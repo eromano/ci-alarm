@@ -8,6 +8,7 @@ module.exports = function() {
             src: ['test/**/*.js'],
             options: {
                 require: ['chai','node_modules/sinon/lib/sinon'],
+                clearRequireCache: true,
                 log: true,
                 logErrors: true,
                 reporter: 'Nyan'

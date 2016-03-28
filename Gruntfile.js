@@ -15,7 +15,8 @@ module.exports = function(grunt) {
         connectPort: CONNECT_PORT,
         connectPortTest: CONNECT_PORT_TEST
     };
-    var options = ['jshint', 'jscs', 'watch', 'connect', 'livereload', 'open', 'mochaTest', 'plato'];
+    var options = ['jshint', 'jscs', 'watch', 'connect', 'livereload', 'open', 'mochaTest',
+        'plato', 'coveralls', 'storeCoverage', 'makeReport', 'env', 'instrument'];
 
     grunt.config.init(options.reduce(function(accumulator, val) {
         accumulator[val] = (require('./grunt/' + val + '.js'))(accumulator.alarm, grunt);
@@ -34,6 +35,14 @@ module.exports = function(grunt) {
         'default',
         'mochaTest:test'
     ]);
+
+    grunt.registerTask('coverage', [
+        'env:coverage',
+        'instrument',
+        'mochaTest',
+        'storeCoverage',
+        'makeReport',
+        'coveralls']);
 
     grunt.registerTask('complex', 'Plato code complexity analyzer', [
         'default',
