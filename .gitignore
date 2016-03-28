@@ -13,4 +13,5 @@ coverage
 build/Release
 node_modules
 .npm
+/test/src
 .node_repl_history
