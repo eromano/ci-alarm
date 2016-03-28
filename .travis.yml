@@ -4,6 +4,8 @@ node_js:
 before_install: npm install -g grunt-cli
 install: npm install
 sudo: false
+after_success:
+  - coveralls
 cache:
   directories:
     - node_modules
