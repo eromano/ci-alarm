@@ -18,11 +18,14 @@
   "scripts": {
     "postinstall": "grunt",
     "start": "node src/main.js",
-    "test": "grunt test"
+    "debug": "node-debug src/main.js",
+    "test": "grunt test",
+    "coverage": "grunt coverage"
   },
   "license": "MIT",
   "devDependencies": {
     "chai": "^3.5.0",
+    "coveralls": "^2.11.9",
     "grunt": "~0.4.0",
     "grunt-cli": "^1.1.0",
     "grunt-contrib-connect": "^1.0.0",

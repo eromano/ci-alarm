@@ -5,9 +5,9 @@ before_install: npm install -g grunt-cli
 install: npm install
 sudo: false
 after_success:
-  - coveralls
+  npm run-script coverage
 cache:
   directories:
     - node_modules
 notifications:
-  email: false
+  slack: bottry:qGLlvCPcGHJp6kcmmPuCcHGd

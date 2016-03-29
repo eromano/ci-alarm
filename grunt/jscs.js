@@ -7,7 +7,7 @@ module.exports = function() {
         src: [
             'Gruntfile.js',
             'grunt/**/*.js',
-            'test/**/*.js',
+            'test/*.js',
             'src/**/*.js'
         ],
         options: {

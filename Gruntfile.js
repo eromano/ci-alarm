@@ -42,7 +42,8 @@ module.exports = function(grunt) {
         'mochaTest',
         'storeCoverage',
         'makeReport',
-        'coveralls']);
+        'coveralls'
+    ]);
 
     grunt.registerTask('complex', 'Plato code complexity analyzer', [
         'default',
