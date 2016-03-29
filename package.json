@@ -20,7 +20,7 @@
     "start": "node src/main.js",
     "debug": "node-debug src/main.js",
     "test": "grunt test",
-    "coverage": "grunt coveralls"
+    "coverage": "grunt coverage"
   },
   "license": "MIT",
   "devDependencies": {
@@ -32,7 +32,6 @@
     "grunt-contrib-jshint": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
     "grunt-coveralls": "^1.0.0",
-    "grunt-env": "^0.4.4",
     "grunt-istanbul": "^0.7.0",
     "grunt-jscs": "^2.8.0",
     "grunt-mocha-istanbul": "^3.0.1",

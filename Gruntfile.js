@@ -4,7 +4,7 @@ var CONNECT_PORT = 9090;
 var CONNECT_PORT_TEST = 9091;
 var LIVERELOAD_PORT = 35742;
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
     require('load-grunt-tasks')(grunt);
 
@@ -16,14 +16,23 @@ module.exports = function(grunt) {
         connectPortTest: CONNECT_PORT_TEST
     };
     var options = ['jshint', 'jscs', 'watch', 'connect', 'livereload', 'open', 'mochaTest',
-        'plato', 'coveralls', 'storeCoverage', 'makeReport', 'env', 'instrument', 'mocha_istanbul'];
+        'plato', 'coveralls' , 'mocha_istanbul'];
 
-    grunt.config.init(options.reduce(function(accumulator, val) {
+    grunt.config.init(options.reduce(function (accumulator, val) {
         accumulator[val] = (require('./grunt/' + val + '.js'))(accumulator.alarm, grunt);
         return accumulator;
     }, {
         alarm: alarm
     }));
+
+    grunt.event.on('coverage', function (lcov, done) {
+        require('coveralls').handleInput(lcov, function (err) {
+            if (err) {
+                return done(err);
+            }
+            done();
+        });
+    });
 
     grunt.registerTask('default', 'Default build tasks', [
         'jshint',
@@ -36,16 +45,10 @@ module.exports = function(grunt) {
         'mochaTest:test'
     ]);
 
-    grunt.registerTask('coverage', [
-        'env:coverage',
-        'instrument',
-        'mochaTest:test',
-        'storeCoverage',
-        'makeReport',
+    grunt.registerTask('coverage', 'Save coverage in coveralls', [
+        'mocha_istanbul:coveralls',
         'coveralls'
     ]);
-
-    grunt.registerTask('coveralls', ['mocha_istanbul:coveralls']);
 
     grunt.registerTask('complex', 'Plato code complexity analyzer', [
         'default',
@@ -54,4 +57,5 @@ module.exports = function(grunt) {
         'open:plato',
         'watch'
     ]);
+
 };
