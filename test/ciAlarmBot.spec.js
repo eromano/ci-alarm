@@ -9,12 +9,11 @@ describe('Bot Initialization', function () {
     beforeEach(function () {
         this.textCheck = '';
 
-        this.slackbotStub = sinon.stub(Bot.prototype, '_post', (function (type, name, text) {
-            this.textCheck = text;
+        this.slackbotStub = sinon.stub(Bot.prototype, '_post', (function (type, name, text, message) {
+            this.textCheck = message.attachments[0].text;
         }).bind(this));
 
-        this.ciAlarmBot = new CiAlarmBot('Fake-token');
-
+        this.ciAlarmBot = new CiAlarmBot('Fake-token','B0W93JU9Y');
         this.ciAlarmBot.run();
     });
 
@@ -32,16 +31,8 @@ describe('Bot Initialization', function () {
         expect(this.textCheck).to.be.equal('Keep calm I am the alarm!');
     });
 
-    it('should the bot respond with the Build status if asked "build status"', function () {
-        this.ciAlarmBot.bot.self = { id: '1234'};
-
-        this.ciAlarmBot.bot.emit('message', {username: 'Sonikku', type: 'message', text: '<@' + this.ciAlarmBot.bot.self.id + '>: tell me something'});
-
-        expect(this.textCheck).to.be.equal('Build Status is Unknown!');
-    });
-
     it('should Not respond with the Build status if asked by ciAlarmBot', function () {
-        this.ciAlarmBot.bot.emit('message', {username: this.ciAlarmBot.bot.name, type: 'message', text: 'tell me something'});
+        this.ciAlarmBot.bot.emit('message', {username: this.ciAlarmBot.bot.name, type: 'message', text: 'status'});
 
         expect(this.textCheck).to.be.equal('');
     });
