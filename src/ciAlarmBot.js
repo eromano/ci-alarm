@@ -67,7 +67,7 @@ class CiAlarmBot {
 
     listenerRequestStatusBuild() {
         this.bot.on('message', (function (message) {
-            console.log(message);
+            //console.log(message);
             if (!this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) &&
                 this.isMentioningCiAlarm(message) && this.isStatusRequest(message)) {
                 var params = {
