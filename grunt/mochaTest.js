@@ -10,8 +10,7 @@ module.exports = function() {
                 require: ['chai','node_modules/sinon/lib/sinon'],
                 clearRequireCache: true,
                 log: true,
-                logErrors: true,
-                reporter: 'Nyan'
+                logErrors: true
             }
         }
     };

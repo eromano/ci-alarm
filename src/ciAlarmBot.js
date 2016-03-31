@@ -1,6 +1,7 @@
 'use strict';
 
 var Bot = require('slackbots');
+var RaspberryInterface = require('./raspberryInterface');
 
 class CiAlarmBot {
 
@@ -17,6 +18,10 @@ class CiAlarmBot {
     }
 
     constructor(token, idBotCi) {
+        if (!token || !idBotCi) {
+            console.log('Slack Tocken and Id Bot CI are necessary');
+        }
+
         var settingsBot = {
             token: token,
             name: 'CI Bot Alarm'
@@ -25,6 +30,8 @@ class CiAlarmBot {
         this.bot = new Bot(settingsBot);
         this.buildStatus = {message: 'Unknown', color: this.infoColor};
         this.ciBotId = idBotCi;
+
+        this.raspberryInterface = new RaspberryInterface(22);
     }
 
     run() {
