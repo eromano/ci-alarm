@@ -9,8 +9,9 @@ nconf.add('config', {type: 'file', file: './config.json'});
 try {
     var tokenSlack =  nconf.get('tokenslack');
     var ciBotId =  nconf.get('cibotid');
+    var githubToken =  nconf.get('github_token');
 
-    var ciAlarmBot = new CiAlarmBot(tokenSlack, ciBotId);
+    var ciAlarmBot = new CiAlarmBot(tokenSlack, ciBotId, githubToken);
     ciAlarmBot.run();
 } catch (error) {
     console.log('Bot failed' + error);

@@ -18,9 +18,9 @@ class CiAlarmBot {
         return 'warning';
     }
 
-    constructor(token, idBotCi) {
-        if (!token || !idBotCi) {
-            console.log('Slack Tocken and Id Bot CI are necessary');
+    constructor(token, idBotCi, githubToken) {
+        if (!token || !idBotCi || !githubToken) {
+            console.log('Slack Tocken , Id Bot CI, githubToken are necessary');
         }
 
         var settingsBot = {
@@ -33,8 +33,7 @@ class CiAlarmBot {
         this.ciBotId = idBotCi;
 
         this.raspberryInterface = new RaspberryInterface(22);
-        this.travisInterface = new TravisInterface();
-
+        this.travisInterface = new TravisInterface(githubToken);
     }
 
     run() {

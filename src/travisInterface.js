@@ -3,7 +3,8 @@ var Travis = require('travis-ci');
 
 class travisInterface {
 
-    constructor() {
+    constructor(githubToken) {
+        this.githubToken = githubToken;
         this.travis = new Travis({
             version: '2.0.0',
             headers: {
@@ -16,13 +17,19 @@ class travisInterface {
 
     authenticate() {
         this.travis.auth.github.post({
-            github_token: ''
+            github_token: this.githubToken
         }, (function (err, res) {
+            if (err) {
+                console.log('Github Access Error ' + err);
+                return;
+            }
+
             this.travis.authenticate({
                 access_token: res.access_token
             }, (function (err) {
                 if (err) {
-                    throw new Error('Travis Access Error' + err);
+                    console.log('Travis Access Error ' + err);
+                    return;
                 }
 
                 this.getAccountInfo().then((function (username) {
