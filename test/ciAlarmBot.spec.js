@@ -3,26 +3,43 @@ var CiAlarmBot = require('../src/ciAlarmBot');
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var Bot = require('slackbots');
+var TravisInterface = require('../src/travisInterface');
 
 describe('Bot Initialization', function () {
 
     beforeEach(function () {
         this.textCheck = '';
 
+        this.authenticateGithubStub = sinon.stub(TravisInterface.prototype, 'authenticateGithub', function () {
+            return new Promise(
+                function (resolve) {
+                    resolve('123');
+                });
+        });
+
+        this.authenticateTravisStub = sinon.stub(TravisInterface.prototype, 'authenticateTravis', function () {
+            return new Promise(
+                function (resolve) {
+                    resolve('123');
+                });
+        });
+
         this.slackbotStub = sinon.stub(Bot.prototype, '_post', (function (type, name, text, message) {
             this.textCheck = message.attachments[0].text;
         }).bind(this));
 
-        this.ciAlarmBot = new CiAlarmBot('Fake-token','B0W93JU9Y');
+        this.ciAlarmBot = new CiAlarmBot('Fake-token-slack', 'B0W93JU9Y', 'fake-token-github');
         this.ciAlarmBot.run();
     });
 
     afterEach(function () {
         this.slackbotStub.restore();
+        this.authenticateGithubStub.restore();
+        this.authenticateTravisStub.restore();
     });
 
     it('should the BOT token present', function () {
-        expect(this.ciAlarmBot.bot.token).to.be.equal('Fake-token');
+        expect(this.ciAlarmBot.bot.token).to.be.equal('Fake-token-slack');
     });
 
     it('should the BOT say hello to the the channel when start', function () {

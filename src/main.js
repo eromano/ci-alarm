@@ -9,7 +9,7 @@ nconf.add('config', {type: 'file', file: './config.json'});
 try {
     var tokenSlack =  nconf.get('tokenslack');
     var ciBotId =  nconf.get('cibotid');
-    var githubToken =  nconf.get('github_token');
+    var githubToken =  nconf.get('githubtoken');
 
     var ciAlarmBot = new CiAlarmBot(tokenSlack, ciBotId, githubToken);
     ciAlarmBot.run();

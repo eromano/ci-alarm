@@ -18,10 +18,11 @@ class CiAlarmBot {
         return 'warning';
     }
 
-    constructor(token, idBotCi, githubToken) {
+    constructor(token, idBotCi, githubToken, gpioPin) {
         if (!token || !idBotCi || !githubToken) {
             console.log('Slack Tocken , Id Bot CI, githubToken are necessary');
         }
+        this.gpioPin = !gpioPin ? 22 : gpioPin;
 
         var settingsBot = {
             token: token,
@@ -32,7 +33,7 @@ class CiAlarmBot {
         this.buildStatus = {message: 'Unknown', color: this.infoColor};
         this.ciBotId = idBotCi;
 
-        this.raspberryInterface = new RaspberryInterface(22);
+        this.raspberryInterface = new RaspberryInterface(this.gpioPin);
         this.travisInterface = new TravisInterface(githubToken);
     }
 

@@ -12,33 +12,48 @@ class travisInterface {
             }
         });
 
-        this.authenticate();
+        this.authenticateGithub().then((function (res) {
+            this.authenticateTravis(res).then((function () {
+                this.getInfo();
+            }).bind(this));
+        }).bind(this));
     }
 
-    authenticate() {
-        this.travis.auth.github.post({
-            github_token: this.githubToken
-        }, (function (err, res) {
-            if (err) {
-                console.log('Github Access Error ' + err);
-                return;
-            }
-
-            this.travis.authenticate({
-                access_token: res.access_token
-            }, (function (err) {
-                if (err) {
-                    console.log('Travis Access Error ' + err);
-                    return;
-                }
-
-                this.getAccountInfo().then((function (username) {
-                    this.getUserRepository(username).then(function (repository) {
-                        console.log(repository);
-                    });
+    authenticateGithub() {
+        return new Promise(
+            (function (resolve) {
+                this.travis.auth.github.post({
+                    github_token: this.githubToken
+                }, (function (err, res) {
+                    if (err) {
+                        console.log('Github Access Error ' + err);
+                        return;
+                    }
+                    resolve(res);
                 }).bind(this));
-
             }).bind(this));
+    }
+
+    authenticateTravis(res) {
+        return new Promise(
+            (function (resolve) {
+                this.travis.authenticate({
+                    access_token: res.access_token
+                }, (function (err) {
+                    if (err) {
+                        console.log('Travis Access Error ' + err);
+                        return;
+                    }
+                    resolve();
+                }).bind(this));
+            }).bind(this));
+    }
+
+    getInfo() {
+        this.getAccountInfo().then((function (username) {
+            this.getUserRepository(username).then(function (repository) {
+                console.log(repository);
+            });
         }).bind(this));
     }
 

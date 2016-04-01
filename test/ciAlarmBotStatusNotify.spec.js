@@ -1,5 +1,7 @@
 /*global describe, it, beforeEach, afterEach */
 var CiAlarmBot = require('../src/ciAlarmBot');
+var TravisInterface = require('../src/travisInterface');
+
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var Bot = require('slackbots');
@@ -9,18 +11,35 @@ describe('Bot CI communication', function () {
     beforeEach(function () {
         this.textCheck = '';
 
+        this.authenticateGithubStub = sinon.stub(TravisInterface.prototype, 'authenticateGithub', function () {
+            return new Promise(
+                function (resolve) {
+                    resolve('123');
+                });
+        });
+
+        this.authenticateTravisStub = sinon.stub(TravisInterface.prototype, 'authenticateTravis', function () {
+            return new Promise(
+                function (resolve) {
+                    resolve('123');
+                });
+        });
+
         this.slackbotStub = sinon.stub(Bot.prototype, '_post', (function (type, name, text, message) {
             this.textCheck = message.attachments[0].text;
             this.colorMessage = message.attachments[0].color;
         }).bind(this));
 
-        this.ciAlarmBot = new CiAlarmBot('Fake-token', 'B0W93JU9Y');
+        this.ciAlarmBot = new CiAlarmBot('Fake-token-slack', 'B0W93JU9Y', 'fake-token-github');
         this.ciAlarmBot.run();
         this.ciAlarmBot.bot.self = {id: '1234'};
     });
 
     afterEach(function () {
         this.slackbotStub.restore();
+        this.authenticateGithubStub.restore();
+        this.authenticateTravisStub.restore();
+
     });
 
     it('should the bot respond with the Unknown Build status if asked "build status" and has never received a status', function () {
