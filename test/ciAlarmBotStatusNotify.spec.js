@@ -18,6 +18,8 @@ describe('Bot CI communication', function () {
             this.colorMessage = message.attachments[0].color;
         }).bind(this));
 
+        this.loginStub = sinon.stub(Bot.prototype, 'login', function () {});
+
         this.ciAlarmBot = new CiAlarmBot('Fake-token-slack', 'B0W93JU9Y', 'fake-token-github');
         this.ciAlarmBot.run();
         this.ciAlarmBot.bot.self = {id: '1234'};
@@ -26,6 +28,7 @@ describe('Bot CI communication', function () {
     afterEach(function () {
         this.slackbotStub.restore();
         this.constructorStub.restore();
+        this.loginStub.restore();
     });
 
     it('should the bot respond with the Unknown Build status if asked "build status" and has never received a status', function () {

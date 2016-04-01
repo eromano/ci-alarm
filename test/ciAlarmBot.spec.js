@@ -8,13 +8,15 @@ var TravisInterface = require('../src/travisInterface');
 describe('Bot Initialization', function () {
 
     beforeEach(function () {
-
         this.textCheck = '';
+
         this.constructorStub = sinon.stub(TravisInterface.prototype, 'constructor', function () {});
 
         this.slackbotStub = sinon.stub(Bot.prototype, '_post', (function (type, name, text, message) {
             this.textCheck = message.attachments[0].text;
         }).bind(this));
+
+        this.loginStub = sinon.stub(Bot.prototype, 'login', function () {});
 
         this.ciAlarmBot = new CiAlarmBot('Fake-token-slack', 'B0W93JU9Y', 'fake-token-github');
         this.ciAlarmBot.run();
@@ -23,6 +25,7 @@ describe('Bot Initialization', function () {
     afterEach(function () {
         this.slackbotStub.restore();
         this.constructorStub.restore();
+        this.loginStub.restore();
     });
 
     it('should the BOT token present', function () {
