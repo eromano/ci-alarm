@@ -8,21 +8,9 @@ var TravisInterface = require('../src/travisInterface');
 describe('Bot Initialization', function () {
 
     beforeEach(function () {
+
         this.textCheck = '';
-
-        this.authenticateGithubStub = sinon.stub(TravisInterface.prototype, 'authenticateGithub', function () {
-            return new Promise(
-                function (resolve) {
-                    resolve('123');
-                });
-        });
-
-        this.authenticateTravisStub = sinon.stub(TravisInterface.prototype, 'authenticateTravis', function () {
-            return new Promise(
-                function (resolve) {
-                    resolve('123');
-                });
-        });
+        this.constructorStub = sinon.stub(TravisInterface.prototype, 'constructor', function () {});
 
         this.slackbotStub = sinon.stub(Bot.prototype, '_post', (function (type, name, text, message) {
             this.textCheck = message.attachments[0].text;
@@ -34,8 +22,7 @@ describe('Bot Initialization', function () {
 
     afterEach(function () {
         this.slackbotStub.restore();
-        this.authenticateGithubStub.restore();
-        this.authenticateTravisStub.restore();
+        this.constructorStub.restore();
     });
 
     it('should the BOT token present', function () {

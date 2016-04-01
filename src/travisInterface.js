@@ -61,6 +61,11 @@ class travisInterface {
         return new Promise(
             (function (resolve) {
                 this.travis.accounts.get(function (err, res) {
+                    if (err || !res) {
+                        console.log('Get AccountInfo Error ' + err);
+                        return;
+                    }
+
                     resolve(res.accounts[0].login);
                 });
             }).bind(this));
