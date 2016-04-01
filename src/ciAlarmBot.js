@@ -2,6 +2,7 @@
 
 var Bot = require('slackbots');
 var RaspberryInterface = require('./raspberryInterface');
+var TravisInterface = require('./travisInterface');
 
 class CiAlarmBot {
 
@@ -32,6 +33,8 @@ class CiAlarmBot {
         this.ciBotId = idBotCi;
 
         this.raspberryInterface = new RaspberryInterface(22);
+        this.travisInterface = new TravisInterface();
+
     }
 
     run() {

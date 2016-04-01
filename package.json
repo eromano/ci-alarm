@@ -26,6 +26,8 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "coveralls": "^2.11.9",
+    "es6-promise": "^3.1.2",
+    "github": "^0.2.4",
     "gpio": "^0.2.7",
     "grunt": "~0.4.0",
     "grunt-cli": "^1.1.0",
@@ -43,7 +45,8 @@
     "mocha-lcov-reporter": "^1.2.0",
     "nconf": "^0.8.4",
     "sinon": "^1.17.3",
-    "slackbots": "^0.5.1"
+    "slackbots": "^0.5.1",
+    "travis-ci": "^2.1.0"
   },
   "contributors": [
     "Eugenio Romano <> (http://eromano.github.io/)"
