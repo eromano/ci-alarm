@@ -1,7 +1,16 @@
 'use strict';
 var Travis = require('travis-ci');
+var TravisAuth = require('./travisAuth');
 
 class travisInterface {
+
+    get account() {
+        return this.account;
+    }
+
+    set account(account) {
+        this.account = account;
+    }
 
     constructor(githubToken) {
         this.githubToken = githubToken;
@@ -12,72 +21,31 @@ class travisInterface {
             }
         });
 
-        this.authenticateGithub().then((function (res) {
-            this.authenticateTravis(res).then((function () {
-                this.getInfo();
-            }).bind(this));
-        }).bind(this));
-    }
-
-    authenticateGithub() {
-        return new Promise(
-            (function (resolve) {
-                this.travis.auth.github.post({
-                    github_token: this.githubToken
-                }, (function (err, res) {
-                    if (err) {
-                        console.log('Github Access Error ' + err);
-                        return;
-                    }
-                    resolve(res);
-                }).bind(this));
-            }).bind(this));
-    }
-
-    authenticateTravis(res) {
-        return new Promise(
-            (function (resolve) {
-                this.travis.authenticate({
-                    access_token: res.access_token
-                }, (function (err) {
-                    if (err) {
-                        console.log('Travis Access Error ' + err);
-                        return;
-                    }
-                    resolve();
-                }).bind(this));
-            }).bind(this));
-    }
-
-    getInfo() {
-        this.getAccountInfo().then((function (username) {
-            this.getUserRepository(username).then(function (repository) {
-                console.log(repository);
-            });
-        }).bind(this));
+        this.travisAuth = new TravisAuth(this.travis, githubToken);
+        this.travisAuth.login().then(() => {
+            console.log('a');
+            this.getAccountInfo();
+        });
     }
 
     getAccountInfo() {
-        return new Promise(
-            (function (resolve) {
-                this.travis.accounts.get(function (err, res) {
-                    if (err || !res) {
-                        console.log('Get AccountInfo Error ' + err);
-                        return;
-                    }
-
-                    resolve(res.accounts[0].login);
-                });
-            }).bind(this));
+        return new Promise((resolve) => {
+            this.travis.accounts.get(function (err, res) {
+                if (err || !res) {
+                    console.log('Get AccountInfo Error ' + err);
+                    return;
+                }
+                resolve(res.accounts[0].login);
+            });
+        });
     }
 
     getUserRepository(username) {
-        return new Promise(
-            (function (resolve) {
-                this.travis.repos(username).get(function (err, res) {
-                    resolve(res);
-                });
-            }).bind(this));
+        return new Promise((resolve) => {
+            this.travis.repos(username).get(function (err, res) {
+                resolve(res);
+            });
+        });
     }
 }
 
