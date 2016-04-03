@@ -22,7 +22,11 @@ class travisAuth {
                         this.authenticateTravis(res).then(() => {
                             this.isAuthenticated = true;
                             resolve();
+                        }, (reject) => {
+                            reject(reject);
                         });
+                    }, (reject) => {
+                        reject(reject);
                     });
                 } else {
                     resolve();
