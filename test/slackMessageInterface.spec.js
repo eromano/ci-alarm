@@ -1,5 +1,5 @@
 /*global describe, it, beforeEach, afterEach */
-var CiAlarmBot = require('../src/ciAlarmBot');
+var SlackMessageInterface = require('../src/slackMessageInterface');
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var Bot = require('slackbots');
@@ -18,8 +18,8 @@ describe('Bot Initialization', function () {
 
         this.loginStub = sinon.stub(Bot.prototype, 'login', function () {});
 
-        this.ciAlarmBot = new CiAlarmBot('Fake-token-slack', 'B0W93JU9Y', 'fake-token-github');
-        this.ciAlarmBot.run();
+        this.slackMessageInterface = new SlackMessageInterface('Fake-token-slack', 'B0W93JU9Y');
+        this.slackMessageInterface.run();
     });
 
     afterEach(function () {
@@ -29,23 +29,23 @@ describe('Bot Initialization', function () {
     });
 
     it('should the BOT token present', function () {
-        expect(this.ciAlarmBot.bot.token).to.be.equal('Fake-token-slack');
+        expect(this.slackMessageInterface.bot.token).to.be.equal('Fake-token-slack');
     });
 
     it('should the BOT say hello to the the channel when start', function () {
-        this.ciAlarmBot.bot.emit('start');
+        this.slackMessageInterface.bot.emit('start');
 
         expect(this.textCheck).to.be.equal('Keep calm I am the alarm!');
     });
 
     it('should Not respond with the Build status if asked by ciAlarmBot', function () {
-        this.ciAlarmBot.bot.emit('message', {username: this.ciAlarmBot.bot.name, type: 'message', text: 'status'});
+        this.slackMessageInterface.bot.emit('message', {username: this.slackMessageInterface.bot.name, type: 'message', text: 'status'});
 
         expect(this.textCheck).to.be.equal('');
     });
 
     it('should Not respond with the Build status if is not a chat message', function () {
-        this.ciAlarmBot.bot.emit('message', {type: 'reconnect_url'});
+        this.slackMessageInterface.bot.emit('message', {type: 'reconnect_url'});
 
         expect(this.textCheck).to.be.equal('');
     });

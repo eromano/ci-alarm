@@ -26,7 +26,6 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "coveralls": "^2.11.9",
-    "es6-promise": "^3.1.2",
     "github": "^0.2.4",
     "gpio": "^0.2.7",
     "grunt": "~0.4.0",

@@ -11,8 +11,7 @@ try {
     var ciBotId =  nconf.get('cibotid');
     var githubToken =  nconf.get('githubtoken');
 
-    var ciAlarmBot = new CiAlarmBot(tokenSlack, ciBotId, githubToken);
-    ciAlarmBot.run();
+    new CiAlarmBot(tokenSlack, ciBotId, githubToken);
 } catch (error) {
     console.log('Bot failed' + error);
 }
