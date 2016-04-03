@@ -5,6 +5,7 @@ logs
 npm-debug.log*
 pids
 *.pid
+/config.json
 *.seed
 lib-cov
 coverage

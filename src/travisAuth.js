@@ -15,51 +15,48 @@ class travisAuth {
     }
 
     login() {
-        return new Promise(
-            ((resolve) => {
-                if (!this.isAuthenticated) {
-                    this.authenticateGitHub().then((res) => {
-                        this.authenticateTravis(res).then(() => {
-                            this.isAuthenticated = true;
-                            resolve();
-                        }, (reject) => {
-                            reject(reject);
-                        });
+        return new Promise(((resolve) => {
+            if (!this.isAuthenticated) {
+                this.authenticateGitHub().then((res) => {
+                    this.authenticateTravis(res).then(() => {
+                        this.isAuthenticated = true;
+                        resolve();
                     }, (reject) => {
                         reject(reject);
                     });
-                } else {
-                    resolve();
-                }
-            }));
+                }, (reject) => {
+                    reject(reject);
+                });
+            } else {
+                resolve();
+            }
+        }));
     }
 
     authenticateGitHub() {
-        return new Promise(
-            (resolve, reject) => {
-                this.travis.auth.github.post({
-                    github_token: this.githubToken
-                }, (err, res) => {
-                    if (err) {
-                        reject(new Error(('Github Access Error ' + err)));
-                    }
-                    resolve(res);
-                });
+        return new Promise((resolve, reject) => {
+            this.travis.auth.github.post({
+                github_token: this.githubToken
+            }, (err, res) => {
+                if (err) {
+                    reject(new Error(('Github Access Error ' + err)));
+                }
+                resolve(res);
             });
+        });
     }
 
     authenticateTravis(res) {
-        return new Promise(
-            (resolve, reject) => {
-                this.travis.authenticate({
-                    access_token: res.access_token
-                }, (err) => {
-                    if (err) {
-                        reject(new Error(('Travis Access Error ' + err)));
-                    }
-                    resolve();
-                });
+        return new Promise((resolve, reject) => {
+            this.travis.authenticate({
+                access_token: res.access_token
+            }, (err) => {
+                if (err) {
+                    reject(new Error(('Travis Access Error ' + err)));
+                }
+                resolve();
             });
+        });
     }
 
 }

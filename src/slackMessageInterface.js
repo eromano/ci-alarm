@@ -53,7 +53,7 @@ class slackMessageInterface {
     }
 
     listenerCiChangeStatusMessageBuild() {
-        this.bot.on('message', (function (message) {
+        this.bot.on('message', ((message) => {
             if (this.isFromCiSlackBot(message)) {
                 if (this.isFailingMessage(message)) {
                     this.buildStatus = {message: 'Failed', color: this.failColor};
@@ -61,30 +61,32 @@ class slackMessageInterface {
                     this.buildStatus = {message: 'Success', color: this.successColor};
                 }
             }
-
-        }).bind(this));
+        }));
     }
 
     listenerRequestStatusBuild() {
-        this.bot.on('message', (function (message) {
-            //console.log(message);
+        this.bot.on('message', ((message) => {
             if (!this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) &&
                 this.isMentioningCiAlarm(message) && this.isStatusRequest(message)) {
-                var params = {
-                    icon_emoji: ':robot_face:',
-                    attachments: [
-                        {
-                            'fallback': 'Ci status',
-                            'color': this.buildStatus.color,
-                            'author_name': 'Ci Alarm',
-                            'author_link': 'https://github.com/eromano/ci-alarm',
-                            'text': 'Hi <@' + message.user + '> the build Status is ' + this.buildStatus.message + '!'
-                        }
-                    ]
-                };
-                this.bot.postMessageToChannel('general', '', params);
+                this.postSlackMessageToChannel('Hi <@' + message.user + '> the build Status is ' + this.buildStatus.message + '!', 'Ci status');
             }
-        }).bind(this));
+        }));
+    }
+
+    postSlackMessageToChannel(message, fallback) {
+        var params = {
+            icon_emoji: ':robot_face:',
+            attachments: [
+                {
+                    'fallback': fallback,
+                    'color': this.buildStatus.color,
+                    'author_name': 'Ci Alarm',
+                    'author_link': 'https://github.com/eromano/ci-alarm',
+                    'text': message
+                }
+            ]
+        };
+        this.bot.postMessageToChannel('general', '', params);
     }
 
     isFromCiAlarmBotMessage(message) {

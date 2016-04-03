@@ -1,15 +1,17 @@
 'use strict';
 var Travis = require('travis-ci');
 var TravisAuth = require('./travisAuth');
+var util = require('util');
+var EventEmitter = require('events').EventEmitter;
 
 class travisInterface {
 
-    get account() {
-        return this.account;
+    get username() {
+        return this._username;
     }
 
-    set account(account) {
-        this.account = account;
+    set username(newUsername) {
+        this._username = newUsername;
     }
 
     constructor(githubToken) {
@@ -23,30 +25,34 @@ class travisInterface {
 
         this.travisAuth = new TravisAuth(this.travis, githubToken);
         this.travisAuth.login().then(() => {
-            console.log('a');
             this.getAccountInfo();
         });
     }
 
     getAccountInfo() {
-        return new Promise((resolve) => {
-            this.travis.accounts.get(function (err, res) {
+        return new Promise((resolve, reject) => {
+            this.travis.accounts.get((err, res) => {
                 if (err || !res) {
-                    console.log('Get AccountInfo Error ' + err);
-                    return;
+                    reject(new Error(('Get AccountInfo Error ' + err)));
                 }
+                this.username = res.accounts[0].login;
+                this.emit('travis:login:ok');
                 resolve(res.accounts[0].login);
             });
         });
     }
 
-    getUserRepository(username) {
-        return new Promise((resolve) => {
-            this.travis.repos(username).get(function (err, res) {
+    getUserRepository() {
+        return new Promise((resolve, reject) => {
+            this.travis.repos(this.username).get(function (err, res) {
+                if (err || !res) {
+                    reject(new Error(('Get UserRepository Error ' + err)));
+                }
                 resolve(res);
             });
         });
     }
 }
 
+util.inherits(travisInterface, EventEmitter);
 module.exports = travisInterface;

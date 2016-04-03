@@ -17,8 +17,21 @@ class CiAlarmBot {
 
         this.raspberryInterface = new RaspberryInterface(this.gpioPin);
         this.travisInterface = new TravisInterface(githubToken);
+
+        this.travisInterface.on('travis:login:ok', ()=> {
+            this.run(token, idBotCi);
+        });
+    }
+
+    run(token, idBotCi) {
         this.slackMessageInterface = new SlackMessageInterface(token, idBotCi);
         this.slackMessageInterface.run();
+
+        this.travisInterface.getUserRepository().then((res)=> {
+            console.log(res.repos[0].id);
+            this.slackMessageInterface.postSlackMessageToChannel(res.repos[0].id, '');
+        });
+
     }
 }
 
