@@ -16,7 +16,7 @@ class slackMessageInterface {
         return 'warning';
     }
 
-    constructor(token, idBotCi) {
+    constructor(token, idBotCi, ciService) {
         var settingsBot = {
             token: token,
             name: 'CI Bot Alarm'
@@ -25,12 +25,14 @@ class slackMessageInterface {
         this.bot = new Bot(settingsBot);
         this.buildStatus = {message: 'Unknown', color: this.infoColor};
         this.ciBotId = idBotCi;
+        this.ciService = ciService;
     }
 
     run() {
         this.startChannelMessage();
         this.listenerRequestStatusBuild();
         this.listenerCiChangeStatusMessageBuild();
+        this.listenerRepositoryListMessage();
     }
 
     startChannelMessage() {
@@ -68,18 +70,39 @@ class slackMessageInterface {
         this.bot.on('message', ((message) => {
             if (!this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) &&
                 this.isMentioningCiAlarm(message) && this.isStatusRequest(message)) {
+
                 this.postSlackMessageToChannel('Hi <@' + message.user + '> the build Status is ' + this.buildStatus.message + '!', 'Ci status');
             }
         }));
     }
 
-    postSlackMessageToChannel(message, fallback) {
+    listenerRepositoryListMessage() {
+        this.bot.on('message', ((message) => {
+            if (!this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) &&
+                this.isMentioningCiAlarm(message) && this.isListRepositoryRequest(message)) {
+
+                this.ciService.getUserRepository().then((repositories)=> {
+                    this.postSlackMessageToChannel('Hi <@' + message.user + '> this is the repository list: \n • ' +
+                        repositories.join('\n• ') + 'Repository list', this.infoColor);
+                });
+            }
+        }));
+    }
+
+    /**
+     * Post a message in the slack general chat
+     *
+     * @param {String} message
+     * @param {String} fallback
+     * @param {successColor|failColor|infoColor} color
+     */
+    postSlackMessageToChannel(message, fallback, color) {
         var params = {
             icon_emoji: ':robot_face:',
             attachments: [
                 {
                     'fallback': fallback,
-                    'color': this.buildStatus.color,
+                    'color': color || this.buildStatus.color,
                     'author_name': 'Ci Alarm',
                     'author_link': 'https://github.com/eromano/ci-alarm',
                     'text': message
@@ -105,8 +128,12 @@ class slackMessageInterface {
         return this.ciBotId === message.bot_id;
     }
 
+    isListRepositoryRequest(message) {
+        return message.text && message.text.toLowerCase().indexOf('repository list') > -1;
+    }
+
     isStatusRequest(message) {
-        return message.text && message.text.indexOf('status') > -1;
+        return message.text && message.text.toLowerCase().indexOf('status') > -1;
     }
 
     isFailingMessage(message) {

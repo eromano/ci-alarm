@@ -4,6 +4,7 @@ var TravisAuth = require('./travisAuth');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var _ = require('lodash');
+var assert = require('assert');
 
 class travisInterface {
 
@@ -16,9 +17,7 @@ class travisInterface {
     }
 
     constructor(githubToken) {
-        if (!githubToken) {
-            throw Error('GithubToken is necessary');
-        }
+        assert(githubToken, 'GithubToken is necessary');
 
         this.githubToken = githubToken;
         this.travis = new Travis({
@@ -34,6 +33,9 @@ class travisInterface {
         });
     }
 
+    /**
+     * Retrieve the user Account info in a promise
+     */
     getAccountInfo() {
         return new Promise((resolve, reject) => {
             this.travis.accounts.get((err, res) => {
@@ -46,6 +48,9 @@ class travisInterface {
         });
     }
 
+    /**
+     * Retrieve the user repository in a promise
+     */
     getUserRepository() {
         return new Promise((resolve, reject) => {
             this.travis.repos(this.username).get(function (err, res) {

@@ -7,7 +7,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var Bot = require('slackbots');
 
-describe('Bot CI communication', function () {
+describe('Bot CI build communication', function () {
 
     beforeEach(function () {
         this.textCheck = '';

@@ -141,11 +141,7 @@ describe('Travis Service', function () {
         it('Should Get UserRepository return the repository list', function (done) {
             this.travisService.username = 'mbros';
 
-            var repos = [
-                Repository.createRepository({slug: 'fakeuser/fake-project1'}),
-                Repository.createRepository({slug: 'fakeuser/fake-project2'}),
-                Repository.createRepository({slug: 'fakeuser/fake-project3'})
-            ];
+            var repos = Repository.createRepositoriesList();
 
             nock('https://api.travis-ci.org:443')
                 .get('/repos/mbros')
