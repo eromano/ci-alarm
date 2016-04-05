@@ -19,7 +19,7 @@
     "strict": false,
     "trailing": true,
     "globals": {
-        "_": false,
+        "_": true,
         "$": false,
         "Fluxxor": false,
         "React": false,

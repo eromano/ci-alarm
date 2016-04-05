@@ -3,6 +3,7 @@ var Travis = require('travis-ci');
 var TravisAuth = require('./travisAuth');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
+var _ = require('lodash');
 
 class travisInterface {
 
@@ -15,6 +16,10 @@ class travisInterface {
     }
 
     constructor(githubToken) {
+        if (!githubToken) {
+            throw Error('GithubToken is necessary');
+        }
+
         this.githubToken = githubToken;
         this.travis = new Travis({
             version: '2.0.0',
@@ -25,7 +30,7 @@ class travisInterface {
 
         this.travisAuth = new TravisAuth(this.travis, githubToken);
         this.travisAuth.login().then(() => {
-            this.getAccountInfo();
+            this.getAccountInfo().then(() => {this.emit('travis:login:ok');},() => {this.emit('travis:login:error');});
         });
     }
 
@@ -36,8 +41,7 @@ class travisInterface {
                     reject(new Error(('Get AccountInfo Error ' + err)));
                 }
                 this.username = res.accounts[0].login;
-                this.emit('travis:login:ok');
-                resolve(res.accounts[0].login);
+                resolve();
             });
         });
     }
@@ -48,7 +52,7 @@ class travisInterface {
                 if (err || !res) {
                     reject(new Error(('Get UserRepository Error ' + err)));
                 }
-                resolve(res);
+                resolve(_.map(res.repos,'slug'));
             });
         });
     }

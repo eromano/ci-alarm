@@ -1,4 +1,5 @@
 /*global describe, it*/
+'use strict';
 var RaspberryInterface = require('../src/raspberryInterface');
 var expect = require('chai').expect;
 

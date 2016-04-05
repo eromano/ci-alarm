@@ -1,16 +1,15 @@
 /*global describe, it, beforeEach, afterEach */
+'use strict';
+
 var SlackMessageInterface = require('../src/slackMessageInterface');
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var Bot = require('slackbots');
-var TravisInterface = require('../src/travisInterface');
 
 describe('Bot Initialization', function () {
 
     beforeEach(function () {
         this.textCheck = '';
-
-        this.constructorStub = sinon.stub(TravisInterface.prototype, 'constructor', function () {});
 
         this.slackbotStub = sinon.stub(Bot.prototype, '_post', (function (type, name, text, message) {
             this.textCheck = message.attachments[0].text;
@@ -24,7 +23,6 @@ describe('Bot Initialization', function () {
 
     afterEach(function () {
         this.slackbotStub.restore();
-        this.constructorStub.restore();
         this.loginStub.restore();
     });
 

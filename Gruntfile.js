@@ -15,7 +15,7 @@ module.exports = function (grunt) {
         connectPort: CONNECT_PORT,
         connectPortTest: CONNECT_PORT_TEST
     };
-    var options = ['jshint', 'jscs', 'watch', 'connect', 'livereload', 'open', 'mochaTest', 'coveralls' , 'mocha_istanbul'];
+    var options = ['jshint', 'jscs', 'watch', 'livereload', 'open', 'mochaTest', 'coveralls' , 'mocha_istanbul'];
 
     grunt.config.init(options.reduce(function (accumulator, val) {
         accumulator[val] = (require('./grunt/' + val + '.js'))(accumulator.alarm, grunt);
@@ -35,8 +35,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', 'Default build tasks', [
         'jshint',
-        'jscs',
-        'connect:test'
+        'jscs'
     ]);
 
     grunt.registerTask('test', 'Default build tasks', [

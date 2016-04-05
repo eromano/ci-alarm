@@ -1,7 +1,7 @@
 'use strict';
 
 var RaspberryInterface = require('./raspberryInterface');
-var TravisInterface = require('./travisInterface');
+var TravisService = require('./travisService');
 var SlackMessageInterface = require('./slackMessageInterface');
 
 class CiAlarmBot {
@@ -16,9 +16,9 @@ class CiAlarmBot {
         this.ciBotId = idBotCi;
 
         this.raspberryInterface = new RaspberryInterface(this.gpioPin);
-        this.travisInterface = new TravisInterface(githubToken);
+        this.travisService = new TravisService(githubToken);
 
-        this.travisInterface.on('travis:login:ok', ()=> {
+        this.travisService.on('travis:login:ok', ()=> {
             this.run(token, idBotCi);
         });
     }
@@ -27,7 +27,7 @@ class CiAlarmBot {
         this.slackMessageInterface = new SlackMessageInterface(token, idBotCi);
         this.slackMessageInterface.run();
 
-        this.travisInterface.getUserRepository().then((res)=> {
+        this.travisService.getUserRepository().then((res)=> {
             console.log(res.repos[0].id);
             this.slackMessageInterface.postSlackMessageToChannel(res.repos[0].id, '');
         });
