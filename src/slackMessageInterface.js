@@ -59,11 +59,12 @@ class slackMessageInterface {
 
                 if (repoName) {
                     this.ciService.getLastBuildStatusByRepository(repoName).then((statusBuild)=> {
+                        statusBuild = statusBuild ? statusBuild : 'unknown';
                         this.postSlackMessageToChannel('Hi <@' + message.user + '> the build Status is ' + statusBuild + '!', 'Ci status', this.colorByStatus(statusBuild));
-                    },(error)=> {
+                    }, (error)=> {
                         this.postSlackMessageToChannel(error.toString(), 'Ci status', this.failColor);
                     });
-                }else {
+                } else {
                     this.postSlackMessageToChannel('Maybe you want use the command : "status username/example-project" but you forgot to add the repository slug', 'Ci status', this.infoColor);// jscs:ignore maximumLineLength
                 }
             }
@@ -112,7 +113,7 @@ class slackMessageInterface {
 
     getRepositoriesNameInMessage(message) {
         var statusPos = message.text.toLowerCase().indexOf('status');
-        var afterStatus = message.text.toLowerCase().substr(statusPos + 6,message.length);
+        var afterStatus = message.text.toLowerCase().substr(statusPos + 6, message.length);
         var allPhrasesSeparateBySpace = afterStatus.split(' ');
         if (allPhrasesSeparateBySpace && allPhrasesSeparateBySpace.length > 1) {
             return allPhrasesSeparateBySpace[1].trim();
@@ -136,14 +137,14 @@ class slackMessageInterface {
     }
 
     colorByStatus(status) {
-        var color;
+        var color = this.infoColor;
+
         if (status === 'passed') {
             color = this.successColor;
         } else if (status === 'failed') {
             color = this.failColor;
-        } else {
-            color = this.infoColor;
         }
+        
         return color;
     }
 }

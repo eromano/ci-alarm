@@ -114,4 +114,25 @@ describe('Bot CI build communication', function () {
 
     });
 
+    it('should the bot respond with the Unknown Build status if asked "build status" and travis not ha this repo in the CI', function (done) {
+        var repos = Repository.createRepositoriesList();
+        nock('https://api.travis-ci.org:443')
+            .get('/repos/mbros')
+            .reply(200, {repos});
+
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: status fakeuser/fake-project3'
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status is unknown!');
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            done();
+        }, 50);
+
+    });
+
 });
