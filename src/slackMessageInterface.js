@@ -16,22 +16,19 @@ class slackMessageInterface {
         return 'warning';
     }
 
-    constructor(token, idBotCi, ciService) {
+    constructor(token, ciService) {
         var settingsBot = {
             token: token,
             name: 'CI Bot Alarm'
         };
 
         this.bot = new Bot(settingsBot);
-        this.buildStatus = {message: 'Unknown', color: this.infoColor};
-        this.ciBotId = idBotCi;
         this.ciService = ciService;
     }
 
     run() {
         this.startChannelMessage();
         this.listenerRequestStatusBuild();
-        this.listenerCiChangeStatusMessageBuild();
         this.listenerRepositoryListMessage();
     }
 
@@ -54,24 +51,21 @@ class slackMessageInterface {
         }).bind(this));
     }
 
-    listenerCiChangeStatusMessageBuild() {
-        this.bot.on('message', ((message) => {
-            if (this.isFromCiSlackBot(message)) {
-                if (this.isFailingMessage(message)) {
-                    this.buildStatus = {message: 'Failed', color: this.failColor};
-                } else if (this.isSuccessMessage(message)) {
-                    this.buildStatus = {message: 'Success', color: this.successColor};
-                }
-            }
-        }));
-    }
-
     listenerRequestStatusBuild() {
         this.bot.on('message', ((message) => {
             if (!this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) &&
                 this.isMentioningCiAlarm(message) && this.isStatusRequest(message)) {
+                var repoName = this.getRepositoriesNameInMessage(message);
 
-                this.postSlackMessageToChannel('Hi <@' + message.user + '> the build Status is ' + this.buildStatus.message + '!', 'Ci status');
+                if (repoName) {
+                    this.ciService.getLastBuildStatusByRepository(repoName).then((statusBuild)=> {
+                        this.postSlackMessageToChannel('Hi <@' + message.user + '> the build Status is ' + statusBuild + '!', 'Ci status', this.colorByStatus(statusBuild));
+                    },(error)=> {
+                        this.postSlackMessageToChannel(error.toString(), 'Ci status', this.failColor);
+                    });
+                }else {
+                    this.postSlackMessageToChannel('Maybe you want use the command : "status username/example-project" but you forgot to add the repository slug', 'Ci status', this.infoColor);// jscs:ignore maximumLineLength
+                }
             }
         }));
     }
@@ -81,7 +75,7 @@ class slackMessageInterface {
             if (!this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) &&
                 this.isMentioningCiAlarm(message) && this.isListRepositoryRequest(message)) {
 
-                this.ciService.getUserRepository().then((repositories)=> {
+                this.ciService.getUserRepositoriesSlugList().then((repositories)=> {
                     this.postSlackMessageToChannel('Hi <@' + message.user + '> this is the repository list: \n • ' +
                         repositories.join('\n• ') + 'Repository list', this.infoColor);
                 });
@@ -94,7 +88,7 @@ class slackMessageInterface {
      *
      * @param {String} message
      * @param {String} fallback
-     * @param {successColor|failColor|infoColor} color
+     * @param {successColor|failColor|infoColor} color of the vertical line before the message default infoColor yellow
      */
     postSlackMessageToChannel(message, fallback, color) {
         var params = {
@@ -102,7 +96,7 @@ class slackMessageInterface {
             attachments: [
                 {
                     'fallback': fallback,
-                    'color': color || this.buildStatus.color,
+                    'color': color || this.infoColor,
                     'author_name': 'Ci Alarm',
                     'author_link': 'https://github.com/eromano/ci-alarm',
                     'text': message
@@ -116,16 +110,21 @@ class slackMessageInterface {
         return message.hasOwnProperty('username') && (message.username === this.bot.name);
     }
 
+    getRepositoriesNameInMessage(message) {
+        var statusPos = message.text.toLowerCase().indexOf('status');
+        var afterStatus = message.text.toLowerCase().substr(statusPos + 6,message.length);
+        var allPhrasesSeparateBySpace = afterStatus.split(' ');
+        if (allPhrasesSeparateBySpace && allPhrasesSeparateBySpace.length > 1) {
+            return allPhrasesSeparateBySpace[1].trim();
+        }
+    }
+
     isChatMessage(message) {
         return message.type === 'message' && Boolean(message.text);
     }
 
     isMentioningCiAlarm(message) {
         return message.text && message.text.indexOf(this.bot.self.id) > -1;
-    }
-
-    isFromCiSlackBot(message) {
-        return this.ciBotId === message.bot_id;
     }
 
     isListRepositoryRequest(message) {
@@ -136,12 +135,16 @@ class slackMessageInterface {
         return message.text && message.text.toLowerCase().indexOf('status') > -1;
     }
 
-    isFailingMessage(message) {
-        return message.attachments[0].text.indexOf('failed') > -1;
-    }
-
-    isSuccessMessage(message) {
-        return message.attachments[0].text.indexOf('passed') > -1;
+    colorByStatus(status) {
+        var color;
+        if (status === 'passed') {
+            color = this.successColor;
+        } else if (status === 'failed') {
+            color = this.failColor;
+        } else {
+            color = this.infoColor;
+        }
+        return color;
     }
 }
 

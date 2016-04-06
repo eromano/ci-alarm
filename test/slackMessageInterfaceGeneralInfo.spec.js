@@ -24,7 +24,7 @@ describe('Bot CI General Travis info communication', function () {
 
         this.travisService =  new TravisService('github-token');
 
-        this.slackMessageInterface = new SlackMessageInterface('Fake-token-slack', 'B0W93JU9Y', this.travisService);
+        this.slackMessageInterface = new SlackMessageInterface('Fake-token-slack', this.travisService);
         this.slackMessageInterface.run();
         this.slackMessageInterface.bot.self = {id: '1234'};
     });

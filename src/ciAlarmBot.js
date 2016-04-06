@@ -7,30 +7,25 @@ var assert = require('assert');
 
 class CiAlarmBot {
 
-    constructor(token, idBotCi, githubToken, gpioPin) {
+    constructor(token, githubToken, gpioPin) {
         assert(token, 'Slack Tocken is necessary');
-        assert(idBotCi, 'Id Bot CI, is necessary');
         assert(githubToken, 'GithubToken is necessary');
 
         this.gpioPin = !gpioPin ? 22 : gpioPin;
-
-        this.buildStatus = {message: 'Unknown', color: this.infoColor};
-        this.ciBotId = idBotCi;
 
         this.raspberryInterface = new RaspberryInterface(this.gpioPin);
         this.travisService = new TravisService(githubToken);
 
         this.travisService.on('travis:login:ok', ()=> {
-            this.run(token, idBotCi);
+            this.run(token);
         });
     }
 
-    run(token, idBotCi) {
-        this.slackMessageInterface = new SlackMessageInterface(token, idBotCi, this.travisService);
+    run(token) {
+        this.slackMessageInterface = new SlackMessageInterface(token, this.travisService);
         this.slackMessageInterface.run();
 
-        this.travisService.getUserRepository().then((res)=> {
-            console.log(res.repos[0].id);
+        this.travisService.getUserRepositoriesSlugList().then((res)=> {
             this.slackMessageInterface.postSlackMessageToChannel(res.repos[0].id, '');
         });
 

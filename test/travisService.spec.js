@@ -138,7 +138,7 @@ describe('Travis Service', function () {
             this.travisGetAccountInfo.restore();
         });
 
-        it('Should Get UserRepository return the repository list', function (done) {
+        it('Should Get getUserRepositoriesSlugList return the repositories slug list', function (done) {
             this.travisService.username = 'mbros';
 
             var repos = Repository.createRepositoriesList();
@@ -147,13 +147,57 @@ describe('Travis Service', function () {
                 .get('/repos/mbros')
                 .reply(200, {repos});
 
-            var response;
-            this.travisService.getUserRepository().then((repoList)=> {
-                response = repoList.toString();
+            var slugListResponse;
+            this.travisService.getUserRepositoriesSlugList().then((repoList)=> {
+                slugListResponse = repoList.toString();
             });
 
             setTimeout(()=> {
-                expect(response).equals('fakeuser/fake-project1,fakeuser/fake-project2,fakeuser/fake-project3');
+                expect(slugListResponse).equals('fakeuser/fake-project1,fakeuser/fake-project2,fakeuser/fake-project3');
+                done();
+            }, 50);
+
+        });
+
+        it('Should Get getLastbuildStatusByRepository return the status of the repository passed', function (done) {
+            this.travisService.username = 'mbros';
+
+            var repos = Repository.createRepositoriesList();
+
+            nock('https://api.travis-ci.org:443')
+                .get('/repos/mbros')
+                .reply(200, {repos});
+
+            var buildStatusResponse;
+            this.travisService.getLastBuildStatusByRepository('fakeuser/fake-project2').then((status)=> {
+                buildStatusResponse = status.toString();
+            });
+
+            setTimeout(()=> {
+                expect(buildStatusResponse).equals('failed');
+                done();
+            }, 50);
+
+        });
+
+        it('Should Get getLastbuildStatusByRepository return an error if the the repository doesn t exist' , function (done) {
+            this.travisService.username = 'mbros';
+
+            var repos = Repository.createRepositoriesList();
+
+            nock('https://api.travis-ci.org:443')
+                .get('/repos/mbros')
+                .reply(200, {repos});
+
+            var buildStatusResponse;
+            this.travisService.getLastBuildStatusByRepository('fakeuser/fake-porject90').then((status)=> {
+                buildStatusResponse = status.toString();
+            },(error)=> {
+                buildStatusResponse = error.toString();
+            });
+
+            setTimeout(()=> {
+                expect(buildStatusResponse).equals('Error: This repositories dosen\'t exixst');
                 done();
             }, 50);
 

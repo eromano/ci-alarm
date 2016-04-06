@@ -17,7 +17,7 @@ describe('Bot Initialization', function () {
 
         this.loginStub = sinon.stub(Bot.prototype, 'login', function () {});
 
-        this.slackMessageInterface = new SlackMessageInterface('Fake-token-slack', 'B0W93JU9Y');
+        this.slackMessageInterface = new SlackMessageInterface('Fake-token-slack');
         this.slackMessageInterface.run();
     });
 

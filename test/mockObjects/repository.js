@@ -26,7 +26,7 @@ class repository {
     static createRepositoriesList() {
         return [
             this.createRepository({slug: 'fakeuser/fake-project1'}),
-            this.createRepository({slug: 'fakeuser/fake-project2'}),
+            this.createRepository({slug: 'fakeuser/fake-project2', last_build_state: 'failed'}),
             this.createRepository({slug: 'fakeuser/fake-project3'})
         ];
     }

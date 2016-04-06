@@ -29,7 +29,11 @@ class travisInterface {
 
         this.travisAuth = new TravisAuth(this.travis, githubToken);
         this.travisAuth.login().then(() => {
-            this.getAccountInfo().then(() => {this.emit('travis:login:ok');},() => {this.emit('travis:login:error');});
+            this.getAccountInfo().then(() => {
+                this.emit('travis:login:ok');
+            }, () => {
+                this.emit('travis:login:error');
+            });
         });
     }
 
@@ -49,15 +53,49 @@ class travisInterface {
     }
 
     /**
-     * Retrieve the user repository in a promise
+     * Retrieve the user repository List in a promise
+     *
+     * @return {Promise} A promise that returns the list of the all repositories
      */
-    getUserRepository() {
+    getUserRepositoriesList() {
         return new Promise((resolve, reject) => {
             this.travis.repos(this.username).get(function (err, res) {
                 if (err || !res) {
                     reject(new Error(('Get UserRepository Error ' + err)));
                 }
-                resolve(_.map(res.repos,'slug'));
+                resolve(res.repos);
+            });
+        });
+    }
+
+    /**
+     * Retrieve the user repositories slug list  in a promise
+     *
+     * @return {Promise} A promise that returns the list of the all repositories slug
+     */
+    getUserRepositoriesSlugList() {
+        return new Promise((resolve) => {
+            this.getUserRepositoriesList().then((repositoriesList)=> {
+                resolve(_.map(repositoriesList, 'slug'));
+            });
+        });
+    }
+
+    /**
+     * Retrieve the repository master branch status
+     *
+     * @param  {String} repositoryName name of the repository which you are interested in
+     * @return {Promise} A promise that returns the status of the last build of the repository which you are interested in
+     */
+    getLastBuildStatusByRepository(repositoryName) {
+        return new Promise((resolve, reject) => {
+            this.getUserRepositoriesList().then((repositoriesList)=> {
+                var slugRepository = _.find(repositoriesList, ['slug', repositoryName]);
+                if (slugRepository) {
+                    resolve(slugRepository.last_build_state);
+                }else {
+                    reject(new Error(('This repositories dosen\'t exixst')));
+                }
             });
         });
     }
