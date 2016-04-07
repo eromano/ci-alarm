@@ -30,6 +30,7 @@ class slackMessageInterface {
         this.startChannelMessage();
         this.listenerRequestStatusBuild();
         this.listenerRepositoryListMessage();
+        this.listenerCommandListMessage();
     }
 
     startChannelMessage() {
@@ -71,6 +72,9 @@ class slackMessageInterface {
         }));
     }
 
+    /**
+     * Post a message on slack with the list of all the repositories slug when the bot is asked about it
+     */
     listenerRepositoryListMessage() {
         this.bot.on('message', ((message) => {
             if (!this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) &&
@@ -80,6 +84,19 @@ class slackMessageInterface {
                     this.postSlackMessageToChannel('Hi <@' + message.user + '> this is the repository list: \n • ' +
                         repositories.join('\n• ') + 'Repository list', this.infoColor);
                 });
+            }
+        }));
+    }
+
+    /**
+     * Post a message on slack with the command list when the bot is asked about it
+     */
+    listenerCommandListMessage() {
+        this.bot.on('message', ((message) => {
+            if (!this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) &&
+                this.isMentioningCiAlarm(message) && this.isCommandListRequest(message)) {
+
+                this.postSlackMessageToChannel('Command list: \n • Repository list \n • build status username/example-project');
             }
         }));
     }
@@ -136,6 +153,10 @@ class slackMessageInterface {
         return message.text && message.text.toLowerCase().indexOf('status') > -1;
     }
 
+    isCommandListRequest(message) {
+        return message.text && message.text.toLowerCase().indexOf('command list') > -1;
+    }
+
     colorByStatus(status) {
         var color = this.infoColor;
 
@@ -144,7 +165,7 @@ class slackMessageInterface {
         } else if (status === 'failed') {
             color = this.failColor;
         }
-        
+
         return color;
     }
 }

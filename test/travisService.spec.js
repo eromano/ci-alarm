@@ -50,7 +50,7 @@ describe('Travis Service', function () {
 
     describe('Event', function () {
 
-        describe('Should emit an event', function () {
+        describe('Should emit an success event', function () {
             beforeEach(function () {
                 this.travisAuthStub = sinon.stub(TravisAuth.prototype, 'login', ()=> {
                     return new Promise(((resolve) => {
@@ -84,7 +84,7 @@ describe('Travis Service', function () {
             });
         });
 
-        describe('Should emit an event', function () {
+        describe('Should emit an error  event', function () {
             beforeEach(function () {
                 this.travisAuthStub = sinon.stub(TravisAuth.prototype, 'login', ()=> {
                     return new Promise(((resolve) => {
@@ -104,7 +104,7 @@ describe('Travis Service', function () {
                 this.travisGetAccountInfo.restore();
             });
 
-            it('Should emit an event travis:login:error when the login is NOT ok', function (done) {
+            it('travis:login:error when the login is NOT ok', function (done) {
                 var spyEventLoginError = sinon.spy();
 
                 this.travisService = new TravisService('fake-github-token');

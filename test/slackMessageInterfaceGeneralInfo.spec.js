@@ -55,4 +55,19 @@ describe('Bot CI General Travis info communication', function () {
             done();
         }, 50);
     });
+
+    it('should the bot respond with the command list if asked "command list" ', function (done) {
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: command list'
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).to.be.equal('Command list: \n • Repository list \n • build status username/example-project');// jscs:ignore maximumLineLength
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            done();
+        }, 50);
+    });
 });
