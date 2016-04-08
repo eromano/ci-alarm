@@ -18,6 +18,7 @@ describe('Bot CI build communication', function () {
         this.slackbotStub = sinon.stub(Bot.prototype, '_post', (function (type, name, text, message) {
             this.textCheck = message.attachments[0].text;
             this.colorMessage = message.attachments[0].color;
+            this.fields = message.attachments[0].fields;
         }).bind(this));
 
         this.loginStub = sinon.stub(Bot.prototype, 'login', function () {});
@@ -87,8 +88,10 @@ describe('Bot CI build communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status is passed!');
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was passed a few seconds ago');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.successColor);
+            expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":"#37","short":true}');
             done();
         }, 50);
     });
@@ -107,14 +110,16 @@ describe('Bot CI build communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status is failed!');
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was failed a few seconds ago');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.failColor);
+            expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":"#37","short":true}');
             done();
         }, 50);
 
     });
 
-    it('should the bot respond with the Unknown Build status if asked "build status" and travis not ha this repo in the CI', function (done) {
+    it('should the bot respond with the Unknown Build status if asked "build status" and travis not has this repo in the CI', function (done) {
         var repos = Repository.createRepositoriesList();
         nock('https://api.travis-ci.org:443')
             .get('/repos/mbros')
@@ -128,11 +133,57 @@ describe('Bot CI build communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status is unknown!');
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was unknown a few seconds ago');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":"#37","short":true}');
+            done();
+        }, 50);
+    });
+
+    it('should the bot respond with the  Build status also if there are spaces before and after the slug repository name', function (done) {
+        var repos = Repository.createRepositoriesList();
+        nock('https://api.travis-ci.org:443')
+            .get('/repos/mbros')
+            .reply(200, {repos});
+
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: status       fakeuser/fake-project3   '
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was unknown a few seconds ago');
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":"#37","short":true}');
             done();
         }, 50);
 
     });
 
+    it('should the bot respond with the  Build status also if the slug is not complete', function (done) {
+        var repos = Repository.createRepositoriesList();
+        nock('https://api.travis-ci.org:443')
+            .get('/repos/mbros')
+            .reply(200, {repos});
+
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: status fake-project2'
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was failed a few seconds ago');
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.failColor);
+            expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":"#37","short":true}');
+            done();
+        }, 50);
+
+    });
 });

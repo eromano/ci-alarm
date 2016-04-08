@@ -52,5 +52,7 @@
   "contributors": [
     "Eugenio Romano <> (http://eromano.github.io/)"
   ],
-  "dependencies": {}
+  "dependencies": {
+    "moment": "^2.12.0"
+  }
 }

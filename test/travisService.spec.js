@@ -170,11 +170,11 @@ describe('Travis Service', function () {
 
             var buildStatusResponse;
             this.travisService.getLastBuildStatusByRepository('fakeuser/fake-project2').then((status)=> {
-                buildStatusResponse = status.toString();
+                buildStatusResponse = status;
             });
 
             setTimeout(()=> {
-                expect(buildStatusResponse).equals('failed');
+                expect(buildStatusResponse.last_build_state).equals('failed');
                 done();
             }, 50);
 

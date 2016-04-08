@@ -89,11 +89,18 @@ class travisInterface {
      */
     getLastBuildStatusByRepository(repositoryName) {
         return new Promise((resolve, reject) => {
+
             this.getUserRepositoriesList().then((repositoriesList)=> {
-                var slugRepository = _.find(repositoriesList, ['slug', repositoryName]);
+
+                var slugRepository = _.find(repositoriesList, (repository)=> {
+                    if (repository.slug.indexOf(repositoryName) > -1) {
+                        return repository.slug;
+                    }
+                });
+
                 if (slugRepository) {
-                    resolve(slugRepository.last_build_state);
-                }else {
+                    resolve(slugRepository);
+                } else {
                     reject(new Error(('This repositories dosen\'t exixst')));
                 }
             });

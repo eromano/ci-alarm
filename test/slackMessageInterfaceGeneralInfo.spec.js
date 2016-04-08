@@ -65,7 +65,7 @@ describe('Bot CI General Travis info communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Command list: \n • Repository list \n • build status username/example-project');// jscs:ignore maximumLineLength
+            expect(this.textCheck).to.be.equal('Command list: \n • repository list \n • status username/example-project');// jscs:ignore maximumLineLength
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();
         }, 50);
