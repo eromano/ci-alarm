@@ -17,7 +17,8 @@ class repository {
             'last_build_started_at': new Date(),
             'last_build_finished_at': new Date(),
             'active': true,
-            'github_language': 'JavaScript'
+            'github_language': 'JavaScript',
+            'linkBuild': ''
         };
 
         return _.extend(defaultAttributes, attributes);

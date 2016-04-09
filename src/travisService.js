@@ -27,6 +27,7 @@ class travisInterface {
             }
         });
 
+        this.travisBaseUrl = 'https://travis-ci.org';
         this.travisAuth = new TravisAuth(this.travis, githubToken);
         this.travisAuth.login().then(() => {
             this.getAccountInfo().then(() => {
@@ -92,19 +93,24 @@ class travisInterface {
 
             this.getUserRepositoriesList().then((repositoriesList)=> {
 
-                var slugRepository = _.find(repositoriesList, (repository)=> {
+                var repository = _.find(repositoriesList, (repository)=> {
                     if (repository.slug.indexOf(repositoryName) > -1) {
-                        return repository.slug;
+                        return true;
                     }
                 });
 
-                if (slugRepository) {
-                    resolve(slugRepository);
+                if (repository) {
+                    this._expandBaseRepositoryTravisObject(repository);
+                    resolve(repository);
                 } else {
                     reject(new Error(('This repositories dosen\'t exixst')));
                 }
             });
         });
+    }
+
+    _expandBaseRepositoryTravisObject(repository) {
+        repository.linkBuild = this.travisBaseUrl + '/' + repository.slug + '/builds/' + repository.last_build_id;
     }
 }
 

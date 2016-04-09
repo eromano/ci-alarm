@@ -63,12 +63,13 @@ class slackMessageInterface {
                         var fields = this._createFieldsAdditionInformationMessage(statusBuild);
                         var lastBuildState = statusBuild.last_build_state ? statusBuild.last_build_state : 'unknown';
 
-                        this.postSlackMessageToChannel('Hi <@' + message.user + '> the build Status was ' + lastBuildState + ' ' + moment(statusBuild.last_build_finished_at).fromNow(), 'Ci status', this.colorByStatus(lastBuildState), fields); // jscs:ignore maximumLineLength
+                        this.postSlackMessageToChannel('Hi <@' + message.user + '> the build Status was ' + lastBuildState + ' ' + moment(statusBuild.last_build_finished_at).fromNow(), 'Ci status', this.colorByStatus(lastBuildState), fields, 'Build status', statusBuild.linkBuild); // jscs:ignore maximumLineLength
                     }, (error)=> {
-                        this.postSlackMessageToChannel(error.toString(), 'Ci status', this.failColor);
+                        this.postSlackMessageToChannel(error.toString(), 'Ci status', this.failColor, null, 'Build status');
                     });
                 } else {
-                    this.postSlackMessageToChannel('Maybe you want use the command : "status username/example-project" but you forgot to add the repository slug', 'Ci status', this.infoColor);// jscs:ignore maximumLineLength
+                    this.postSlackMessageToChannel('Maybe you want use the command : "status username/example-project" but' +
+                        ' you forgot to add the repository slug', 'Ci status', this.infoColor, null, 'Build status');
                 }
             }
         }));
@@ -83,7 +84,7 @@ class slackMessageInterface {
 
                 this.ciService.getUserRepositoriesSlugList().then((repositories)=> {
                     this.postSlackMessageToChannel('Hi <@' + message.user + '> this is the repository list: \n • ' +
-                        repositories.join('\n• ') + 'Repository list', this.infoColor);
+                        repositories.join('\n• ') + 'Repository list', this.infoColor, null, 'Repositories list');
                 });
             }
         }));
@@ -95,7 +96,7 @@ class slackMessageInterface {
     listenerCommandListMessage() {
         this.bot.on('message', ((message) => {
             if (this.isValidCiMentionMessage(message) && this.isCommandListRequest(message)) {
-                this.postSlackMessageToChannel('Command list: \n • repository list \n • status username/example-project');
+                this.postSlackMessageToChannel('Command list: \n • repository list \n • status username/example-project', this.infoColor, null, 'Repository list');
             }
         }));
     }
@@ -108,15 +109,15 @@ class slackMessageInterface {
      * @param {successColor|failColor|infoColor} color of the vertical line before the message default infoColor yellow
      * @param {Array} fields is an Array of messages  { 'title': 'Project', 'value': 'Awesome Project','short': true},
      */
-    postSlackMessageToChannel(message, fallback, color, fields) {
+    postSlackMessageToChannel(message, fallback, color, fields, title, titleLink) {
         var params = {
             icon_emoji: ':robot_face:',
             attachments: [
                 {
                     'fallback': fallback,
                     'color': color || this.infoColor,
-                    'author_name': 'Ci Alarm',
-                    'author_link': 'https://github.com/eromano/ci-alarm',
+                    'title': title ? title : 'Ci Alarm',
+                    'title_link': titleLink,
                     'text': message,
                     'fields': fields
                 }
@@ -143,7 +144,7 @@ class slackMessageInterface {
     _createFieldsAdditionInformationMessage(statusBuild) {
         return [
             {'title': 'Elapsed time', 'value': (statusBuild.last_build_duration + ' sec'), 'short': true},
-            {'title': 'Build Number', 'value': ('#' + statusBuild.last_build_number), 'short': true}
+            {'title': 'Build Number', 'value': ('<' + statusBuild.linkBuild  + '|Build #' + statusBuild.last_build_number + '>'), 'short': true}
         ];
     }
 

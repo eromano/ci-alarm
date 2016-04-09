@@ -19,6 +19,8 @@ describe('Bot CI build communication', function () {
             this.textCheck = message.attachments[0].text;
             this.colorMessage = message.attachments[0].color;
             this.fields = message.attachments[0].fields;
+            this.title = message.attachments[0].title;
+            this.title_link = message.attachments[0].title_link;
         }).bind(this));
 
         this.loginStub = sinon.stub(Bot.prototype, 'login', function () {});
@@ -91,7 +93,9 @@ describe('Bot CI build communication', function () {
             expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was passed a few seconds ago');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.successColor);
             expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
-            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":"#37","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
+                '"<https://travis-ci.org/fakeuser/fake-project1/builds/120506232|Build #37>","short":true}');
+            expect(this.title_link).to.be.equal('https://travis-ci.org/fakeuser/fake-project1/builds/120506232');
             done();
         }, 50);
     });
@@ -113,7 +117,9 @@ describe('Bot CI build communication', function () {
             expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was failed a few seconds ago');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.failColor);
             expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
-            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":"#37","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
+                '"<https://travis-ci.org/fakeuser/fake-project2/builds/120506232|Build #37>","short":true}');
+            expect(this.title_link).to.be.equal('https://travis-ci.org/fakeuser/fake-project2/builds/120506232');
             done();
         }, 50);
 
@@ -136,7 +142,9 @@ describe('Bot CI build communication', function () {
             expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was unknown a few seconds ago');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
-            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":"#37","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
+                '"<https://travis-ci.org/fakeuser/fake-project3/builds/120506232|Build #37>","short":true}');
+            expect(this.title_link).to.be.equal('https://travis-ci.org/fakeuser/fake-project3/builds/120506232');
             done();
         }, 50);
     });
@@ -158,7 +166,9 @@ describe('Bot CI build communication', function () {
             expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was unknown a few seconds ago');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
-            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":"#37","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
+                '"<https://travis-ci.org/fakeuser/fake-project3/builds/120506232|Build #37>","short":true}');
+            expect(this.title_link).to.be.equal('https://travis-ci.org/fakeuser/fake-project3/builds/120506232');
             done();
         }, 50);
 
@@ -181,7 +191,9 @@ describe('Bot CI build communication', function () {
             expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was failed a few seconds ago');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.failColor);
             expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
-            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":"#37","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
+                '"<https://travis-ci.org/fakeuser/fake-project2/builds/120506232|Build #37>","short":true}');
+            expect(this.title_link).to.be.equal('https://travis-ci.org/fakeuser/fake-project2/builds/120506232');
             done();
         }, 50);
 
