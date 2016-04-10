@@ -2,26 +2,28 @@
 'use strict';
 
 var SlackMessageInterface = require('../src/slackMessageInterface');
+var TravisService = require('../src/travisService');
 
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var Bot = require('slackbots');
-var TravisService = require('../src/travisService');
 var nock = require('nock');
+
 var Repository = require('../test/mockObjects/repository');
+var Channel = require('../test/mockObjects/channel');
 
 describe('Bot CI build communication', function () {
 
     beforeEach(function () {
         this.textCheck = '';
 
-        this.slackbotStub = sinon.stub(Bot.prototype, '_post', (function (type, name, text, message) {
-            this.textCheck = message.attachments[0].text;
-            this.colorMessage = message.attachments[0].color;
-            this.fields = message.attachments[0].fields;
-            this.title = message.attachments[0].title;
-            this.title_link = message.attachments[0].title_link;
-        }).bind(this));
+        this.slackbotStub = sinon.stub(Bot.prototype, 'postTo', (name, text, params) => {
+            this.textCheck = params.attachments[0].text;
+            this.colorMessage = params.attachments[0].color;
+            this.fields = params.attachments[0].fields;
+            this.title = params.attachments[0].title;
+            this.title_link = params.attachments[0].title_link;
+        });
 
         this.loginStub = sinon.stub(Bot.prototype, 'login', function () {});
 
@@ -29,8 +31,9 @@ describe('Bot CI build communication', function () {
         this.travisService.username = 'mbros';
 
         this.slackMessageInterface = new SlackMessageInterface('Fake-token-slack', this.travisService);
-        this.slackMessageInterface.run();
         this.slackMessageInterface.bot.self = {id: '1234'};
+        this.slackMessageInterface.bot.channels = Channel.createChannelList();
+        this.slackMessageInterface.run();
     });
 
     afterEach(function () {
@@ -85,6 +88,7 @@ describe('Bot CI build communication', function () {
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
+            channel: 'fake-general-channel-id',
             type: 'message',
             text: '<@' + this.slackMessageInterface.bot.self.id + '>: status fakeuser/fake-project1'
         });
@@ -109,6 +113,7 @@ describe('Bot CI build communication', function () {
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
+            channel: 'fake-general-channel-id',
             type: 'message',
             text: '<@' + this.slackMessageInterface.bot.self.id + '>: status fakeuser/fake-project2'
         });
@@ -134,6 +139,7 @@ describe('Bot CI build communication', function () {
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
+            channel: 'fake-general-channel-id',
             type: 'message',
             text: '<@' + this.slackMessageInterface.bot.self.id + '>: status fakeuser/fake-project3'
         });
@@ -158,6 +164,7 @@ describe('Bot CI build communication', function () {
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
+            channel: 'fake-general-channel-id',
             type: 'message',
             text: '<@' + this.slackMessageInterface.bot.self.id + '>: status       fakeuser/fake-project3   '
         });
@@ -183,6 +190,7 @@ describe('Bot CI build communication', function () {
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
+            channel: 'fake-general-channel-id',
             type: 'message',
             text: '<@' + this.slackMessageInterface.bot.self.id + '>: status fake-project2'
         });

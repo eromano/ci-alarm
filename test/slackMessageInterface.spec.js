@@ -6,18 +6,22 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var Bot = require('slackbots');
 
+var Channel = require('../test/mockObjects/channel');
+
 describe('Bot Initialization', function () {
 
     beforeEach(function () {
         this.textCheck = '';
 
-        this.slackbotStub = sinon.stub(Bot.prototype, '_post', (function (type, name, text, message) {
-            this.textCheck = message.attachments[0].text;
-        }).bind(this));
+        this.slackbotStub = sinon.stub(Bot.prototype, 'postTo', (name, text, params) => {
+            this.textCheck = params.attachments[0].text;
+        });
 
         this.loginStub = sinon.stub(Bot.prototype, 'login', function () {});
 
         this.slackMessageInterface = new SlackMessageInterface('Fake-token-slack');
+        this.slackMessageInterface.bot.self = {id: '1234'};
+        this.slackMessageInterface.bot.channels = Channel.createChannelList();
         this.slackMessageInterface.run();
     });
 

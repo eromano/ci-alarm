@@ -35,7 +35,7 @@ class slackMessageInterface {
     }
 
     startChannelMessage() {
-        this.bot.on('start', (function () {
+        this.bot.on('start', (()=> {
             var params = {
                 icon_emoji: ':robot_face:',
                 attachments: [
@@ -48,27 +48,34 @@ class slackMessageInterface {
                     }
                 ]
             };
+            var allJoinedChannelsByUserId = this._getAllJoinedChannelsByUserId(this.bot.self.id);
 
-            this.bot.postMessageToChannel('general', '', params);
-        }).bind(this));
+            if (allJoinedChannelsByUserId) {
+                allJoinedChannelsByUserId.forEach((channel)=> {
+                    console.log('channel' + channel);
+
+                    this.bot.postTo(channel, '', params);
+                });
+            }
+        }));
     }
 
     listenerRequestStatusBuild() {
         this.bot.on('message', ((message) => {
             if (this.isValidCiMentionMessage(message) && this.isStatusRequest(message)) {
                 var repoName = this.getRepositoriesNameInMessage(message);
-
                 if (repoName) {
                     this.ciService.getLastBuildStatusByRepository(repoName).then((statusBuild)=> {
                         var fields = this._createFieldsAdditionInformationMessage(statusBuild);
                         var lastBuildState = statusBuild.last_build_state ? statusBuild.last_build_state : 'unknown';
+                        var nameChannelOrUser = this._getSlackNameById(message).name;
 
-                        this.postSlackMessageToChannel('Hi <@' + message.user + '> the build Status was ' + lastBuildState + ' ' + moment(statusBuild.last_build_finished_at).fromNow(), 'Ci status', this.colorByStatus(lastBuildState), fields, 'Build status', statusBuild.linkBuild); // jscs:ignore maximumLineLength
+                        this.postSlackMessage('Hi <@' + message.user + '> the build Status was ' + lastBuildState + ' ' + moment(statusBuild.last_build_finished_at).fromNow(), 'Ci status', this.colorByStatus(lastBuildState), fields, 'Build status', statusBuild.linkBuild, nameChannelOrUser); // jscs:ignore maximumLineLength
                     }, (error)=> {
-                        this.postSlackMessageToChannel(error.toString(), 'Ci status', this.failColor, null, 'Build status');
+                        this.postSlackMessage(error.toString(), 'Ci status', this.failColor, null, 'Build status');
                     });
                 } else {
-                    this.postSlackMessageToChannel('Maybe you want use the command : "status username/example-project" but' +
+                    this.postSlackMessage('Maybe you want use the command : "status username/example-project" but' +
                         ' you forgot to add the repository slug', 'Ci status', this.infoColor, null, 'Build status');
                 }
             }
@@ -83,8 +90,9 @@ class slackMessageInterface {
             if (this.isValidCiMentionMessage(message) && this.isListRepositoryRequest(message)) {
 
                 this.ciService.getUserRepositoriesSlugList().then((repositories)=> {
-                    this.postSlackMessageToChannel('Hi <@' + message.user + '> this is the repository list: \n • ' +
-                        repositories.join('\n• ') + 'Repository list', this.infoColor, null, 'Repositories list');
+                    var nameChannelOrUser = this._getSlackNameById(message).name;
+                    this.postSlackMessage('Hi <@' + message.user + '> this is the repository list: \n • ' + repositories.join('\n• ') , 'Repository list',
+                        this.infoColor, null, 'Repositories list', '', nameChannelOrUser);
                 });
             }
         }));
@@ -96,7 +104,10 @@ class slackMessageInterface {
     listenerCommandListMessage() {
         this.bot.on('message', ((message) => {
             if (this.isValidCiMentionMessage(message) && this.isCommandListRequest(message)) {
-                this.postSlackMessageToChannel('Command list: \n • repository list \n • status username/example-project', this.infoColor, null, 'Repository list');
+                var nameChannelOrUser = this._getSlackNameById(message).name;
+                console.log('nameChannelOrUser  ' + nameChannelOrUser);
+                this.postSlackMessage('Hi <@' + message.user + '> this is the command list \n • status username/example-project', 'Command list',
+                    this.infoColor, null, 'Command list', '', nameChannelOrUser);
             }
         }));
     }
@@ -108,8 +119,11 @@ class slackMessageInterface {
      * @param {String} fallback
      * @param {successColor|failColor|infoColor} color of the vertical line before the message default infoColor yellow
      * @param {Array} fields is an Array of messages  { 'title': 'Project', 'value': 'Awesome Project','short': true},
+     * @param {String} title title message,
+     * @param {String} titleLink link message
+     * @param {String} nameChannelOrUser where posts a message  channel | group | user by name,
      */
-    postSlackMessageToChannel(message, fallback, color, fields, title, titleLink) {
+    postSlackMessage(message, fallback, color, fields, title, titleLink, nameChannelOrUser) {
         var params = {
             icon_emoji: ':robot_face:',
             attachments: [
@@ -123,7 +137,8 @@ class slackMessageInterface {
                 }
             ]
         };
-        this.bot.postMessageToChannel('general', '', params);
+
+        this.bot.postTo(nameChannelOrUser, '', params);
     }
 
     isFromCiAlarmBotMessage(message) {
@@ -170,6 +185,46 @@ class slackMessageInterface {
 
     isValidCiMentionMessage(message) {
         return !this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) && this.isMentioningCiAlarm(message);
+    }
+
+    /**
+     * get the message channel Name or user Name by ID
+     */
+    _getSlackNameById(message) {
+        var name = this.bot.channels.find(function (item) {
+            return item.id === message.channel;
+        });
+
+        if (!name && this.bot.users) {
+            name = this.bot.users.find(function (item) {
+                    return item.id === message.user;
+                });
+        }
+        return name;
+    }
+
+    /**
+     * get all the channel where a user is member
+     *
+     * @param {String} userId
+     *
+     * @return {Array} Array of all the channels where the user is member
+     */
+    _getAllJoinedChannelsByUserId(userId) {
+        var userChannels = [];
+
+        this.bot.channels.forEach((channel)=> {
+            if (channel.members) {
+                var member = channel.members.find((member)=> {
+                    return member === userId;
+                });
+                if (member) {
+                    userChannels.push(channel.name);
+                }
+            }
+        });
+
+        return userChannels;
     }
 
     colorByStatus(status) {
