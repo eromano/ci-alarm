@@ -59,7 +59,6 @@ class travisInterface {
      * @return {Promise} A promise that returns the list of the all repositories
      */
     getUserRepositoriesList() {
-        this.getCommitInfoByBuildNumber('122131187');
         return new Promise((resolve, reject) => {
             this.travis.repos(this.username).get(function (err, res) {
                 if (err || !res) {
@@ -123,6 +122,17 @@ class travisInterface {
             },(error)=> {
                 reject(new Error(error));
             });
+        });
+    }
+
+    /**
+     * re-execute last build
+     *
+     * @param  {String} repositoryName name of the repository which you are interested in
+     */
+    restartLastBuild(repositoryName) {
+        this.getLastBuildStatusByRepository(repositoryName).then((repository)=> {
+            this.travis.agent.request('POST', '/builds/' + repository.last_build_id + '/restart', null);
         });
     }
 
