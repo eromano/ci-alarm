@@ -11,11 +11,15 @@ var nock = require('nock');
 
 var Repository = require('../test/mockObjects/repository');
 var Channel = require('../test/mockObjects/channel');
+var Build = require('../test/mockObjects/build');
 
 describe('Bot CI build communication', function () {
 
     beforeEach(function () {
         this.textCheck = '';
+
+        var build = Build.createBuild();
+        var repos = Repository.createRepositoriesList();
 
         this.slackbotStub = sinon.stub(Bot.prototype, 'postTo', (name, text, params) => {
             this.textCheck = params.attachments[0].text;
@@ -30,6 +34,9 @@ describe('Bot CI build communication', function () {
         this.travisService =  new TravisService('github-token');
         this.travisService.username = 'mbros';
 
+        nock('https://api.travis-ci.org:443').get('/repos/' + this.travisService.username).reply(200, {repos});
+        nock('https://api.travis-ci.org:443').get('/builds/120506232').reply(200, build);
+
         this.slackMessageInterface = new SlackMessageInterface('Fake-token-slack', this.travisService);
         this.slackMessageInterface.bot.self = {id: '1234'};
         this.slackMessageInterface.bot.channels = Channel.createChannelList();
@@ -42,11 +49,6 @@ describe('Bot CI build communication', function () {
     });
 
     it('should the bot respond with the suggestion if asked "build status" without a slug repository', function (done) {
-        var repos = Repository.createRepositoriesList();
-        nock('https://api.travis-ci.org:443')
-            .get('/repos/mbros')
-            .reply(200, {repos});
-
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
@@ -61,11 +63,6 @@ describe('Bot CI build communication', function () {
     });
 
     it('should the bot respond with the Error if asked "build status" of not present repository', function (done) {
-        var repos = Repository.createRepositoriesList();
-        nock('https://api.travis-ci.org:443')
-            .get('/repos/mbros')
-            .reply(200, {repos});
-
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
@@ -80,11 +77,6 @@ describe('Bot CI build communication', function () {
     });
 
     it('should the bot respond with the Success Build status if asked "build status" and has received a status success from ci', function (done) {
-        var repos = Repository.createRepositoriesList();
-        nock('https://api.travis-ci.org:443')
-            .get('/repos/mbros')
-            .reply(200, {repos});
-
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
@@ -94,7 +86,7 @@ describe('Bot CI build communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was passed a few seconds ago');
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was *passed* a few seconds ago \n *Commit* : <https://github.com/fakeuser/fake-project1/commit/6aace211abf84f16d74f195109bc91433dc437f4|Link github>fake-commit-message');// jscs:ignore maximumLineLength
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.successColor);
             expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
             expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
@@ -105,11 +97,6 @@ describe('Bot CI build communication', function () {
     });
 
     it('should the bot respond with the Failed Build status if asked "build status" and has received a status fail from ci', function (done) {
-        var repos = Repository.createRepositoriesList();
-        nock('https://api.travis-ci.org:443')
-            .get('/repos/mbros')
-            .reply(200, {repos});
-
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
@@ -119,7 +106,7 @@ describe('Bot CI build communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was failed a few seconds ago');
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was *failed* a few seconds ago \n *Commit* : <https://github.com/fakeuser/fake-project2/commit/6aace211abf84f16d74f195109bc91433dc437f4|Link github>fake-commit-message');// jscs:ignore maximumLineLength
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.failColor);
             expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
             expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
@@ -131,11 +118,6 @@ describe('Bot CI build communication', function () {
     });
 
     it('should the bot respond with the Unknown Build status if asked "build status" and travis not has this repo in the CI', function (done) {
-        var repos = Repository.createRepositoriesList();
-        nock('https://api.travis-ci.org:443')
-            .get('/repos/mbros')
-            .reply(200, {repos});
-
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
@@ -145,7 +127,7 @@ describe('Bot CI build communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was unknown a few seconds ago');
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was *unknown* a few seconds ago \n *Commit* : <https://github.com/fakeuser/fake-project3/commit/6aace211abf84f16d74f195109bc91433dc437f4|Link github>fake-commit-message');// jscs:ignore maximumLineLength
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
             expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
@@ -156,11 +138,6 @@ describe('Bot CI build communication', function () {
     });
 
     it('should the bot respond with the  Build status also if there are spaces before and after the slug repository name', function (done) {
-        var repos = Repository.createRepositoriesList();
-        nock('https://api.travis-ci.org:443')
-            .get('/repos/mbros')
-            .reply(200, {repos});
-
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
@@ -170,7 +147,7 @@ describe('Bot CI build communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was unknown a few seconds ago');
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was *unknown* a few seconds ago \n *Commit* : <https://github.com/fakeuser/fake-project3/commit/6aace211abf84f16d74f195109bc91433dc437f4|Link github>fake-commit-message');// jscs:ignore maximumLineLength
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
             expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
@@ -182,11 +159,6 @@ describe('Bot CI build communication', function () {
     });
 
     it('should the bot respond with the  Build status also if the slug is not complete', function (done) {
-        var repos = Repository.createRepositoriesList();
-        nock('https://api.travis-ci.org:443')
-            .get('/repos/mbros')
-            .reply(200, {repos});
-
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
@@ -196,7 +168,7 @@ describe('Bot CI build communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was failed a few seconds ago');
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was *failed* a few seconds ago \n *Commit* : <https://github.com/fakeuser/fake-project2/commit/6aace211abf84f16d74f195109bc91433dc437f4|Link github>fake-commit-message');// jscs:ignore maximumLineLength
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.failColor);
             expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
             expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +

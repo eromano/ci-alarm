@@ -24,11 +24,6 @@ class CiAlarmBot {
     run(token) {
         this.slackMessageInterface = new SlackMessageInterface(token, this.travisService);
         this.slackMessageInterface.run();
-
-        this.travisService.getUserRepositoriesSlugList().then((res)=> {
-            this.slackMessageInterface.postSlackMessageToChannel(res.repos[0].id, '');
-        });
-
     }
 }
 

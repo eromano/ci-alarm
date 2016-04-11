@@ -18,6 +18,13 @@ class slackMessageInterface {
     }
 
     constructor(token, ciService) {
+
+        this.listner = [
+            this.startChannelMessage,
+            this.listenerRequestStatusBuild,
+            this.listenerRepositoryListMessage,
+            this.listenerCommandListMessage];
+
         var settingsBot = {
             token: token,
             name: 'CI Bot Alarm'
@@ -28,12 +35,18 @@ class slackMessageInterface {
     }
 
     run() {
-        this.startChannelMessage();
-        this.listenerRequestStatusBuild();
-        this.listenerRepositoryListMessage();
-        this.listenerCommandListMessage();
+        this.startListener();
     }
 
+    startListener() {
+        while (this.listner.length) {
+            this.listner.shift().call(this);
+        }
+    }
+
+    /**
+     * Post a message in any channel where the bot is present at Start
+     */
     startChannelMessage() {
         this.bot.on('start', (()=> {
             var params = {
@@ -52,64 +65,65 @@ class slackMessageInterface {
 
             if (allJoinedChannelsByUserId) {
                 allJoinedChannelsByUserId.forEach((channel)=> {
-                    console.log('channel' + channel);
-
                     this.bot.postTo(channel, '', params);
                 });
             }
         }));
     }
 
+    /**
+     * Post a message on slack chat with the status of the last build of a asked repository example: "status ci-alarm"
+     */
     listenerRequestStatusBuild() {
-        this.bot.on('message', ((message) => {
-            if (this.isValidCiMentionMessage(message) && this.isStatusRequest(message)) {
-                var repoName = this.getRepositoriesNameInMessage(message);
-                if (repoName) {
-                    this.ciService.getLastBuildStatusByRepository(repoName).then((statusBuild)=> {
-                        var fields = this._createFieldsAdditionInformationMessage(statusBuild);
-                        var lastBuildState = statusBuild.last_build_state ? statusBuild.last_build_state : 'unknown';
-                        var nameChannelOrUser = this._getSlackNameById(message).name;
+        this._listenerMessage(this.isStatusMessage, (message) => {
+            var repoName = this._getRepositoriesNameInStatusMessage(message);
+            if (repoName) {
+                this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
+                    var fields = this._createFieldsAdditionInformationMessage(repository);
+                    var lastBuildState = repository.last_build_state ? repository.last_build_state : 'unknown';
+                    var nameChannelOrUser = this._getSlackNameById(message).name;
 
-                        this.postSlackMessage('Hi <@' + message.user + '> the build Status was ' + lastBuildState + ' ' + moment(statusBuild.last_build_finished_at).fromNow(), 'Ci status', this.colorByStatus(lastBuildState), fields, 'Build status', statusBuild.linkBuild, nameChannelOrUser); // jscs:ignore maximumLineLength
-                    }, (error)=> {
-                        this.postSlackMessage(error.toString(), 'Ci status', this.failColor, null, 'Build status');
+                    this.ciService.getCommitInfoByBuildNumber(repository.last_build_id).then((commit)=> {
+
+                        var commitLink = this.ciService.getCommitLink(commit, repository.slug);
+                        this.postSlackMessage('Hi <@' + message.user + '> the build Status was *' + lastBuildState + '* ' + moment(repository.last_build_finished_at).fromNow() + ' \n *Commit* : <' + commitLink + '|Link github>' + commit.message, // jscs:ignore maximumLineLength
+                            'Ci status', this.colorByStatus(lastBuildState), fields, 'Build status', repository.linkBuild, nameChannelOrUser);
                     });
-                } else {
-                    this.postSlackMessage('Maybe you want use the command : "status username/example-project" but' +
-                        ' you forgot to add the repository slug', 'Ci status', this.infoColor, null, 'Build status');
-                }
+                }, (error)=> {
+                    this.postSlackMessage(error.toString(), 'Ci status', this.failColor, null, 'Build status');
+                });
+            } else {
+                this.postSlackMessage('Maybe you want use the command : "status username/example-project" but' +
+                    ' you forgot to add the repository slug', 'Ci status', this.infoColor, null, 'Build status');
             }
-        }));
+        });
     }
 
     /**
      * Post a message on slack with the list of all the repositories slug when the bot is asked about it
      */
     listenerRepositoryListMessage() {
-        this.bot.on('message', ((message) => {
-            if (this.isValidCiMentionMessage(message) && this.isListRepositoryRequest(message)) {
+        this._listenerMessage(this.isRepositoryListMessage, (message) => {
 
-                this.ciService.getUserRepositoriesSlugList().then((repositories)=> {
-                    var nameChannelOrUser = this._getSlackNameById(message).name;
-                    this.postSlackMessage('Hi <@' + message.user + '> this is the repository list: \n • ' + repositories.join('\n• ') , 'Repository list',
-                        this.infoColor, null, 'Repositories list', '', nameChannelOrUser);
-                });
-            }
-        }));
+            this.ciService.getUserRepositoriesSlugList().then((repositories)=> {
+                var nameChannelOrUser = this._getSlackNameById(message).name;
+                this.postSlackMessage('Hi <@' + message.user + '> this is the repository list: \n • ' + repositories.join('\n• '), 'Repository list',
+                    this.infoColor, null, 'Repositories list', '', nameChannelOrUser);
+            });
+
+        });
     }
 
     /**
      * Post a message on slack with the command list when the bot is asked about it
      */
     listenerCommandListMessage() {
-        this.bot.on('message', ((message) => {
-            if (this.isValidCiMentionMessage(message) && this.isCommandListRequest(message)) {
-                var nameChannelOrUser = this._getSlackNameById(message).name;
-                console.log('nameChannelOrUser  ' + nameChannelOrUser);
-                this.postSlackMessage('Hi <@' + message.user + '> this is the command list \n • status username/example-project', 'Command list',
-                    this.infoColor, null, 'Command list', '', nameChannelOrUser);
-            }
-        }));
+        this._listenerMessage(this.isCommandListMessage, (message) => {
+            var nameChannelOrUser = this._getSlackNameById(message).name;
+
+            this.postSlackMessage('Hi <@' + message.user + '> this is the command list \n • status username/example-project', 'Command list',
+                this.infoColor, null, 'Command list', '', nameChannelOrUser);
+        });
     }
 
     /**
@@ -133,7 +147,8 @@ class slackMessageInterface {
                     'title': title ? title : 'Ci Alarm',
                     'title_link': titleLink,
                     'text': message,
-                    'fields': fields
+                    'fields': fields,
+                    'mrkdwn_in': ['text', 'pretext']
                 }
             ]
         };
@@ -141,11 +156,14 @@ class slackMessageInterface {
         this.bot.postTo(nameChannelOrUser, '', params);
     }
 
-    isFromCiAlarmBotMessage(message) {
-        return message.hasOwnProperty('username') && (message.username === this.bot.name);
-    }
-
-    getRepositoriesNameInMessage(message) {
+    /**
+     * Get the repository name in a message String
+     *
+     * @param {String} message like 'statsu eromano/ci-alarm'
+     *
+     * @return {String} return the repository name in a message string
+     */
+    _getRepositoriesNameInStatusMessage(message) {
         var statusPos = message.text.toLowerCase().indexOf('status');
         var afterStatus = message.text.toLowerCase().substr(statusPos + 6, message.length).trim();
 
@@ -156,39 +174,30 @@ class slackMessageInterface {
         }
     }
 
-    _createFieldsAdditionInformationMessage(statusBuild) {
+    /**
+     * Create additionl field for the slack message
+     *
+     * @param {Object} repository
+     *
+     * @return {Array} Array of slack fields
+     */
+    _createFieldsAdditionInformationMessage(repository) {
         return [
-            {'title': 'Elapsed time', 'value': (statusBuild.last_build_duration + ' sec'), 'short': true},
-            {'title': 'Build Number', 'value': ('<' + statusBuild.linkBuild  + '|Build #' + statusBuild.last_build_number + '>'), 'short': true}
+            {'title': 'Elapsed time', 'value': (repository.last_build_duration + ' sec'), 'short': true},
+            {
+                'title': 'Build Number',
+                'value': ('<' + repository.linkBuild + '|Build #' + repository.last_build_number + '>'),
+                'short': true
+            }
         ];
     }
 
-    isChatMessage(message) {
-        return message.type === 'message' && Boolean(message.text);
-    }
-
-    isMentioningCiAlarm(message) {
-        return message.text && message.text.indexOf(this.bot.self.id) > -1;
-    }
-
-    isListRepositoryRequest(message) {
-        return message.text && message.text.toLowerCase().indexOf('repository list') > -1;
-    }
-
-    isStatusRequest(message) {
-        return message.text && message.text.toLowerCase().indexOf('status') > -1;
-    }
-
-    isCommandListRequest(message) {
-        return message.text && message.text.toLowerCase().indexOf('command list') > -1;
-    }
-
-    isValidCiMentionMessage(message) {
-        return !this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) && this.isMentioningCiAlarm(message);
-    }
-
     /**
-     * get the message channel Name or user Name by ID
+     * Get the message channel Name or user Name by ID
+     *
+     * @param {String} message slack message
+     *
+     * @return {name} name of the channel or the user in the message depend if is a direct message or channel message
      */
     _getSlackNameById(message) {
         var name = this.bot.channels.find(function (item) {
@@ -197,14 +206,14 @@ class slackMessageInterface {
 
         if (!name && this.bot.users) {
             name = this.bot.users.find(function (item) {
-                    return item.id === message.user;
-                });
+                return item.id === message.user;
+            });
         }
         return name;
     }
 
     /**
-     * get all the channel where a user is member
+     * Get all the channel where a user is member
      *
      * @param {String} userId
      *
@@ -237,6 +246,54 @@ class slackMessageInterface {
         }
 
         return color;
+    }
+
+    _listenerMessage(condition, callback) {
+        this.bot.on('message', (message) => {
+            if (condition.call(this, message)) {
+                callback.call(this, message);
+            }
+        });
+    }
+
+    isRepositoryListMessage(message) {
+        return this.isValidCiMentionMessage(message) && this.isListRepositoryRequest(message);
+    }
+
+    isCommandListMessage(message) {
+        return this.isValidCiMentionMessage(message) && this.isCommandListRequest(message);
+    }
+
+    isStatusMessage(message) {
+        return this.isValidCiMentionMessage(message) && this.isStatusRequest(message);
+    }
+
+    isFromCiAlarmBotMessage(message) {
+        return message.hasOwnProperty('username') && (message.username === this.bot.name);
+    }
+
+    isChatMessage(message) {
+        return message.type === 'message' && Boolean(message.text);
+    }
+
+    isMentioningCiAlarm(message) {
+        return message.text && message.text.indexOf(this.bot.self.id) > -1;
+    }
+
+    isListRepositoryRequest(message) {
+        return message.text && message.text.toLowerCase().indexOf('repository list') > -1;
+    }
+
+    isStatusRequest(message) {
+        return message.text && message.text.toLowerCase().indexOf('status') > -1;
+    }
+
+    isCommandListRequest(message) {
+        return message.text && message.text.toLowerCase().indexOf('command list') > -1;
+    }
+
+    isValidCiMentionMessage(message) {
+        return !this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) && this.isMentioningCiAlarm(message);
     }
 }
 

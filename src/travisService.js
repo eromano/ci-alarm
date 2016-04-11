@@ -59,6 +59,7 @@ class travisInterface {
      * @return {Promise} A promise that returns the list of the all repositories
      */
     getUserRepositoriesList() {
+        this.getCommitInfoByBuildNumber('122131187');
         return new Promise((resolve, reject) => {
             this.travis.repos(this.username).get(function (err, res) {
                 if (err || !res) {
@@ -107,6 +108,51 @@ class travisInterface {
                 }
             });
         });
+    }
+
+    /**
+     * Retrieve the commits information by build Number
+     *
+     * @param  {String} buildNumberId build number
+     * @return {Promise} A promise that returns all the commits bounded to the build
+     */
+    getCommitInfoByBuildNumber(buildNumberId) {
+        return new Promise((resolve, reject) => {
+            this.getBuildInfoByBuildNumber(buildNumberId).then((build)=> {
+                resolve(build.commit);
+            },(error)=> {
+                reject(new Error(error));
+            });
+        });
+    }
+
+    /**
+     * Retrieve the build information by build Number
+     *
+     * @param  {String} buildNumberId build number
+     * @return {Promise} A promise that returns all the build info
+     */
+    getBuildInfoByBuildNumber(buildNumberId) {
+        return new Promise((resolve, reject) => {
+            this.travis.builds(buildNumberId).get(function (err, res) {
+                if (err || !res) {
+                    reject(new Error(('Get Info Build Error ' + err)));
+                }
+                resolve(res);
+            });
+        });
+    }
+
+    /**
+     * Retrieve the link to the repo
+     *
+     * @param  {Object} commit Object
+     * @param  {String} slug repository
+     *
+     * @return {Promise} A promise that returns all the build info
+     */
+    getCommitLink(commit, slug) {
+        return 'https://github.com' + '/' + slug + '/commit/' + commit.sha;
     }
 
     _expandBaseRepositoryTravisObject(repository) {

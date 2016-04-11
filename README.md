@@ -40,16 +40,20 @@ Ci-alarm is a simple node.js slack bot to help to turn on a light alarm through 
 * To show the command list
 
     ```@BotName command list ```
-<p align="left" style="width:200px;height:200px">
-  <img title="ci alarm" src='doc/img/command list.png' />
+<p align="left" >
+  <img title="ci alarm" src='doc/img/command list.png' style="width: 400px;max-width:100%;"/>
 </p>
+
+* To show the repository status
     ```@BotName status "repository name" ```
-<p align="left" style="width:100px;height:100px">
-  <img title="ci alarm" src='doc/img/status.png' />
+<p align="left" >
+  <img title="ci alarm" src='doc/img/status.png' style="width: 400px;max-width:100%;"/>
 </p>
+
+* To show the repository list
     ```@BotName repository list ```
-<p align="left" style="width:200px;height:200px">
-  <img title="ci alarm" src='doc/img/repo list.png' />
+<p align="left"  >
+  <img title="ci alarm" src='doc/img/repo list.png' style="width: 400px;max-width:100%;"/>
 </p>
 
 
