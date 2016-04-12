@@ -100,6 +100,14 @@ class build {
 
         return _.extend(defaultAttributes, attributes);
     }
+
+    static createBuildsList() {
+        return [
+            this.createBuild(),
+            this.createBuild(),
+            this.createBuild()
+        ];
+    }
 }
 
 module.exports = build;

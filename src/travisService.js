@@ -126,6 +126,23 @@ class travisInterface {
     }
 
     /**
+     * Retrieve all the builds master for a project
+     *
+     * @param  {String} repositoryName name of the repository which you are interested in
+     * @return {Promise} A promise that returns all the builds for a Project
+     */
+    getAllBuildByRepositoryName(repositoryName) {
+        return new Promise((resolve, reject) => {
+            this.travis.repos(this.username, repositoryName).builds.get(function (err, res) {
+                if (err || !res) {
+                    reject(new Error(('Get builds Error ' + err)));
+                }
+                resolve(res);
+            });
+        });
+    }
+
+    /**
      * re-execute last build
      *
      * @param  {String} repositoryName name of the repository which you are interested in

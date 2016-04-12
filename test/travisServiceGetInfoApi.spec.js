@@ -28,7 +28,6 @@ describe('Travis Service', function () {
             });
             this.travisService = new TravisService('fake-github-token');
             this.travisService.username = 'mbros';
-
         });
 
         afterEach(function () {
@@ -115,5 +114,24 @@ describe('Travis Service', function () {
             }, 50);
         });
 
+        it('Should Get getAllBuildByRepositoryName return all the builds for a repository name', function (done) {
+            var buildsList = Build.createBuildsList();
+
+            nock('https://api.travis-ci.org:443')
+                .get('/repos/' + this.travisService.username + '/fake-project1/builds')
+                .reply(200, buildsList);
+
+            var buildsInfo;
+            this.travisService.getAllBuildByRepositoryName('fake-project1').then((builds)=> {
+                buildsInfo = JSON.stringify(builds);
+            }, (error)=> {
+                buildsInfo = error.toString();
+            });
+
+            setTimeout(()=> {
+                expect(buildsInfo).equals(JSON.stringify(buildsList));
+                done();
+            }, 50);
+        });
     });
 });

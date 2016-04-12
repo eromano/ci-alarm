@@ -50,7 +50,7 @@ With this bot you can :
 </p>
 
 * To show the repository status
-    ```@BotName status "repository name" ```
+    ```@BotName status "repository [name|slugName]" ```
 <p align="left" >
   <img title="ci alarm" src='doc/img/status.png' style="width: 400px;max-width:100%;"/>
 </p>
@@ -61,7 +61,9 @@ With this bot you can :
   <img title="ci alarm" src='doc/img/repo list.png' style="width: 400px;max-width:100%;"/>
 </p>
 
-    ```@BotName rebuild "repository name" ```
+    ```@BotName rebuild "repository [name|slugName]" ```
+
+    ```@BotName rebuild "history [name|slugName]" ```
 
 
 

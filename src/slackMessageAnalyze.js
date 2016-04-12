@@ -1,4 +1,5 @@
 'use strict';
+var assert = require('assert');
 
 class slackMessageAnalyze {
 
@@ -7,36 +8,47 @@ class slackMessageAnalyze {
         this.bot = bot;
     }
 
+    /**
+     * Get the repository name in a message String
+     *
+     * @param {String} textMessage like 'status eromano/ci-alarm'
+     * @param {String} wordBeforeNameRepo the string before the name of the repository for example "status"
+     *
+     * @return {String} return the repository name in a message string
+     */
+    getRepositoriesNameInMessageFrom(textMessage, wordBeforeNameRepo) {
+        var wordPos = textMessage.toLowerCase().indexOf(wordBeforeNameRepo);
+        var afterStatus = textMessage.toLowerCase().substr((wordPos + wordBeforeNameRepo.length), textMessage.length).trim();
+
+        var allPhrasesSeparateBySpace = afterStatus.split(' ');
+
+        if (allPhrasesSeparateBySpace && allPhrasesSeparateBySpace.length > 0) {
+            return allPhrasesSeparateBySpace[0].trim();
+        }
+    }
+
     isRebuildMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isRebuildRequest(textMessage);
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'build');
     }
 
     isRepositoryListMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isListRepositoryRequest(textMessage);
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'repository list');
     }
 
     isCommandListMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isCommandListRequest(textMessage);
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'command list');
     }
 
     isStatusMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isStatusRequest(textMessage);
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'status');
     }
 
-     _isListRepositoryRequest(textMessage) {
-        return textMessage && textMessage.toLowerCase().indexOf('repository list') > -1;
+    isHistoryMessage(textMessage) {
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'history');
     }
 
-    _isStatusRequest(textMessage) {
-        return textMessage && textMessage.toLowerCase().indexOf('status') > -1;
-    }
-
-    _isRebuildRequest(textMessage) {
-        return textMessage && textMessage.toLowerCase().indexOf('build') > -1;
-    }
-
-    _isCommandListRequest(textMessage) {
-        return textMessage && textMessage.toLowerCase().indexOf('command list') > -1;
+    _isTextContaineidInMessage(textMessage, textToSearch) {
+        return textMessage && textMessage.toLowerCase().indexOf(textToSearch) > -1;
     }
 
     _isValidCiMentionMessage(textMessage) {

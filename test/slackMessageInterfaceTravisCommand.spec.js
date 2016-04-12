@@ -110,7 +110,7 @@ describe('Slack Travis Command', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('This repositories doesn\'t exist');// jscs:ignore maximumLineLength
+            expect(this.textCheck).to.be.equal('This repositories doesn\'t exist');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();

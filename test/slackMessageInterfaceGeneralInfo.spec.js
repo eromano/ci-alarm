@@ -11,6 +11,7 @@ var nock = require('nock');
 
 var Repository = require('../test/mockObjects/repository');
 var Channel = require('../test/mockObjects/channel');
+var Build = require('../test/mockObjects/build');
 
 describe('Bot CI General Travis info communication', function () {
 
@@ -25,6 +26,7 @@ describe('Bot CI General Travis info communication', function () {
         this.loginStub = sinon.stub(Bot.prototype, 'login');
 
         this.travisService =  new TravisService('github-token');
+        this.travisService.username = 'mbros';
 
         this.slackMessageInterface = new SlackMessageInterface('Fake-token-slack', this.travisService);
         this.slackMessageInterface.bot.self = {id: '1234'};
@@ -71,6 +73,28 @@ describe('Bot CI General Travis info communication', function () {
 
         setTimeout(()=> {
             expect(this.textCheck).to.be.equal('Hi <@C3P0> this is the command list \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project');// jscs:ignore maximumLineLength
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            done();
+        }, 50);
+    });
+
+    it('should the bot respond with the build history if asked : "history username/example-project" ', function (done) {
+        var buildsList = Build.createBuildsList();
+
+        nock('https://api.travis-ci.org:443')
+            .get('/repos/' + this.travisService.username + '/fake-project3/builds')
+            .reply(200, buildsList);
+
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            channel: 'fake-general-channel-id',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: history ' + this.travisService.username + '/fake-project3'
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).to.be.equal('Build #53 was passed\nBuild #53 was passed\nBuild #53 was passed\n');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();
         }, 50);

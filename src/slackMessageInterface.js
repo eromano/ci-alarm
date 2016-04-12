@@ -26,7 +26,8 @@ class slackMessageInterface {
             this.listenerRequestStatusBuild,
             this.listenerRepositoryListMessage,
             this.listenerCommandListMessage,
-            this.listenerRebuildMessage
+            this.listenerRebuildMessage,
+            this.listenerBuildsHistory
         ];
 
         var settingsBot = {
@@ -80,12 +81,12 @@ class slackMessageInterface {
      */
     listenerRequestStatusBuild() {
         this._listenerMessage(this.slackMessageAnalyze.isStatusMessage, (message) => {
-            var repoName = this._getRepositoriesNameInMessageFrom(message, 'status');
+            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFrom(message.text, 'status');
             if (repoName) {
                 this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
                     var fields = this._createFieldsAdditionInformationMessage(repository);
                     var lastBuildState = repository.last_build_state ? repository.last_build_state : 'unknown';
-                    var nameChannelOrUser = this._getSlackNameById(message).name;
+                    var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
                     this.ciService.getCommitInfoByBuildNumber(repository.last_build_id).then((commit)=> {
 
@@ -110,7 +111,7 @@ class slackMessageInterface {
         this._listenerMessage(this.slackMessageAnalyze.isRepositoryListMessage, (message) => {
 
             this.ciService.getUserRepositoriesSlugList().then((repositories)=> {
-                var nameChannelOrUser = this._getSlackNameById(message).name;
+                var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
                 this.postSlackMessage('Hi <@' + message.user + '> this is the repository list: \n • ' + repositories.join('\n• '), 'Repository list',
                     this.infoColor, null, 'Repositories list', '', nameChannelOrUser);
             });
@@ -123,7 +124,7 @@ class slackMessageInterface {
      */
     listenerCommandListMessage() {
         this._listenerMessage(this.slackMessageAnalyze.isCommandListMessage, (message) => {
-            var nameChannelOrUser = this._getSlackNameById(message).name;
+            var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
             this.postSlackMessage('Hi <@' + message.user + '> this is the command list \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project', 'Command list', // jscs:ignore maximumLineLength
                 this.infoColor, null, 'Command list', '', nameChannelOrUser);
@@ -135,8 +136,8 @@ class slackMessageInterface {
      */
     listenerRebuildMessage() {
         this._listenerMessage(this.slackMessageAnalyze.isRebuildMessage, (message) => {
-            var repoName = this._getRepositoriesNameInMessageFrom(message, 'build');
-            var nameChannelOrUser = this._getSlackNameById(message).name;
+            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFrom(message.text, 'build');
+            var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
             if (repoName) {
                 this.ciService.restartLastBuild(repoName).then(()=> {
@@ -149,6 +150,34 @@ class slackMessageInterface {
             } else {
                 this.postSlackMessage('Maybe you want use the command : "build username/example-project" but' +
                     ' you forgot to add the repository slug', 'Execute build', this.infoColor, null, 'Execute build');
+
+            }
+        });
+    }
+
+    /**
+     * Post a message on slack with the build history for the asked repository example "history ci-alarm"
+     */
+    listenerBuildsHistory() {
+        this._listenerMessage(this.slackMessageAnalyze.isHistoryMessage, (message) => {
+            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFrom(message.text, 'history');
+            var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
+
+            if (repoName.indexOf('/') > -1) {
+                repoName = repoName.replace((this.ciService.username + '/'), '');
+            }
+
+            if (repoName) {
+                this.ciService.getAllBuildByRepositoryName(repoName).then((builds)=> {
+                    this.postSlackMessage(this._createMessageFromBuildsArray(builds) , 'Build History',
+                        this.infoColor, null, 'Build History', '', nameChannelOrUser);
+                }, ()=> {
+                    this.postSlackMessage('This repositories doesn\'t exist', 'Build History',
+                        this.infoColor, null, 'Build History', '', nameChannelOrUser);
+                });
+            } else {
+                this.postSlackMessage('Maybe you want use the command : "history username/example-project" but' +
+                    ' you forgot to add the repository slug', 'Build History', this.infoColor, null, 'Build History');
 
             }
         });
@@ -185,25 +214,6 @@ class slackMessageInterface {
     }
 
     /**
-     * Get the repository name in a message String
-     *
-     * @param {String} message like 'statsu eromano/ci-alarm'
-     * @param {String} wordBeforeNameRepo the string before the name of the repository'
-     *
-     * @return {String} return the repository name in a message string
-     */
-    _getRepositoriesNameInMessageFrom(message, wordBeforeNameRepo) {
-        var statusPos = message.text.toLowerCase().indexOf(wordBeforeNameRepo);
-        var afterStatus = message.text.toLowerCase().substr(statusPos + 6, message.length).trim();
-
-        var allPhrasesSeparateBySpace = afterStatus.split(' ');
-
-        if (allPhrasesSeparateBySpace && allPhrasesSeparateBySpace.length > 0) {
-            return allPhrasesSeparateBySpace[0].trim();
-        }
-    }
-
-    /**
      * Create additionl field for the slack message
      *
      * @param {Object} repository
@@ -231,7 +241,7 @@ class slackMessageInterface {
      *
      * @return {name} name of the channel or the user in the message depend if is a direct message or channel message
      */
-    _getSlackNameById(message) {
+    _getSlackNameChannelOrUserById(message) {
         var name = this.bot.channels.find(function (item) {
             return item.id === message.channel;
         });
@@ -266,6 +276,22 @@ class slackMessageInterface {
         });
 
         return userChannels;
+    }
+
+    /**
+     * Create Slack Message from builds Array
+     *
+     * @param {Array} builds
+     *
+     * @return {String} message
+     */
+    _createMessageFromBuildsArray(builds) {
+        var message = '';
+        builds.forEach((buildobject)=> {
+            message = message + 'Build #' + buildobject.build.number + ' was ' + buildobject.build.state + '\n';
+        });
+
+        return message;
     }
 
     colorByStatus(status) {
