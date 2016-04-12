@@ -84,11 +84,10 @@ class slackMessageInterface {
             var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFrom(message.text, 'status');
             if (repoName) {
                 this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
-                    var fields = this._createFieldsAdditionInformationMessage(repository);
-                    var lastBuildState = repository.last_build_state ? repository.last_build_state : 'unknown';
-                    var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
-
                     this.ciService.getCommitInfoByBuildNumber(repository.last_build_id).then((commit)=> {
+                        var fields = this._createFieldsAdditionInformationMessage(repository, commit);
+                        var lastBuildState = repository.last_build_state ? repository.last_build_state : 'unknown';
+                        var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
                         var commitLink = this.ciService.getCommitLink(commit, repository.slug);
                         this.postSlackMessage('Hi <@' + message.user + '> the build Status was *' + lastBuildState + '* ' + moment(repository.last_build_finished_at).fromNow() + ' \n *Commit* : <' + commitLink + '|Link github>' + commit.message, // jscs:ignore maximumLineLength
@@ -217,11 +216,12 @@ class slackMessageInterface {
      * Create additionl field for the slack message
      *
      * @param {Object} repository
+     * @param {Commit} commit
      *
      * @return {Array} Array of slack fields
      */
-    _createFieldsAdditionInformationMessage(repository) {
-        return [
+    _createFieldsAdditionInformationMessage(repository, commit) {
+        var fields =  [
             {
                 'title': 'Elapsed time',
                 'value': (repository.last_build_duration + ' sec'),
@@ -232,6 +232,15 @@ class slackMessageInterface {
                 'short': true
             }
         ];
+
+        if (repository.last_build_state === 'failed') {
+            fields.push({
+                'title': 'Possible Failing Guilty',
+                'value': commit.committer_name,
+                'short': true
+            });
+        }
+        return fields;
     }
 
     /**

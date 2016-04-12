@@ -111,6 +111,7 @@ describe('Bot CI build communication', function () {
             expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
             expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
                 '"<https://travis-ci.org/fakeuser/fake-project2/builds/120506232|Build #37>","short":true}');
+            expect(JSON.stringify(this.fields[2])).to.be.equal('{"title":"Possible Failing Guilty","value":"Eugenio Romano","short":true}');
             expect(this.title_link).to.be.equal('https://travis-ci.org/fakeuser/fake-project2/builds/120506232');
             done();
         }, 50);
