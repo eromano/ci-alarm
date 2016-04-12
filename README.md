@@ -15,7 +15,12 @@
 </p>
 
 ## About Ci-alarm
-Ci-alarm is a simple node.js slack bot to help to turn on a light alarm through GPIO of the Raspberry Pi when your Travis or Jenkins build fail
+Ci-alarm is a  node.js slack bot to help you to communicate with Travis CI.
+
+With this bot you can :
+* Get in yor slack chat all the info about your repository
+* Restart Build
+* Turn on a light alarm through GPIO of the Raspberry Pi when your Travis build fail
 
 ## Development
 
@@ -55,6 +60,9 @@ Ci-alarm is a simple node.js slack bot to help to turn on a light alarm through 
 <p align="left"  >
   <img title="ci alarm" src='doc/img/repo list.png' style="width: 400px;max-width:100%;"/>
 </p>
+
+    ```@BotName rebuild "repository name" ```
+
 
 
 ## Contributing

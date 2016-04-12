@@ -103,7 +103,7 @@ class travisInterface {
                     this._expandBaseRepositoryTravisObject(repository);
                     resolve(repository);
                 } else {
-                    reject(new Error(('This repositories dosen\'t exixst')));
+                    reject(new Error(('This repositories doesn\'t exist')));
                 }
             });
         });
@@ -129,10 +129,17 @@ class travisInterface {
      * re-execute last build
      *
      * @param  {String} repositoryName name of the repository which you are interested in
+     * @return {Promise} A promise that returns the statusCode
      */
     restartLastBuild(repositoryName) {
-        this.getLastBuildStatusByRepository(repositoryName).then((repository)=> {
-            this.travis.agent.request('POST', '/builds/' + repository.last_build_id + '/restart', null);
+        return new Promise((resolve, reject) => {
+            this.getLastBuildStatusByRepository(repositoryName).then((repository)=> {
+                this.travis.agent.request('POST', '/builds/' + repository.last_build_id + '/restart', null, (response)=> {
+                    resolve(200);
+                });
+            },(error)=> {
+                reject(error);
+            });
         });
     }
 

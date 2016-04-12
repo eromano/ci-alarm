@@ -71,7 +71,7 @@ describe('Bot CI build communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Error: This repositories dosen\'t exixst');
+            expect(this.textCheck).to.be.equal('Error: This repositories doesn\'t exist');
             done();
         }, 50);
     });

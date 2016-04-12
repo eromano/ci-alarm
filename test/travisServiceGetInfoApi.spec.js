@@ -89,7 +89,7 @@ describe('Travis Service', function () {
             });
 
             setTimeout(()=> {
-                expect(buildStatusResponse).equals('Error: This repositories dosen\'t exixst');
+                expect(buildStatusResponse).equals('Error: This repositories doesn\'t exist');
                 done();
             }, 50);
 

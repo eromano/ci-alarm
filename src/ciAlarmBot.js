@@ -8,7 +8,7 @@ var assert = require('assert');
 class CiAlarmBot {
 
     constructor(token, githubToken, gpioPin) {
-        assert(token, 'Slack Tocken is necessary');
+        assert(token, 'Slack Token is necessary');
         assert(githubToken, 'GithubToken is necessary');
 
         this.gpioPin = !gpioPin ? 22 : gpioPin;

@@ -49,7 +49,7 @@ class build {
                 'sha': '6aace211abf84f16d74f195109bc91433dc437f4',
                 'branch': 'v1.1.0',
                 'branch_is_default': false,
-                'message' : 'fake-commit-message',
+                'message': 'fake-commit-message',
                 'committed_at': '2016-04-10T23:44:29Z',
                 'author_name': 'Eugenio Romano',
                 'author_email': 'eugenio.romano@alfresco.com',

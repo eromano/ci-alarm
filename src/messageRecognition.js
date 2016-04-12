@@ -2,9 +2,8 @@
 
 var Bot = require('slackbots');
 var moment = require('moment');
-var SlackMessageAnalyze = require('./slackMessageAnalyze');
 
-class slackMessageInterface {
+class messageRecognition {
 
     get successColor() {
         return 'good';
@@ -19,7 +18,6 @@ class slackMessageInterface {
     }
 
     constructor(token, ciService) {
-        this.ciService = ciService;
 
         this.listner = [
             this.startChannelMessage,
@@ -35,7 +33,7 @@ class slackMessageInterface {
         };
 
         this.bot = new Bot(settingsBot);
-        this.slackMessageAnalyze = new SlackMessageAnalyze(this.bot);
+        this.ciService = ciService;
     }
 
     run() {
@@ -79,7 +77,7 @@ class slackMessageInterface {
      * Post a message on slack chat with the status of the last build of a asked repository example: "status ci-alarm"
      */
     listenerRequestStatusBuild() {
-        this._listenerMessage(this.slackMessageAnalyze.isStatusMessage, (message) => {
+        this._listenerMessage(this.isStatusMessage, (message) => {
             var repoName = this._getRepositoriesNameInMessageFrom(message, 'status');
             if (repoName) {
                 this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
@@ -91,7 +89,7 @@ class slackMessageInterface {
 
                         var commitLink = this.ciService.getCommitLink(commit, repository.slug);
                         this.postSlackMessage('Hi <@' + message.user + '> the build Status was *' + lastBuildState + '* ' + moment(repository.last_build_finished_at).fromNow() + ' \n *Commit* : <' + commitLink + '|Link github>' + commit.message, // jscs:ignore maximumLineLength
-                            'Ci status', this.colorByStatus(lastBuildState), fields, 'Build status', repository.linkBuild, nameChannelOrUser);
+                            'Ci status', this._colorByStatus(lastBuildState), fields, 'Build status', repository.linkBuild, nameChannelOrUser);
                     });
                 }, (error)=> {
                     this.postSlackMessage(error.toString(), 'Ci status', this.failColor, null, 'Build status');
@@ -107,7 +105,7 @@ class slackMessageInterface {
      * Post a message on slack with the list of all the repositories slug when the bot is asked about it
      */
     listenerRepositoryListMessage() {
-        this._listenerMessage(this.slackMessageAnalyze.isRepositoryListMessage, (message) => {
+        this._listenerMessage(this.isRepositoryListMessage, (message) => {
 
             this.ciService.getUserRepositoriesSlugList().then((repositories)=> {
                 var nameChannelOrUser = this._getSlackNameById(message).name;
@@ -122,7 +120,7 @@ class slackMessageInterface {
      * Post a message on slack with the command list when the bot is asked about it
      */
     listenerCommandListMessage() {
-        this._listenerMessage(this.slackMessageAnalyze.isCommandListMessage, (message) => {
+        this._listenerMessage(this.isCommandListMessage, (message) => {
             var nameChannelOrUser = this._getSlackNameById(message).name;
 
             this.postSlackMessage('Hi <@' + message.user + '> this is the command list \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project', 'Command list', // jscs:ignore maximumLineLength
@@ -134,7 +132,7 @@ class slackMessageInterface {
      * Rebuild the last build with the command rebuild slug repository to rebuild
      */
     listenerRebuildMessage() {
-        this._listenerMessage(this.slackMessageAnalyze.isRebuildMessage, (message) => {
+        this._listenerMessage(this.isRebuildMessage, (message) => {
             var repoName = this._getRepositoriesNameInMessageFrom(message, 'build');
             var nameChannelOrUser = this._getSlackNameById(message).name;
 
@@ -212,11 +210,8 @@ class slackMessageInterface {
      */
     _createFieldsAdditionInformationMessage(repository) {
         return [
+            {'title': 'Elapsed time', 'value': (repository.last_build_duration + ' sec'), 'short': true},
             {
-                'title': 'Elapsed time',
-                'value': (repository.last_build_duration + ' sec'),
-                'short': true
-            }, {
                 'title': 'Build Number',
                 'value': ('<' + repository.linkBuild + '|Build #' + repository.last_build_number + '>'),
                 'short': true
@@ -268,7 +263,7 @@ class slackMessageInterface {
         return userChannels;
     }
 
-    colorByStatus(status) {
+    _colorByStatus(status) {
         var color = this.infoColor;
 
         if (status === 'passed') {
@@ -282,11 +277,59 @@ class slackMessageInterface {
 
     _listenerMessage(condition, callback) {
         this.bot.on('message', (message) => {
-            if (condition.call(this.slackMessageAnalyze, message.text, message.username)) {
+            if (condition.call(this, message)) {
                 callback.call(this, message);
             }
         });
     }
+
+    isRebuildMessage(message) {
+        return this.isValidCiMentionMessage(message) && this.isRebuildRequest(message);
+    }
+
+    isRepositoryListMessage(message) {
+        return this.isValidCiMentionMessage(message) && this.isListRepositoryRequest(message);
+    }
+
+    isCommandListMessage(message) {
+        return this.isValidCiMentionMessage(message) && this.isCommandListRequest(message);
+    }
+
+    isStatusMessage(message) {
+        return this.isValidCiMentionMessage(message) && this.isStatusRequest(message);
+    }
+
+    isFromCiAlarmBotMessage(message) {
+        return message.hasOwnProperty('username') && (message.username === this.bot.name);
+    }
+
+    isChatMessage(message) {
+        return message.type === 'message' && Boolean(message.text);
+    }
+
+    isMentioningCiAlarm(message) {
+        return message.text && message.text.indexOf(this.bot.self.id) > -1;
+    }
+
+    isListRepositoryRequest(message) {
+        return message.text && message.text.toLowerCase().indexOf('repository list') > -1;
+    }
+
+    isStatusRequest(message) {
+        return message.text && message.text.toLowerCase().indexOf('status') > -1;
+    }
+
+    isRebuildRequest(message) {
+        return message.text && message.text.toLowerCase().indexOf('build') > -1;
+    }
+
+    isCommandListRequest(message) {
+        return message.text && message.text.toLowerCase().indexOf('command list') > -1;
+    }
+
+    isValidCiMentionMessage(message) {
+        return !this.isFromCiAlarmBotMessage(message) && this.isChatMessage(message) && this.isMentioningCiAlarm(message);
+    }
 }
 
-module.exports = slackMessageInterface;
+module.exports = messageRecognition;
