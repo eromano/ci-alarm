@@ -40,8 +40,6 @@ describe('Bot CI General Travis info communication', function () {
     });
 
     it('should the bot respond with the repositories list if asked "repository list" ', function (done) {
-        this.travisService.username = 'mbros';
-
         var repos = Repository.createRepositoriesList();
         nock('https://api.travis-ci.org:443')
             .get('/repos/mbros')
@@ -72,7 +70,7 @@ describe('Bot CI General Travis info communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> this is the command list \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project');// jscs:ignore maximumLineLength
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> this is the command list \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • status username/example-project');// jscs:ignore maximumLineLength
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();
         }, 50);
@@ -95,6 +93,26 @@ describe('Bot CI General Travis info communication', function () {
 
         setTimeout(()=> {
             expect(this.textCheck).to.be.equal('Build #53 was passed\nBuild #53 was passed\nBuild #53 was passed\n');
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            done();
+        }, 50);
+    });
+
+    it('should the bot respond with the information about a repository id asked : "info username/example-project" ', function (done) {
+        var repos = Repository.createRepositoriesList();
+
+        nock('https://api.travis-ci.org:443').get('/repos/' + this.travisService.username).reply(200, {repos});
+
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            channel: 'fake-general-channel-id',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: info fake-project3'
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).to.be.equal('Repository fakeuser/fake-project3 status \nfake repo description\n');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();
         }, 50);

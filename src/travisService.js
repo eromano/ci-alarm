@@ -32,9 +32,11 @@ class travisInterface {
         this.travisAuth.login().then(() => {
             this.getAccountInfo().then(() => {
                 this.emit('travis:login:ok');
-            }, () => {
-                this.emit('travis:login:error');
+            }, (error) => {
+                this.emit('travis:login:error', error);
             });
+        }, (error) => {
+            this.emit('travis:login:error', error);
         });
     }
 

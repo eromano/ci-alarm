@@ -19,6 +19,10 @@ class CiAlarmBot {
         this.travisService.on('travis:login:ok', ()=> {
             this.run(token);
         });
+
+        this.travisService.on('travis:login:error', (error)=> {
+            console.log(error);
+        });
     }
 
     run(token) {

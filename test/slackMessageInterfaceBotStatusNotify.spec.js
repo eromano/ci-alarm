@@ -138,7 +138,7 @@ describe('Bot CI build communication', function () {
         }, 50);
     });
 
-    it('should the bot respond with the  Build status also if there are spaces before and after the slug repository name', function (done) {
+    it('should the bot respond with the Build status also if there are spaces before and after the slug repository name', function (done) {
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
@@ -159,7 +159,7 @@ describe('Bot CI build communication', function () {
 
     });
 
-    it('should the bot respond with the  Build status also if the slug is not complete', function (done) {
+    it('should the bot respond with the Build status also if the slug is not complete', function (done) {
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
@@ -177,6 +177,6 @@ describe('Bot CI build communication', function () {
             expect(this.title_link).to.be.equal('https://travis-ci.org/fakeuser/fake-project2/builds/120506232');
             done();
         }, 50);
-
     });
+
 });

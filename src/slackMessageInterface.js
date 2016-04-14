@@ -25,6 +25,7 @@ class slackMessageInterface {
             this.startChannelMessage,
             this.listenerRequestStatusBuild,
             this.listenerRepositoryListMessage,
+            this.listenerInfoRepository,
             this.listenerCommandListMessage,
             this.listenerRebuildMessage,
             this.listenerBuildsHistory
@@ -125,7 +126,7 @@ class slackMessageInterface {
         this._listenerMessage(this.slackMessageAnalyze.isCommandListMessage, (message) => {
             var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
-            this.postSlackMessage('Hi <@' + message.user + '> this is the command list \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project', 'Command list', // jscs:ignore maximumLineLength
+            this.postSlackMessage('Hi <@' + message.user + '> this is the command list \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • status username/example-project', 'Command list', // jscs:ignore maximumLineLength
                 this.infoColor, null, 'Command list', '', nameChannelOrUser);
         });
     }
@@ -177,6 +178,34 @@ class slackMessageInterface {
             } else {
                 this.postSlackMessage('Maybe you want use the command : "history username/example-project" but' +
                     ' you forgot to add the repository slug', 'Build History', this.infoColor, null, 'Build History');
+
+            }
+        });
+    }
+
+    /**
+     * Post a message on slack with the information about one repository "info ci-alarm"
+     */
+    listenerInfoRepository() {
+        this._listenerMessage(this.slackMessageAnalyze.isInfoRepoMessage, (message) => {
+            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFrom(message.text, 'info');
+            var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
+
+            if (repoName.indexOf('/') > -1) {
+                repoName = repoName.replace((this.ciService.username + '/'), '');
+            }
+
+            if (repoName) {
+                this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
+                    this.postSlackMessage(this._createMessageFromBuildsRepository(repository) , 'Info repository',
+                        this.infoColor, null, 'Info repository', '', nameChannelOrUser);
+                }, ()=> {
+                    this.postSlackMessage('This repositories doesn\'t exist', 'Info repository',
+                        this.infoColor, null, 'Info repository', '', nameChannelOrUser);
+                });
+            } else {
+                this.postSlackMessage('Maybe you want use the command : "info username/example-project" but' +
+                    ' you forgot to add the repository slug', 'Info repository', this.infoColor, null, 'Info repository');
 
             }
         });
@@ -301,6 +330,17 @@ class slackMessageInterface {
         });
 
         return message;
+    }
+
+    /**
+     * Create Slack Message from repository object
+     *
+     * @param {Object} repository
+     *
+     * @return {String} message
+     */
+    _createMessageFromBuildsRepository(repository) {
+        return 'Repository ' +  repository.slug  + ' status ' + repository.last_build_state + '\n' + repository.description + '\n';
     }
 
     colorByStatus(status) {

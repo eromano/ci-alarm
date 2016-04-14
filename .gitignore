@@ -3,16 +3,7 @@
 logs
 *.log
 npm-debug.log*
-pids
-*.pid
 config.json
-*.seed
-lib-cov
 coverage
-.grunt
-.lock-wscript
-build/Release
 node_modules
-.npm
 /test/src
-.node_repl_history

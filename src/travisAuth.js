@@ -1,36 +1,23 @@
 'use strict';
 class travisAuth {
 
-    get isAuthenticated() {
-        return this.authenticate;
-    }
-
-    set isAuthenticated(authenticate) {
-        this.authenticate = authenticate;
-    }
-
     constructor(travis, githubToken) {
         this.githubToken = githubToken;
         this.travis = travis;
     }
 
     login() {
-        return new Promise(((resolve) => {
-            if (!this.isAuthenticated) {
-                this.authenticateGitHub().then((res) => {
-                    this.authenticateTravis(res).then(() => {
-                        this.isAuthenticated = true;
-                        resolve();
-                    }, (reject) => {
-                        reject(reject);
-                    });
-                }, (reject) => {
-                    reject(reject);
+        return new Promise((resolve, reject) => {
+            this.authenticateGitHub().then((res) => {
+                this.authenticateTravis(res).then(() => {
+                    resolve();
+                }, (err) => {
+                    reject(err);
                 });
-            } else {
-                resolve();
-            }
-        }));
+            }, (err) => {
+                reject(err);
+            });
+        });
     }
 
     authenticateGitHub() {

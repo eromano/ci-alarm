@@ -22,6 +22,34 @@ With this bot you can :
 * Restart Build
 * Turn on a light alarm through GPIO of the Raspberry Pi when your Travis build fail
 
+## Command list
+
+* To show the command list
+
+    ```@BotName command list ```
+<p align="left" >
+  <img title="ci alarm" src='doc/img/command list.png' style="width: 400px;max-width:100%;"/>
+</p>
+
+* To show the repository status
+    ```@BotName status "[repository name|repository slugName]" ```
+<p align="left" >
+  <img title="ci alarm" src='doc/img/status.png' style="width: 400px;max-width:100%;"/>
+</p>
+
+* To show the repository list
+    ```@BotName repository list ```
+<p align="left"  >
+  <img title="ci alarm" src='doc/img/repo list.png' style="width: 400px;max-width:100%;"/>
+</p>
+
+    ```@BotName rebuild "[repository name|repository slugName]" ```
+
+    ```@BotName history "[repository name|repository slugName]" ```
+
+    ```@BotName info "[repository name|repository slugName]" ```
+
+
 ## Development
 
 * To test ci-alarm
@@ -39,32 +67,6 @@ With this bot you can :
 * To run ci-alarm on your machine
 
     ```$ npm run-script start```
-
-## Command list
-
-* To show the command list
-
-    ```@BotName command list ```
-<p align="left" >
-  <img title="ci alarm" src='doc/img/command list.png' style="width: 400px;max-width:100%;"/>
-</p>
-
-* To show the repository status
-    ```@BotName status "repository [name|slugName]" ```
-<p align="left" >
-  <img title="ci alarm" src='doc/img/status.png' style="width: 400px;max-width:100%;"/>
-</p>
-
-* To show the repository list
-    ```@BotName repository list ```
-<p align="left"  >
-  <img title="ci alarm" src='doc/img/repo list.png' style="width: 400px;max-width:100%;"/>
-</p>
-
-    ```@BotName rebuild "repository [name|slugName]" ```
-
-    ```@BotName rebuild "history [name|slugName]" ```
-
 
 
 ## Contributing

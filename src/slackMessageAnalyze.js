@@ -47,6 +47,10 @@ class slackMessageAnalyze {
         return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'history');
     }
 
+    isInfoRepoMessage(textMessage) {
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'info');
+    }
+
     _isTextContaineidInMessage(textMessage, textToSearch) {
         return textMessage && textMessage.toLowerCase().indexOf(textToSearch) > -1;
     }
