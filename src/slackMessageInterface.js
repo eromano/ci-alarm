@@ -82,7 +82,7 @@ class slackMessageInterface {
      */
     listenerRequestStatusBuild() {
         this._listenerMessage(this.slackMessageAnalyze.isStatusMessage, (message) => {
-            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFrom(message.text, 'status');
+            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFromText(message.text, 'status');
             if (repoName) {
                 this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
                     this.ciService.getCommitInfoByBuildNumber(repository.last_build_id).then((commit)=> {
@@ -91,7 +91,9 @@ class slackMessageInterface {
                         var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
                         var commitLink = this.ciService.getCommitLink(commit, repository.slug);
-                        this.postSlackMessage('Hi <@' + message.user + '> the build Status was *' + lastBuildState + '* ' + moment(repository.last_build_finished_at).fromNow() + ' \n *Commit* : <' + commitLink + '|Link github>' + commit.message, // jscs:ignore maximumLineLength
+                        var messageWithIssueLink = this.slackMessageAnalyze.replaceIssueNumberWithIssueLink(commit.message , repository.slug);
+
+                        this.postSlackMessage('Hi <@' + message.user + '> the build Status was *' + lastBuildState + '* ' + moment(repository.last_build_finished_at).fromNow() + ' \n *Commit* : ' + this.slackMessageAnalyze.createSlackMessageLink('Link github', commitLink)  + ' ' + messageWithIssueLink, // jscs:ignore maximumLineLength
                             'Ci status', this.colorByStatus(lastBuildState), fields, 'Build status', repository.linkBuild, nameChannelOrUser);
                     });
                 }, (error)=> {
@@ -136,7 +138,7 @@ class slackMessageInterface {
      */
     listenerRebuildMessage() {
         this._listenerMessage(this.slackMessageAnalyze.isRebuildMessage, (message) => {
-            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFrom(message.text, 'build');
+            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFromText(message.text, 'build');
             var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
             if (repoName) {
@@ -160,7 +162,7 @@ class slackMessageInterface {
      */
     listenerBuildsHistory() {
         this._listenerMessage(this.slackMessageAnalyze.isHistoryMessage, (message) => {
-            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFrom(message.text, 'history');
+            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFromText(message.text, 'history');
             var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
             if (repoName.indexOf('/') > -1) {
@@ -188,7 +190,7 @@ class slackMessageInterface {
      */
     listenerInfoRepository() {
         this._listenerMessage(this.slackMessageAnalyze.isInfoRepoMessage, (message) => {
-            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFrom(message.text, 'info');
+            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFromText(message.text, 'info');
             var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
             if (repoName.indexOf('/') > -1) {
@@ -257,11 +259,10 @@ class slackMessageInterface {
                 'short': true
             }, {
                 'title': 'Build Number',
-                'value': ('<' + repository.linkBuild + '|Build #' + repository.last_build_number + '>'),
+                'value':  this.slackMessageAnalyze.createSlackMessageLink(('Build #' + repository.last_build_number) ,  repository.linkBuild),
                 'short': true
             }
         ];
-
         if (repository.last_build_state === 'failed') {
             fields.push({
                 'title': 'Possible Failing Guilty',

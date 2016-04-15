@@ -1,7 +1,11 @@
 'use strict';
+var assert = require('assert');
+
 class travisAuth {
 
     constructor(travis, githubToken) {
+        assert(githubToken, 'githubtoken in config.json is necessary');
+
         this.githubToken = githubToken;
         this.travis = travis;
     }
@@ -27,6 +31,9 @@ class travisAuth {
             }, (err, res) => {
                 if (err) {
                     reject(new Error(('Github Access Error ' + err)));
+                }
+                if (!res || !res.hasOwnProperty('access_token')) {
+                    reject(new Error(('Github Access Error access token not returned')));
                 }
                 resolve(res);
             });

@@ -18,7 +18,7 @@ class commit {
             'compare_url': 'https://github.com/travis-ci/travis-api/compare/0f31ff4fb6aa...a18f211f6f92'
         };
 
-        return _.extend(defaultAttributes, attributes);
+        return _.merge(defaultAttributes, attributes);
     }
 
     static createCommitsList() {

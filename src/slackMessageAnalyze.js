@@ -16,42 +16,80 @@ class slackMessageAnalyze {
      *
      * @return {String} return the repository name in a message string
      */
-    getRepositoriesNameInMessageFrom(textMessage, wordBeforeNameRepo) {
-        var wordPos = textMessage.toLowerCase().indexOf(wordBeforeNameRepo);
-        var afterStatus = textMessage.toLowerCase().substr((wordPos + wordBeforeNameRepo.length), textMessage.length).trim();
+    getRepositoriesNameInMessageFromText(textMessage, wordBeforeNameRepo) {
+        if (this._isTextContainedInMessage(textMessage, wordBeforeNameRepo)) {
+            var wordPos = textMessage.toLowerCase().indexOf(wordBeforeNameRepo);
+            var afterStatus = textMessage.toLowerCase().substr((wordPos + wordBeforeNameRepo.length), textMessage.length).trim();
 
-        var allPhrasesSeparateBySpace = afterStatus.split(' ');
+            var allPhrasesSeparateBySpace = afterStatus.split(' ');
 
-        if (allPhrasesSeparateBySpace && allPhrasesSeparateBySpace.length > 0) {
-            return allPhrasesSeparateBySpace[0].trim();
+            if (allPhrasesSeparateBySpace && allPhrasesSeparateBySpace.length > 0) {
+                return allPhrasesSeparateBySpace[0].trim();
+            }
         }
     }
 
+    /**
+     * Analyze a message and find inside if is present an issue github number and if is present change the issue number with a link
+     *
+     * @param {String} textMessage like 'closed #21 Info command about one repository smart version of status'
+     * @param {String} slug repository for example
+     *
+     * @return {String} message with the link
+     */
+    replaceIssueNumberWithIssueLink(textMessage, slug) {
+        if (textMessage && this._isTextContainedInMessage(textMessage, '#')) {
+            var hashPosition = textMessage.indexOf('#');
+            var afterHash = textMessage.substr(hashPosition + 1, textMessage.length).trim();
+
+            var allPhrasesSeparateBySpace = afterHash.split(' ');
+
+            if (allPhrasesSeparateBySpace && allPhrasesSeparateBySpace.length > 0) {
+                var issueNumber = allPhrasesSeparateBySpace[0].trim();
+                var issueNumberLink = this.createSlackMessageLink(('#' + issueNumber), ('https://github.com/eromano/' + slug + '/issues/' + issueNumber));
+                return textMessage.replace(('#' + issueNumber), issueNumberLink);
+            }
+        }
+        return textMessage;
+    }
+
+    /**
+     * Create a slack link format message
+     *
+     * @param {String} titleLink  text to show instead of the pure URL
+     * @param {String} link to redirect
+     *
+     * @return {String} slack format message link
+     */
+    createSlackMessageLink(titleLink, link) {
+        return '<' + link + '|' + titleLink + '>';
+    }
+
     isRebuildMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'build');
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'build');
     }
 
     isRepositoryListMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'repository list');
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'repository list');
     }
 
     isCommandListMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'command list');
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'command list');
     }
 
     isStatusMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'status');
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'status');
     }
 
     isHistoryMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'history');
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'history');
     }
 
     isInfoRepoMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContaineidInMessage(textMessage, 'info');
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'info');
     }
 
-    _isTextContaineidInMessage(textMessage, textToSearch) {
+    _isTextContainedInMessage(textMessage, textToSearch) {
         return textMessage && textMessage.toLowerCase().indexOf(textToSearch) > -1;
     }
 

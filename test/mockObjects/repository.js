@@ -21,15 +21,16 @@ class repository {
             'linkBuild': ''
         };
 
-        return _.extend(defaultAttributes, attributes);
+        return _.merge(defaultAttributes, attributes);
     }
 
     static createRepositoriesList() {
         return [
             this.createRepository({slug: 'fakeuser/fake-project1'}),
-            this.createRepository({slug: 'fakeuser/fake-project2', last_build_state: 'failed'}),
+            this.createRepository({slug: 'fakeuser/fake-project2', last_build_state: 'failed', last_build_id: 120506231}),
             this.createRepository({slug: 'fakeuser/fake-project3', last_build_state: ''})
         ];
+
     }
 
 }

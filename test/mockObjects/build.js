@@ -98,7 +98,7 @@ class build {
 
         };
 
-        return _.extend(defaultAttributes, attributes);
+        return _.merge(defaultAttributes, attributes);
     }
 
     static createBuildsList() {

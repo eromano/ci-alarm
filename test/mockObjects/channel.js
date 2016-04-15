@@ -37,7 +37,7 @@ class channel {
             }
         };
 
-        return _.extend(defaultAttributes, attributes);
+        return _.merge(defaultAttributes, attributes);
     }
 
     static createChannelList() {
