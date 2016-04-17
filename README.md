@@ -68,6 +68,14 @@ With this bot you can :
 
     ```$ npm run-script start```
 
+## Plug-In
+Ci Alarm is also able to turn on/off a alarm light when the build is failing.
+In order to have this kind of plug-in you have to install ci-alarm on a Raspberry PI.
+All the specification for this kind of configuration are [here](https://github.com/eromano/ci-alarm/blob/master/doc/README.md).
+
+<p align="left"  >
+  <img title="ci alarm light alarm schema components" src='doc/img/raspberry-pi-logo.png' style="width: 100px;max-width:100%;" />
+</p>
 
 ## Contributing
 
