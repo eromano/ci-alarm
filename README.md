@@ -43,10 +43,13 @@ With this bot you can :
   <img title="ci alarm" src='doc/img/repo list.png' style="width: 400px;max-width:100%;"/>
 </p>
 
+* To build a project on Travis
     ```@BotName rebuild "[repository name|repository slugName]" ```
 
+* To view the build history of a project
     ```@BotName history "[repository name|repository slugName]" ```
 
+* To view info about a project
     ```@BotName info "[repository name|repository slugName]" ```
 
 

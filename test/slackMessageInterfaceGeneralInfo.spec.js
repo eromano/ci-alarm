@@ -70,7 +70,7 @@ describe('Bot CI General Travis info communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> this is the command list \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • status username/example-project');// jscs:ignore maximumLineLength
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> <this is the command list|https://github.com/eromano/ci-alarm/wiki/Command-List> \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project • info username/example-project');// jscs:ignore maximumLineLength
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();
         }, 50);
@@ -116,5 +116,9 @@ describe('Bot CI General Travis info communication', function () {
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();
         }, 50);
+    });
+
+    it('should the bot respond with the information about a commit id asked : "commit info a18f211f6f921affd1ecd8c18691b40d9948aae5" ', function () {
+
     });
 });

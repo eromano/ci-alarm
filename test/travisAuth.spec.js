@@ -47,19 +47,19 @@ describe('Travis Auth', function () {
 
     });
 
-    //describe('login Github', function () {
-    //
-    //    it('Should throw an error if the Github token is not valid', function () {
-    //        var errorThrown = false;
-    //        try {
-    //            var travisAuth  = new TravisAuth('fake-token');
-    //            travisAuth.authenticateGitHub();
-    //        } catch (error) {
-    //            errorThrown = true;
-    //        }
-    //
-    //        expect(errorThrown).equals(true);
-    //    });
-    //
-    //});
+    describe('login Github', function () {
+
+        it('Should throw an error if the Github token is not a valid token for github', function () {
+            var errorThrown = false;
+            try {
+                var travisAuth  = new TravisAuth(new TravisService('fake-token'), 'fake-token');
+                travisAuth.authenticateGitHub();
+            } catch (error) {
+                errorThrown = true;
+            }
+
+            expect(errorThrown).equals(true);
+        });
+
+    });
 });

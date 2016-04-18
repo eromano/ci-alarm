@@ -13,7 +13,7 @@ var Repository = require('../test/mockObjects/repository');
 var Channel = require('../test/mockObjects/channel');
 var Build = require('../test/mockObjects/build');
 
-describe('Bot CI build communication', function () {
+describe('Bot CI build status command', function () {
 
     beforeEach(function () {
         this.textCheck = '';

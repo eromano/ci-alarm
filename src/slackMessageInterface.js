@@ -128,7 +128,7 @@ class slackMessageInterface {
         this._listenerMessage(this.slackMessageAnalyze.isCommandListMessage, (message) => {
             var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
-            this.postSlackMessage('Hi <@' + message.user + '> this is the command list \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • status username/example-project', 'Command list', // jscs:ignore maximumLineLength
+            this.postSlackMessage('Hi <@' + message.user + '> <this is the command list|https://github.com/eromano/ci-alarm/wiki/Command-List> \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project • info username/example-project', 'Command list', // jscs:ignore maximumLineLength
                 this.infoColor, null, 'Command list', '', nameChannelOrUser);
         });
     }
