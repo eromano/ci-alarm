@@ -1,10 +1,10 @@
 <h1 align="center">Ci Alarm</h1>
 <p align="center">
-  <img title="ci alarm" src='ci-alarm-logo.png' />
+  <img alt='ci alarm logo' title="ci alarm" src='ci-alarm-logo.png' />
 </p>
 <p align="center">
   <a title='Build Status' href="https://travis-ci.org/eromano/ci-alarm">
-    <img src='https://travis-ci.org/eromano/ci-alarm.svg?branch=master' />
+    <img src='https://travis-ci.org/eromano/ci-alarm.svg?branch=master' alt='travis Status' />
   </a>
   <a href='https://coveralls.io/r/eromano/ci-alarm'>
     <img src='https://img.shields.io/coveralls/eromano/ci-alarm.svg' alt='Coverage Status' />
@@ -26,30 +26,37 @@ With this bot you can :
 
 * To show the command list
 
-    ```@BotName command list ```
+    ```@BotName command list ``` or     ```@BotName help ```
 <p align="left" >
   <img title="ci alarm" src='doc/img/command list.png' style="width: 400px;max-width: 600px;"/>
 </p>
 
 * To show the repository status
+
     ```@BotName status "[repository name|repository slugName]" ```
+
 <p align="left" >
   <img title="ci alarm" src='doc/img/status.png' style="width: 400px;max-width: 600px;"/>
 </p>
 
 * To show the repository list
+
     ```@BotName repository list ```
+
 <p align="left"  >
   <img title="ci alarm" src='doc/img/repo list.png' style="width: 400px;max-width: 600px;"/>
 </p>
 
 * To build a project on Travis
+
     ```@BotName rebuild "[repository name|repository slugName]" ```
 
 * To view the build history of a project
+
     ```@BotName history "[repository name|repository slugName]" ```
 
 * To view info about a project
+
     ```@BotName info "[repository name|repository slugName]" ```
 
 

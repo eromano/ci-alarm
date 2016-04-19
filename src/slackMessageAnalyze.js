@@ -74,7 +74,7 @@ class slackMessageAnalyze {
     }
 
     isCommandListMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'command list');
+        return this._isValidCiMentionMessage(textMessage) && (this._isTextContainedInMessage(textMessage, 'command list') || this._isTextContainedInMessage(textMessage, 'help'));
     }
 
     isStatusMessage(textMessage) {

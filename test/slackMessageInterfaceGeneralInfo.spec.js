@@ -76,6 +76,22 @@ describe('Bot CI General Travis info communication', function () {
         }, 50);
     });
 
+    it('should the bot respond with the command list if asked "help" ', function (done) {
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            channel: 'fake-general-channel-id',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: command list'
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> <this is the command list|https://github.com/eromano/ci-alarm/wiki/Command-List> \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project • info username/example-project');// jscs:ignore maximumLineLength
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            done();
+        }, 50);
+    });
+
     it('should the bot respond with the build history if asked : "history username/example-project" ', function (done) {
         var buildsList = Build.createBuildsList();
 
