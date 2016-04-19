@@ -1,0 +1,21 @@
+
+{
+  "name": "Ci Alarm",
+  "description": "Ci-alarm is a slack bot to help you to communicate with Travis CI",
+  "keywords": [
+    "slack",
+    "travis",
+    "bot",
+    "github",
+    "build"
+  ],
+  "repository": "https://github.com/eromano/ci-alarm",
+  "env": {
+    "TOKEN_SLACK": {
+      "description": "Your Slack bot integration token (obtainable at https://my.slack.com/services/new/bot)"
+    },
+    "TOKEN_GITHUB": {
+      "description": "Your Git hub private token bot integration token (obtainable at https://github.com/settings/tokens) scope needed repo and user"
+    }
+  }
+}

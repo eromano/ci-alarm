@@ -7,8 +7,8 @@ var nconf = require('nconf');
 nconf.add('config', {type: 'file', file: './config.json'});
 
 try {
-    var tokenSlack =  nconf.get('tokenslack');
-    var githubToken =  nconf.get('githubtoken');
+    var tokenSlack = process.env.TOKEN_SLACK || nconf.get('tokenslack');;
+    var githubToken = process.env.TOKEN_GITHUB || nconf.get('githubtoken');
 
     new CiAlarmBot(tokenSlack, githubToken);
 } catch (error) {
@@ -16,4 +16,4 @@ try {
 }
 
 var server = http.createServer();
-server.listen(1337, '127.0.0.1');
+server.listen(process.env.PORT || 1337);
