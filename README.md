@@ -22,13 +22,30 @@ With this bot you can :
 * Restart Build
 * Turn on a light alarm through GPIO of the Raspberry Pi when your Travis build fail
 
+## Getting Started
+1. Create a new [bot integration](https://my.slack.com/services/new/bot)
+1. Follow the steps to deploy the bot to Heroku or run it locally
+1. Once the bot is running see the documentation for the [Command list](https://github.com/eromano/ci-alarm/wiki/Command-List)
+
+#### One-Click Heroku
+Click this button:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
+#### Manual Heroku
+1. Install [Heroku toolbelt](https://devcenter.heroku.com/articles/getting-started-with-nodejs#set-up)
+1. Create a new bot integration (as above)
+1. `heroku create`
+1. `heroku config:set SLACK_POKER_BOT_TOKEN=[Your API token]`
+1. `git push heroku master`
+
 ## Command list
 
 * To show the command list
 
     ```@BotName command list ``` or     ```@BotName help ```
 <p align="left" >
-  <img title="ci alarm" src='doc/img/command list.png' style="width: 400px;max-width: 600px;"/>
+  <img title="ci alarm" src='doc/img/command list.png' width="400px"/>
 </p>
 
 * To show the repository status
@@ -36,7 +53,7 @@ With this bot you can :
     ```@BotName status "[repository name|repository slugName]" ```
 
 <p align="left" >
-  <img title="ci alarm" src='doc/img/status.png' style="width: 400px;max-width: 600px;"/>
+  <img title="ci alarm" src='doc/img/status.png'  width="400px"/>
 </p>
 
 * To show the repository list
@@ -44,7 +61,7 @@ With this bot you can :
     ```@BotName repository list ```
 
 <p align="left"  >
-  <img title="ci alarm" src='doc/img/repo list.png' style="width: 400px;max-width: 600px;"/>
+  <img title="ci alarm" src='doc/img/repo list.png' width="400px"/>
 </p>
 
 * To build a project on Travis
