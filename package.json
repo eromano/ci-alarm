@@ -16,7 +16,6 @@
     "url": "https://github.com/eromano/ci-alarm"
   },
   "scripts": {
-    "postinstall": "grunt",
     "start": "node src/main.js",
     "debug": "node-debug src/main.js",
     "test": "grunt test",
@@ -25,9 +24,6 @@
   "license": "MIT",
   "devDependencies": {
     "chai": "^3.5.0",
-    "coveralls": "^2.11.9",
-    "github": "^0.2.4",
-    "gpio": "^0.2.7",
     "grunt": "~0.4.0",
     "grunt-cli": "^1.1.0",
     "grunt-contrib-jshint": "^1.0.0",
@@ -42,17 +38,20 @@
     "lodash": "^4.7.0",
     "mocha": "^2.4.5",
     "mocha-lcov-reporter": "^1.2.0",
-    "nconf": "^0.8.4",
     "nock": "^7.7.3",
     "sinon": "^1.17.3",
-    "sinon-chai": "^2.8.0",
-    "slackbots": "^0.5.1",
-    "travis-ci": "^2.1.0"
+    "sinon-chai": "^2.8.0"
   },
   "contributors": [
     "Eugenio Romano <> (http://eromano.github.io/)"
   ],
   "dependencies": {
-    "moment": "^2.12.0"
+    "nconf": "^0.8.4",
+    "coveralls": "^2.11.9",
+    "github": "^0.2.4",
+    "gpio": "^0.2.7",
+    "moment": "^2.12.0",
+    "slackbots": "^0.5.1",
+    "travis-ci": "^2.1.0"
   }
 }
