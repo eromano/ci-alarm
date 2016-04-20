@@ -71,7 +71,8 @@ class slackMessageInterface {
 
             if (allJoinedChannelsByUserId) {
                 allJoinedChannelsByUserId.forEach((channel)=> {
-                    this.bot.postTo(channel, '', params);
+                    this.postSlackMessage('Keep calm I am the alarm please think about to add a star to our project ' + this.slackMessageAnalyze.createSlackMessageLink('Ci Alarm', 'https://github.com/eromano/ci-alarm'), // jscs:ignore maximumLineLength
+                        'Ci Alarm Bot is here', this.infoColor, null, 'Ci Alarm Bot greetings', 'https://github.com/eromano/ci-alarm', channel);
                 });
             }
         }));
@@ -91,9 +92,9 @@ class slackMessageInterface {
                         var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
                         var commitLink = this.ciService.getCommitLink(commit, repository.slug);
-                        var messageWithIssueLink = this.slackMessageAnalyze.replaceIssueNumberWithIssueLink(commit.message , repository.slug);
+                        var messageWithIssueLink = this.slackMessageAnalyze.replaceIssueNumberWithIssueLink(commit.message, repository.slug);
 
-                        this.postSlackMessage('Hi <@' + message.user + '> the build Status was *' + lastBuildState + '* ' + moment(repository.last_build_finished_at).fromNow() + ' \n *Commit* : ' + this.slackMessageAnalyze.createSlackMessageLink('Link github', commitLink)  + ' ' + messageWithIssueLink, // jscs:ignore maximumLineLength
+                        this.postSlackMessage('Hi <@' + message.user + '> the build Status was *' + lastBuildState + '* ' + moment(repository.last_build_finished_at).fromNow() + ' \n *Commit* : ' + this.slackMessageAnalyze.createSlackMessageLink('Link github', commitLink) + ' ' + messageWithIssueLink, // jscs:ignore maximumLineLength
                             'Ci status', this.colorByStatus(lastBuildState), fields, 'Build status', repository.linkBuild, nameChannelOrUser);
                     });
                 }, (error)=> {
@@ -171,7 +172,7 @@ class slackMessageInterface {
 
             if (repoName) {
                 this.ciService.getAllBuildByRepositoryName(repoName).then((builds)=> {
-                    this.postSlackMessage(this._createMessageFromBuildsArray(builds) , 'Build History',
+                    this.postSlackMessage(this._createMessageFromBuildsArray(builds), 'Build History',
                         this.infoColor, null, 'Build History', '', nameChannelOrUser);
                 }, ()=> {
                     this.postSlackMessage('This repositories doesn\'t exist', 'Build History',
@@ -199,7 +200,7 @@ class slackMessageInterface {
 
             if (repoName) {
                 this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
-                    this.postSlackMessage(this._createMessageFromBuildsRepository(repository) , 'Info repository',
+                    this.postSlackMessage(this._createMessageFromBuildsRepository(repository), 'Info repository',
                         this.infoColor, null, 'Info repository', '', nameChannelOrUser);
                 }, ()=> {
                     this.postSlackMessage('This repositories doesn\'t exist', 'Info repository',
@@ -252,14 +253,14 @@ class slackMessageInterface {
      * @return {Array} Array of slack fields
      */
     _createFieldsAdditionInformationMessage(repository, commit) {
-        var fields =  [
+        var fields = [
             {
                 'title': 'Elapsed time',
                 'value': (repository.last_build_duration + ' sec'),
                 'short': true
             }, {
                 'title': 'Build Number',
-                'value':  this.slackMessageAnalyze.createSlackMessageLink(('Build #' + repository.last_build_number) ,  repository.linkBuild),
+                'value': this.slackMessageAnalyze.createSlackMessageLink(('Build #' + repository.last_build_number), repository.linkBuild),
                 'short': true
             }
         ];
@@ -341,7 +342,7 @@ class slackMessageInterface {
      * @return {String} message
      */
     _createMessageFromBuildsRepository(repository) {
-        return 'Repository ' +  repository.slug  + ' status ' + repository.last_build_state + '\n' + repository.description + '\n';
+        return 'Repository ' + repository.slug + ' status ' + repository.last_build_state + '\n' + repository.description + '\n';
     }
 
     colorByStatus(status) {

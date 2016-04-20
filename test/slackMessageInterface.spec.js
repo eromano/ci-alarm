@@ -37,7 +37,7 @@ describe('Bot Initialization', function () {
     it('should the BOT say hello to the the channel when start', function () {
         this.slackMessageInterface.bot.emit('start');
 
-        expect(this.textCheck).to.be.equal('Keep calm I am the alarm!');
+        expect(this.textCheck).to.be.equal('Keep calm I am the alarm please think about to add a star to our project <https://github.com/eromano/ci-alarm|Ci Alarm>');
     });
 
     it('should Not respond with the Build status if asked by ciAlarmBot', function () {
