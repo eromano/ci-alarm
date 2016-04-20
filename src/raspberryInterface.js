@@ -1,9 +1,13 @@
 'use strict';
 var gpio = require('gpio');
+var nconf = require('nconf');
 
 class raspberryInterface {
 
-    constructor(gpioPin) {
+    constructor() {
+        var gpioPinDefault = 22;
+        // var projectToAlarm = process.env.PROJECT_TO_ALARM || nconf.get('projectToAlarm');
+        var gpioPin = nconf.get('gpioPin') || gpioPinDefault;
 
         this.gpioPin = gpio.export(gpioPin, {
             interval: 200,

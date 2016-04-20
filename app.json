@@ -13,9 +13,9 @@
   "env": {
     "TOKEN_SLACK": {
       "description": "Your Slack bot integration token (obtainable at https://my.slack.com/services/new/bot)"
-    },
-    "TOKEN_GITHUB": {
-      "description": "Your Git hub private token bot integration token (obtainable at https://github.com/settings/tokens) scope needed repo and user"
-    }
+  },
+  "TOKEN_GITHUB": {
+    "description": "Your Git hub private token bot integration token (obtainable at https://github.com/settings/tokens) scope needed repo and user"
+  }
   }
 }

@@ -7,17 +7,19 @@ var assert = require('assert');
 
 class CiAlarmBot {
 
-    constructor(token, githubToken, gpioPin) {
-        assert(token, 'Slack Token is necessary');
+    /**
+     * @param {String} slackToken Your Slack bot integration token (obtainable at https://my.slack.com/services/new/bot)
+     * @param {String} githubToken  Your Git hub private token bot integration token (obtainable at https://github.com/settings/tokens) scope needed repo and user
+     */
+    constructor(slackToken, githubToken) {
+        assert(slackToken, 'Slack Token is necessary');
         assert(githubToken, 'GithubToken is necessary');
 
-        this.gpioPin = !gpioPin ? 22 : gpioPin;
-
-        this.raspberryInterface = new RaspberryInterface(this.gpioPin);
+        this.raspberryInterface = new RaspberryInterface();
         this.travisService = new TravisService(githubToken);
 
         this.travisService.on('travis:login:ok', ()=> {
-            this.run(token);
+            this.run(slackToken);
         });
 
         this.travisService.on('travis:login:error', (error)=> {
@@ -25,8 +27,8 @@ class CiAlarmBot {
         });
     }
 
-    run(token) {
-        this.slackMessageInterface = new SlackMessageInterface(token, this.travisService);
+    run(slackToken) {
+        this.slackMessageInterface = new SlackMessageInterface(slackToken, this.travisService);
         this.slackMessageInterface.run();
     }
 }

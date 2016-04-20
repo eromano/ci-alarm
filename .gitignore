@@ -3,7 +3,7 @@
 logs
 *.log
 npm-debug.log*
-config.json
 coverage
 node_modules
 /test/src
+/config.json
