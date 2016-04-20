@@ -55,18 +55,6 @@ class slackMessageInterface {
      */
     startChannelMessage() {
         this.bot.on('start', (()=> {
-            var params = {
-                icon_emoji: ':robot_face:',
-                attachments: [
-                    {
-                        'fallback': 'Ci Alarm Bot is here',
-                        'color': this.infoColor,
-                        'author_name': 'Ci Alarm',
-                        'author_link': 'https://github.com/eromano/ci-alarm',
-                        'text': 'Keep calm I am the alarm!'
-                    }
-                ]
-            };
             var allJoinedChannelsByUserId = this._getAllJoinedChannelsByUserId(this.bot.self.id);
 
             if (allJoinedChannelsByUserId) {
