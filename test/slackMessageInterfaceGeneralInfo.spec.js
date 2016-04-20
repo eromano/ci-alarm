@@ -133,8 +133,4 @@ describe('Bot CI General Travis info communication', function () {
             done();
         }, 50);
     });
-
-    it('should the bot respond with the information about a commit id asked : "commit info a18f211f6f921affd1ecd8c18691b40d9948aae5" ', function () {
-
-    });
 });
