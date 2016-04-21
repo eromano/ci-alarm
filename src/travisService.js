@@ -1,6 +1,7 @@
 'use strict';
 var Travis = require('travis-ci');
 var TravisAuth = require('./travisAuth');
+
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var _ = require('lodash');
@@ -19,16 +20,25 @@ class travisInterface {
     constructor(githubToken) {
         assert(githubToken, 'GithubToken is necessary');
 
-        this.githubToken = githubToken;
-        this.travis = new Travis({
+        this.travisBaseUrl = 'https://travis-ci.org';
+
+        this.travis = this._loginTravis(githubToken);
+    }
+
+    /**
+     * Login on travis
+     *
+     * @return {Object} A Travis-ci object
+     */
+    _loginTravis(githubToken) {
+        var travis = new Travis({
             version: '2.0.0',
             headers: {
                 'User-Agent': 'Travis/1.0'
             }
         });
 
-        this.travisBaseUrl = 'https://travis-ci.org';
-        this.travisAuth = new TravisAuth(this.travis, githubToken);
+        this.travisAuth = new TravisAuth(travis, githubToken);
         this.travisAuth.login().then(() => {
             this.getAccountInfo().then(() => {
                 this.emit('travis:login:ok');
@@ -38,6 +48,8 @@ class travisInterface {
         }, (error) => {
             this.emit('travis:login:error', error);
         });
+
+        return travis;
     }
 
     /**
@@ -121,7 +133,7 @@ class travisInterface {
         return new Promise((resolve, reject) => {
             this.getBuildInfoByBuildNumber(buildNumberId).then((build)=> {
                 resolve(build.commit);
-            },(error)=> {
+            }, (error)=> {
                 reject(new Error(error));
             });
         });
@@ -156,7 +168,7 @@ class travisInterface {
                 this.travis.agent.request('POST', '/builds/' + repository.last_build_id + '/restart', null, (response)=> {
                     resolve(200);
                 });
-            },(error)=> {
+            }, (error)=> {
                 reject(error);
             });
         });

@@ -24,20 +24,22 @@ With this bot you can :
 
 ## Getting Started
 1. Create a new [bot integration](https://my.slack.com/services/new/bot)
-1. Follow the steps to deploy the bot to Heroku or run it locally
-1. Once the bot is running see the documentation for the [Command list](https://github.com/eromano/ci-alarm/wiki/Command-List)
+1. Choose between **One-Click Heroku** or **Manual Heroku**
 
-#### One-Click Heroku
-Click this button:
+ - **One-Click Heroku**
+       Click this button:
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+       [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
-#### Manual Heroku
-1. Install [Heroku toolbelt](https://devcenter.heroku.com/articles/getting-started-with-nodejs#set-up)
-1. Create a new bot integration (as above)
-1. `heroku create`
-1. `heroku config:set SLACK_POKER_BOT_TOKEN=[Your API token]`
-1. `git push heroku master`
+ - **Manual Heroku**
+    *  Install [Heroku toolbelt](https://devcenter.heroku.com/articles/getting-started-with-nodejs#set-up)
+    * Create a new bot integration (as above)
+    *  `heroku create`
+    *  `heroku config:set SLACK_POKER_BOT_TOKEN=[Your API token]`
+    * `git push heroku master`
+
+1. Have fun
+Once the bot is running see the documentation for the [Command list](https://github.com/eromano/ci-alarm/wiki/Command-List)
 
 ## Command list
 
@@ -96,13 +98,16 @@ Click this button:
     ```$ npm run-script start```
 
 ## Plug-In
+
+<div align="left"  >
 Ci Alarm is also able to turn on/off a alarm light when the build is failing.
 In order to have this kind of plug-in you have to install ci-alarm on a Raspberry PI.
 All the specification for this kind of configuration are [here](https://github.com/eromano/ci-alarm/blob/master/doc/README.md).
+</div>
 
-<p align="left"  >
-  <img title="ci alarm light alarm schema components" src='doc/img/raspberry-pi-logo.png' style="width: 100px;max-width:10%;" />
-</p>
+<div align="left"  >
+  <img title="ci alarm light alarm schema components" src='doc/img/raspberry-pi-logo.png' width="100px" height="100px"  />
+</div>
 
 ## Contributing
 

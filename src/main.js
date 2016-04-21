@@ -3,6 +3,7 @@
 var http = require('http');
 var CiAlarmBot = require('./ciAlarmBot');
 var nconf = require('nconf');
+var TravisHook = require('./travisHook');
 
 nconf.add('config', {type: 'file', file: './config.json'});
 
@@ -15,5 +16,10 @@ try {
     console.log('Bot failed' + error);
 }
 
-var server = http.createServer();
-server.listen(process.env.PORT || 1337);
+http.createServer((req, res) => {
+    try {
+        new TravisHook(githubToken,req, res);
+    } catch (error) {
+        console.log('Hook failed' + error);
+    }
+}).listen(process.env.PORT || 1337);

@@ -52,6 +52,7 @@
     "gpio": "^0.2.7",
     "moment": "^2.12.0",
     "slackbots": "^0.5.1",
-    "travis-ci": "^2.1.0"
+    "travis-ci": "^2.1.0",
+    "travisci-webhook-handler": "^1.0.2"
   }
 }

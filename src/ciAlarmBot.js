@@ -20,7 +20,7 @@ class CiAlarmBot {
 
         this.travisService.on('travis:login:ok', ()=> {
             this.run(slackToken);
-            console.log('Keep calm ci aarm is up and running');
+            console.log('Keep calm ci alarm is up and running');
         });
 
         this.travisService.on('travis:login:error', (error)=> {
