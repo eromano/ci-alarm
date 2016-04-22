@@ -1,7 +1,6 @@
 'use strict';
 
-var http = require('http')
-var createHandler = require('travisci-webhook-handler')
+var createHandler = require('travisci-webhook-handler');
 var assert = require('assert');
 
 class travisHook {
@@ -9,7 +8,7 @@ class travisHook {
     constructor(githubToken, req, res) {
         assert(githubToken, 'GithubToken is necessary');
 
-        var handler = createHandler({path: '/sgrbegne', token: githubToken})
+        var handler = createHandler({path: '/sgrbegne', token: githubToken});
 
         handler(req, res, (err) => {
             res.end('Error handler ' + err);
@@ -26,11 +25,11 @@ class travisHook {
                 event.payload.branch);
         });
 
-        handler.on('failure', function (event) {
+        handler.on('failure', function () {
             console.log('Build failed!');
         });
 
-        handler.on('start', function (event) {
+        handler.on('start', function () {
             console.log('Build started!');
         });
     }
