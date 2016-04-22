@@ -6,6 +6,9 @@
   <a title='Build Status' href="https://travis-ci.org/eromano/ci-alarm">
     <img src='https://travis-ci.org/eromano/ci-alarm.svg?branch=master' alt='travis Status' />
   </a>
+    <a href='https://ci.appveyor.com/project/eromano/ci-alarm'>
+      <img src='https://ci.appveyor.com/api/projects/status/github/eromano/ci-alarm?svg=true' alt='appveyor status' />
+    </a>
   <a href='https://coveralls.io/r/eromano/ci-alarm'>
     <img src='https://img.shields.io/coveralls/eromano/ci-alarm.svg' alt='Coverage Status' />
   </a>
