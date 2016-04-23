@@ -117,7 +117,7 @@ class slackMessageInterface {
         this._listenerMessage(this.slackMessageAnalyze.isCommandListMessage, (message) => {
             var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
-            this.postSlackMessage('Hi <@' + message.user + '> ' + this.slackMessageAnalyze.createSlackMessageLink('this is the command list', 'https://github.com/eromano/ci-alarm/wiki/Command-List') + ' \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project • info username/example-project', 'Command list', // jscs:ignore maximumLineLength
+            this.postSlackMessage('Hi <@' + message.user + '> ' + this.slackMessageAnalyze.createSlackMessageLink('this is the command list', 'https://github.com/eromano/ci-alarm/wiki/Command-List') + ' \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project \n • info username/example-project', 'Command list', // jscs:ignore maximumLineLength
                 this.infoColor, null, 'Command list', '', nameChannelOrUser);
         });
     }
@@ -157,7 +157,6 @@ class slackMessageInterface {
             if (repoName.indexOf('/') > -1) {
                 repoName = repoName.replace((this.ciService.username + '/'), '');
             }
-
             if (repoName) {
                 this.ciService.getAllBuildByRepositoryName(repoName).then((builds)=> {
                     this.postSlackMessage(this._createMessageFromBuildsArray(builds), 'Build History',
@@ -316,7 +315,7 @@ class slackMessageInterface {
     _createMessageFromBuildsArray(builds) {
         var message = '';
         builds.forEach((buildobject)=> {
-            message = message + 'Build #' + buildobject.build.number + ' was ' + buildobject.build.state + '\n';
+            message = message + 'Build #' + buildobject.number + ' was ' + buildobject.state + '\n';
         });
 
         return message;

@@ -102,11 +102,13 @@ class build {
     }
 
     static createBuildsList() {
-        return [
-            this.createBuild(),
-            this.createBuild(),
-            this.createBuild()
-        ];
+        return {
+            builds: [
+                this.createBuild().build,
+                this.createBuild().build,
+                this.createBuild().build
+            ]
+        };
     }
 }
 

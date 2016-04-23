@@ -128,7 +128,7 @@ describe('Travis Service Get Api info', function () {
         });
 
         setTimeout(()=> {
-            expect(buildsInfo).equals(JSON.stringify(buildsList));
+            expect(buildsInfo).equals(JSON.stringify(buildsList.builds));
             done();
         }, 50);
     });

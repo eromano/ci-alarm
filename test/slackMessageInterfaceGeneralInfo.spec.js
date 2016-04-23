@@ -70,7 +70,7 @@ describe('Bot CI General Travis info communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> <https://github.com/eromano/ci-alarm/wiki/Command-List|this is the command list> \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project • info username/example-project');// jscs:ignore maximumLineLength
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> <https://github.com/eromano/ci-alarm/wiki/Command-List|this is the command list> \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project \n • info username/example-project');// jscs:ignore maximumLineLength
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();
         }, 50);
@@ -86,7 +86,7 @@ describe('Bot CI General Travis info communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Hi <@C3P0> <https://github.com/eromano/ci-alarm/wiki/Command-List|this is the command list> \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project • info username/example-project');// jscs:ignore maximumLineLength
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> <https://github.com/eromano/ci-alarm/wiki/Command-List|this is the command list> \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project \n • info username/example-project');// jscs:ignore maximumLineLength
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();
         }, 50);

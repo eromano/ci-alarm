@@ -151,7 +151,7 @@ class travisInterface {
                 if (err || !res) {
                     reject(new Error(('Get builds Error ' + err)));
                 }
-                resolve(res);
+                resolve(res.builds);
             });
         });
     }
