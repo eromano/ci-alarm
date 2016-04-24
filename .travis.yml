@@ -11,3 +11,5 @@ cache:
     - node_modules
 notifications:
   slack: bottry:qGLlvCPcGHJp6kcmmPuCcHGd
+  webhooks:
+    - http://ci-alarm.herokuapp.com/
