@@ -11,6 +11,7 @@ class travisHook {
         var handler = createHandler({path: '/webcomponent-generator-element', token: githubToken});
 
         handler(req, res, (err) => {
+            console.log('Error handler', err);
             res.end('Error handler ' + err);
         });
 
