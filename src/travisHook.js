@@ -8,7 +8,7 @@ class travisHook {
     constructor(githubToken, req, res) {
         assert(githubToken, 'GithubToken is necessary');
 
-        var handler = createHandler({path: '/sgrbegne', token: githubToken});
+        var handler = createHandler({path: '/webcomponent-generator-element', token: githubToken});
 
         handler(req, res, (err) => {
             res.end('Error handler ' + err);
