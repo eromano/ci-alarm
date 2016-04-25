@@ -41,8 +41,11 @@ With this bot you can :
     *  Install [Heroku toolbelt](https://devcenter.heroku.com/articles/getting-started-with-nodejs#set-up)
     * Create a new bot integration (as above)
     *  `heroku create`
-    *  `heroku config:set SLACK_POKER_BOT_TOKEN=[Your API token]`
-    * `git push heroku master`
+    *  `heroku config:set TOKEN_SLACK=[Your Slack bot integration token (obtainable at https://my.slack.com/services/new/bot)]`
+    *  `heroku config:set TOKEN_GITHUB=[Your Git hub private token bot integration token (obtainable at https://github.com/settings/tokens) scope needed repo and user]`
+    *  `heroku config:set TOKEN_TRAVIS=[Your Travis token (obtainable at https://travis-ci.org/profile/{your_username})]`
+    *  `git push heroku master`
+
 
 1. Have fun
 Once the bot is running see the documentation for the [Command list](https://github.com/eromano/ci-alarm/wiki/Command-List)
