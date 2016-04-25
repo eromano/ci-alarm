@@ -10,9 +10,11 @@ class travisHook {
         var travistoken = process.env.TOKEN_TRAVIS || nconf.get('travistoken');
         assert(travistoken, 'Travis Token is necessary');
 
-        var handler = createHandler({path: '/webcomponent-generator-element', token: travistoken});
+        var handler = createHandler({path: '/', token: travistoken});
 
         handler(req, res, (err) => {
+            console.log('req ' ,req.url);
+
             console.log('Error handler', err);
             res.end('Error handler ' + err);
         });
