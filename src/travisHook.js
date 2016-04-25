@@ -2,6 +2,7 @@
 
 var createHandler = require('travisci-webhook-handler');
 var assert = require('assert');
+var nconf = require('nconf');
 
 class travisHook {
 
