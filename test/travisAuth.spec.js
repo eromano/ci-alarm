@@ -47,18 +47,39 @@ describe('Travis Auth', function () {
 
     });
 
-    describe('login Github', function () {
+    describe('login', function () {
 
-        it('Should throw an error if the Github token is not a valid token for github', function () {
+        it('Should throw an error if the Github token is not a valid token for github', function (done) {
             var errorThrown = false;
-            try {
-                var travisAuth  = new TravisAuth(new TravisService('fake-token'), 'fake-token');
-                travisAuth.authenticateGitHub();
-            } catch (error) {
-                errorThrown = true;
-            }
 
-            expect(errorThrown).equals(true);
+            var travisAuth = new TravisAuth(new TravisService('fake-token'), 'fake-token');
+            travisAuth._authenticateGitHub().then(()=> {
+                errorThrown = false;
+                expect(errorThrown).equals(true);
+                done();
+            }, ()=> {
+                errorThrown = true;
+                expect(errorThrown).equals(true);
+                done();
+            });
+
+        });
+
+        it('Should throw an error if the Travis token is not a valid token', function (done) {
+            var errorThrown = false;
+
+            var travisAuth = new TravisAuth(new TravisService('fake-token'), 'fake-token');
+            travisAuth._authenticateTravis('fake').then(()=> {
+                errorThrown = false;
+                expect(errorThrown).equals(true);
+                done();
+            }, (res)=> {
+                console.log(res);
+                errorThrown = true;
+                expect(errorThrown).equals(true);
+                done();
+            });
+
         });
 
     });
