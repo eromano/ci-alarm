@@ -13,7 +13,7 @@ class CiAlarmBot {
      */
     constructor(slackToken, githubToken) {
         assert(slackToken, 'Slack Token is necessary');
-        assert(githubToken, 'GithubToken is necessary');
+        assert(githubToken, 'GitHub Token is necessary');
 
         this.raspberryInterface = new RaspberryInterface();
         this.travisService = new TravisService(githubToken);

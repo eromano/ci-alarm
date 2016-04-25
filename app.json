@@ -1,4 +1,3 @@
-
 {
   "name": "Ci Alarm",
   "description": "Ci-alarm is a slack bot to help you to communicate with Travis CI",
@@ -13,9 +12,12 @@
   "env": {
     "TOKEN_SLACK": {
       "description": "Your Slack bot integration token (obtainable at https://my.slack.com/services/new/bot)"
-  },
-  "TOKEN_GITHUB": {
-    "description": "Your Git hub private token bot integration token (obtainable at https://github.com/settings/tokens) scope needed repo and user"
-  }
+    },
+    "TOKEN_GITHUB": {
+      "description": "Your Git hub private token bot integration token (obtainable at https://github.com/settings/tokens) scope needed repo and user"
+    },
+    "TOKEN_TRAVIS": {
+      "description": "Your Travis token (obtainable at https://travis-ci.org/profile/{your_username})"
+    }
   }
 }

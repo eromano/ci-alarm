@@ -18,7 +18,7 @@ try {
 
 http.createServer((req, res) => {
     try {
-        new TravisHook(githubToken,req, res);
+        new TravisHook(req, res);
     } catch (error) {
         console.log('Hook failed' + error);
     }

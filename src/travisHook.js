@@ -5,10 +5,11 @@ var assert = require('assert');
 
 class travisHook {
 
-    constructor(githubToken, req, res) {
-        assert(githubToken, 'GithubToken is necessary');
+    constructor(req, res) {
+        var travistoken = process.env.TOKEN_TRAVIS || nconf.get('travistoken');
+        assert(travistoken, 'Travis Token is necessary');
 
-        var handler = createHandler({path: '/webcomponent-generator-element', token: githubToken});
+        var handler = createHandler({path: '/webcomponent-generator-element', token: travistoken});
 
         handler(req, res, (err) => {
             console.log('Error handler', err);

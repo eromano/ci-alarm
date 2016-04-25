@@ -11,7 +11,7 @@ class travisAuth {
      */
     constructor(travisService, githubToken) {
         assert(travisService, 'Travis service is necessary, instantiate a travis service');
-        assert(githubToken, 'githubtoken in config.json is necessary');
+        assert(githubToken, 'GitHub Token is necessary');
 
         this.githubToken = githubToken;
         this.travis = travisService;
