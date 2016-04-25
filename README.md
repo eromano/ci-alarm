@@ -15,8 +15,8 @@
     <a href='https://github.com/eromano/ci-alarm/blob/master/LICENSE'>
       <img src='https://img.shields.io/badge/license-MIT-blue.svg' alt='license' />
     </a>
-      <a href='https://img.shields.io/badge/unicorn-approved-ff69b4.svg'>
-        <img src='https://www.youtube.com/watch?v=9auOCbH5Ns4' alt='unicorn' />
+      <a href='https://www.youtube.com/watch?v=9auOCbH5Ns4'>
+        <img src='https://img.shields.io/badge/unicorn-approved-ff69b4.svg' alt='unicorn' />
       </a>
 </p>
 
