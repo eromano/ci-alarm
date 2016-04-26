@@ -6,15 +6,19 @@ var nconf = require('nconf');
 
 class travisHook {
 
-    constructor(req, res) {
+    /**
+     * @param {Object} req
+     * @param {Object} res
+     * @param {Object} slackMessageInterface
+     */
+    constructor(req, res, slackMessageInterface) {
         var travistoken = process.env.TOKEN_TRAVIS || nconf.get('travistoken');
+
         assert(travistoken, 'Travis Token is necessary');
 
         var handler = createHandler({path: '/', token: travistoken});
 
         handler(req, res, (err) => {
-            console.log('req ' ,req.url);
-
             console.log('Error handler', err);
             res.end('Error handler ' + err);
         });
@@ -24,6 +28,10 @@ class travisHook {
         });
 
         handler.on('success', function (event) {
+            console.log(event.payload);
+
+            slackMessageInterface.postSlackMessageFromHook(event.payload);
+
             console.log('Build %s success for %s branch %s',
                 event.payload.number,
                 event.payload.repository.name,

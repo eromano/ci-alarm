@@ -201,6 +201,10 @@ class slackMessageInterface {
         });
     }
 
+    postSlackMessageFromHook() {
+
+    }
+
     /**
      * Post a message in the slack general chat
      *

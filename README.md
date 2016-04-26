@@ -3,30 +3,29 @@
   <img alt='ci alarm logo' alt="ci alarm" src='ci-alarm-logo.png' title='Ci Alarm logo' />
 </p>
 <p align="center">
-  <a title='Build Status' href="https://travis-ci.org/eromano/ci-alarm">
-    <img src='https://travis-ci.org/eromano/ci-alarm.svg?branch=master' alt='travis Status' />
-  </a>
-    <a title='Appveyor Status' href='https://ci.appveyor.com/project/eromano/ci-alarm'>
-      <img src='https://ci.appveyor.com/api/projects/status/github/eromano/ci-alarm?svg=true' alt='appveyor status' />
+    <a title='Build Status' href="https://travis-ci.org/eromano/ci-alarm">
+        <img src='https://travis-ci.org/eromano/ci-alarm.svg?branch=master' alt='travis Status' />
     </a>
-  <a title='coveralls Status' href='https://coveralls.io/r/eromano/ci-alarm'>
-    <img src='https://img.shields.io/coveralls/eromano/ci-alarm.svg' alt='Coverage Status' />
-  </a>
+    <a title='Appveyor Status' href='https://ci.appveyor.com/project/eromano/ci-alarm'>
+        <img src='https://ci.appveyor.com/api/projects/status/github/eromano/ci-alarm?svg=true' alt='appveyor status' />
+    </a>
+    <a title='coveralls Status' href='https://coveralls.io/r/eromano/ci-alarm'>
+        <img src='https://img.shields.io/coveralls/eromano/ci-alarm.svg' alt='Coverage Status' />
+    </a>
     <a title='license' href='https://github.com/eromano/ci-alarm/blob/master/LICENSE'>
-      <img src='https://img.shields.io/badge/license-MIT-blue.svg' alt='license' />
+        <img src='https://img.shields.io/badge/license-MIT-blue.svg' alt='license' />
     </a>
 </p>
 <p align="center">
-
-      <a title='closed issue' href='http://issuestats.com/github/eromano/ci-alarm'>
+    <a title='closed issue' href='http://issuestats.com/github/eromano/ci-alarm'>
         <img src='http://issuestats.com/github/eromano/ci-alarm/badge/issue' alt='issue stats' />
-      </a>
-        <a href='http://eromano.github.io'>
-           <img src='https://img.shields.io/badge/style-blog-blue.svg?label=my' alt='blog' />
-        </a>
-          <a title='unicorn video' href='https://www.youtube.com/watch?v=9auOCbH5Ns4'>
-            <img src='https://img.shields.io/badge/unicorn-approved-ff69b4.svg' alt='unicorn' />
-          </a>
+    </a>
+    <a title='blog' href='http://eromano.github.io'>
+       <img src='https://img.shields.io/badge/style-blog-blue.svg?label=my' alt='blog' />
+    </a>
+    <a title='unicorn video' href='https://www.youtube.com/watch?v=9auOCbH5Ns4'>
+        <img src='https://img.shields.io/badge/unicorn-approved-ff69b4.svg' alt='unicorn' />
+    </a>
 </p>
 
 ## About Ci-alarm

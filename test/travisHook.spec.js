@@ -7,14 +7,32 @@ var expect = require('chai').expect;
 
 describe('Travis Hook', function () {
 
-    it('Should throw an error if no Travis token is passed', function () {
-        var errorThrown = false;
-        try {
-            this.travisHook = new TravisHook();
-        } catch (error) {
-            errorThrown = true;
-        }
+    describe('init', function () {
 
-        expect(errorThrown).equals(true);
+        it('Should throw an error if no Travis token is passed', function () {
+            var errorThrown = false;
+            try {
+                this.travisHook = new TravisHook();
+            } catch (error) {
+                errorThrown = true;
+            }
+
+            expect(errorThrown).equals(true);
+        });
+    });
+
+    describe('event', function () {
+
+        it('Should send a message on slack if the build is success', function () {
+
+        });
+
+        it('Should send a message on slack if the build is failing', function () {
+
+        });
+
+        it('Should send a message on slack if the build is started', function () {
+
+        });
     });
 });
