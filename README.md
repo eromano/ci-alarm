@@ -15,12 +15,18 @@
     <a title='license' href='https://github.com/eromano/ci-alarm/blob/master/LICENSE'>
       <img src='https://img.shields.io/badge/license-MIT-blue.svg' alt='license' />
     </a>
+</p>
+<p align="center">
+
       <a title='closed issue' href='http://issuestats.com/github/eromano/ci-alarm'>
         <img src='http://issuestats.com/github/eromano/ci-alarm/badge/issue' alt='issue stats' />
       </a>
-      <a title='unicorn video' href='https://www.youtube.com/watch?v=9auOCbH5Ns4'>
-        <img src='https://img.shields.io/badge/unicorn-approved-ff69b4.svg' alt='unicorn' />
-      </a>
+        <a href='http://eromano.github.io'>
+           <img src='https://img.shields.io/badge/style-blog-blue.svg?label=my' alt='blog' />
+        </a>
+          <a title='unicorn video' href='https://www.youtube.com/watch?v=9auOCbH5Ns4'>
+            <img src='https://img.shields.io/badge/unicorn-approved-ff69b4.svg' alt='unicorn' />
+          </a>
 </p>
 
 ## About Ci-alarm
