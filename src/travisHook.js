@@ -16,18 +16,22 @@ class travisHook {
 
         assert(travistoken, 'Travis Token is necessary');
 
-        var handler = createHandler({path: '/', token: travistoken});
+        this.handler = createHandler({path: '/', token: travistoken});
 
-        handler(req, res, (err) => {
+        this._instantiateHandler(req, res, slackMessageInterface);
+    }
+
+    _instantiateHandler(req, res, slackMessageInterface){
+        this.handler(req, res, (err) => {
             console.log('Error handler', err);
             res.end('Error handler ' + err);
         });
 
-        handler.on('error', function (err) {
+        this.handler.on('error', function (err) {
             console.error('Error:', err.message);
         });
 
-        handler.on('success', function (event) {
+        this.handler.on('success', function (event) {
             console.log(event.payload);
 
             slackMessageInterface.postSlackMessageFromHook(event.payload);
@@ -38,11 +42,11 @@ class travisHook {
                 event.payload.branch);
         });
 
-        handler.on('failure', function () {
+        this.handler.on('failure', function () {
             console.log('Build failed!');
         });
 
-        handler.on('start', function () {
+        this.handler.on('start', function () {
             console.log('Build started!');
         });
     }
