@@ -36,6 +36,7 @@ describe('Slack Travis Build Command', function () {
     afterEach(function () {
         this.slackbotStub.restore();
         this.loginStub.restore();
+        nock.cleanAll();
     });
 
     it('should the bot rebuild the last build  if asked "rebuild fakeuser/fake-project2" ', function (done) {

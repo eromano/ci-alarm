@@ -11,10 +11,9 @@ class CiAlarmBot {
     /**
      * @param {String} slackToken Your Slack bot integration token (obtainable at https://my.slack.com/services/new/bot)
      * @param {String} githubToken  Your Git hub private token bot integration token (obtainable at https://github.com/settings/tokens) scope needed repo and user
-     * @param {Object} req
-     * @param {Object} res
+     * @param {String} travisToken  Your Travis token (obtainable at https://travis-ci.org/profile/{your_username})
      */
-    constructor(slackToken, githubToken, req, res) {
+    constructor(slackToken, githubToken, travisToken) {
         assert(slackToken, 'Slack Token is necessary');
         assert(githubToken, 'GitHub Token is necessary');
 
@@ -22,7 +21,7 @@ class CiAlarmBot {
         this.travisService = new TravisService(githubToken);
 
         this.travisService.on('travis:login:ok', ()=> {
-            this.run(slackToken, req, res);
+            this.run(slackToken, travisToken);
             console.log('Keep calm ci alarm is up and running');
         });
 
@@ -31,11 +30,11 @@ class CiAlarmBot {
         });
     }
 
-    run(slackToken, req, res) {
+    run(slackToken, travisToken) {
         this.slackMessageInterface = new SlackMessageInterface(slackToken, this.travisService);
         this.slackMessageInterface.run();
 
-        new TravisHook(req, res, this.slackMessageInterface);
+        new TravisHook(this.slackMessageInterface, travisToken);
     }
 }
 

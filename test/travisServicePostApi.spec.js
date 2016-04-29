@@ -1,9 +1,7 @@
 /*jshint expr:true */
 /*global describe, it, beforeEach, afterEach */
 'use strict';
-
 var TravisService = require('../src/travisService');
-var TravisAuth = require('../src/travisAuth');
 
 var Repository = require('../test/mockObjects/repository');
 
@@ -14,24 +12,15 @@ var nock = require('nock');
 describe('Travis Service Post Api', function () {
 
     beforeEach(function () {
-        this.travisAuthStub = sinon.stub(TravisAuth.prototype, 'login', ()=> {
-            return new Promise(((resolve) => {
-                resolve();
-            }));
-        });
-        this.travisGetAccountInfo = sinon.stub(TravisService.prototype, 'getAccountInfo', ()=> {
-            return new Promise(((resolve) => {
-                resolve();
-            }));
-        });
+        this.loginTravisStub = sinon.stub(TravisService.prototype, '_loginTravis', function() {});
+
         this.travisService = new TravisService('fake-github-token');
         this.travisService.username = 'mbros';
-
     });
 
     afterEach(function () {
-        this.travisAuthStub.restore();
-        this.travisGetAccountInfo.restore();
+        this.loginTravisStub.restore();
+        nock.cleanAll();
     });
 
     it('Should restartLastBuild send a post for restart the last build', function (done) {
@@ -53,6 +42,6 @@ describe('Travis Service Post Api', function () {
         setTimeout(()=> {
             expect(statusCodeAnswer).equals(200);
             done();
-        }, 50);
+        }, 10);
     });
 });

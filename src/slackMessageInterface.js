@@ -21,7 +21,7 @@ class slackMessageInterface {
     constructor(token, ciService) {
         this.ciService = ciService;
 
-        this.listner = [
+        this.listener = [
             this.startChannelMessage,
             this.listenerRequestStatusBuild,
             this.listenerRepositoryListMessage,
@@ -41,12 +41,15 @@ class slackMessageInterface {
     }
 
     run() {
-        this.startListener();
+        this._startListener();
     }
 
-    startListener() {
-        while (this.listner.length) {
-            this.listner.shift().call(this);
+    /**
+     * Start all the listener message in the listener array
+     */
+    _startListener() {
+        while (this.listener.length) {
+            this.listener.shift().call(this);
         }
     }
 
@@ -55,14 +58,13 @@ class slackMessageInterface {
      */
     startChannelMessage() {
         this.bot.on('start', (()=> {
-            var allJoinedChannelsByUserId = this._getAllJoinedChannelsByUserId(this.bot.self.id);
+            var message = 'Keep calm I am the alarm please think about to add a star to our project ' + this.slackMessageAnalyze.createSlackMessageLink('Ci Alarm', 'https://github.com/eromano/ci-alarm'); // jscs:ignore maximumLineLength
+            var fallBack = 'Ci Alarm Bot is here';
+            var color = this.infoColor;
+            var title = 'Ci Alarm Bot greetings';
+            var titleLink = 'https://github.com/eromano/ci-alarm';
 
-            if (allJoinedChannelsByUserId) {
-                allJoinedChannelsByUserId.forEach((channel)=> {
-                    this.postSlackMessage('Keep calm I am the alarm please think about to add a star to our project ' + this.slackMessageAnalyze.createSlackMessageLink('Ci Alarm', 'https://github.com/eromano/ci-alarm'), // jscs:ignore maximumLineLength
-                        'Ci Alarm Bot is here', this.infoColor, null, 'Ci Alarm Bot greetings', 'https://github.com/eromano/ci-alarm', channel);
-                });
-            }
+            this.postSlackMessageInAllJoinedChannel(message, fallBack, color, null, title, titleLink);
         }));
     }
 
@@ -83,7 +85,7 @@ class slackMessageInterface {
                         var messageWithIssueLink = this.slackMessageAnalyze.replaceIssueNumberWithIssueLink(commit.message, repository.slug);
 
                         this.postSlackMessage('Hi <@' + message.user + '> the build Status was *' + lastBuildState + '* ' + moment(repository.last_build_finished_at).fromNow() + ' \n *Commit* : ' + this.slackMessageAnalyze.createSlackMessageLink('Link github', commitLink) + ' ' + messageWithIssueLink, // jscs:ignore maximumLineLength
-                            'Ci status', this.colorByStatus(lastBuildState), fields, 'Build status', repository.linkBuild, nameChannelOrUser);
+                            'Ci status', this._colorByStatus(lastBuildState), fields, 'Build status', repository.linkBuild, nameChannelOrUser);
                     });
                 }, (error)=> {
                     this.postSlackMessage(error.toString(), 'Ci status', this.failColor, null, 'Build status');
@@ -201,8 +203,14 @@ class slackMessageInterface {
         });
     }
 
-    postSlackMessageFromHook() {
+    postSlackMessageFromHook(hookMessage) {
+        var message = 'A build on the project ' + hookMessage.repository.name + ' is ' + hookMessage.status_message + ' triggered by ' + hookMessage.committer_name + ' ' + this.slackMessageAnalyze.createSlackMessageLink('Commit', hookMessage.compare_url);// jscs:ignore maximumLineLength
+        var fallBack = 'Ci Alarm Build Info';
+        var color = this._colorByStatus(hookMessage.status_message);
+        var title = 'Ci Alarm Build Info';
+        var titleLink = hookMessage.build_url;
 
+        this.postSlackMessageInAllJoinedChannel(message, fallBack, color, null, title, titleLink);
     }
 
     /**
@@ -233,6 +241,26 @@ class slackMessageInterface {
         };
 
         this.bot.postTo(nameChannelOrUser, '', params);
+    }
+
+    /**
+     * Post a message in any channel where the bot is present
+     *
+     * @param {String} message
+     * @param {String} fallback
+     * @param {successColor|failColor|infoColor} color of the vertical line before the message default infoColor yellow
+     * @param {Array} fields is an Array of messages  { 'title': 'Project', 'value': 'Awesome Project','short': true},
+     * @param {String} title title message,
+     * @param {String} titleLink link message
+     * */
+    postSlackMessageInAllJoinedChannel(message, fallback, color, fields, title, titleLink) {
+        var allJoinedChannelsByUserId = this._getAllJoinedChannelsByUserId(this.bot.self.id);
+
+        if (allJoinedChannelsByUserId) {
+            allJoinedChannelsByUserId.forEach((channel)=> {
+                this.postSlackMessage(message, fallback, color, fields, title, titleLink, channel);
+            });
+        }
     }
 
     /**
@@ -336,18 +364,24 @@ class slackMessageInterface {
         return 'Repository ' + repository.slug + ' status ' + repository.last_build_state + '\n' + repository.description + '\n';
     }
 
-    colorByStatus(status) {
+    _colorByStatus(status) {
         var color = this.infoColor;
 
-        if (status === 'passed') {
+        if (status.toLowerCase() === 'passed') {
             color = this.successColor;
-        } else if (status === 'failed') {
+        } else if (status.toLowerCase() === 'failed') {
             color = this.failColor;
         }
 
         return color;
     }
 
+    /**
+     * Call a callback in the case a message from slack meets the condition
+     *
+     * @param {Boolean}  condition to meet to call the callback
+     * @param {Function} callback to call if the condition is satisfied
+     */
     _listenerMessage(condition, callback) {
         this.bot.on('message', (message) => {
             if (condition.call(this.slackMessageAnalyze, message.text, message.username)) {

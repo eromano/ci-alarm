@@ -8,7 +8,6 @@ var TravisService = require('../src/travisService');
 var expect = require('chai').expect;
 
 describe('Travis Auth', function () {
-
     describe('Init', function () {
 
         it('Should throw an error if no Travis service is passed', function () {

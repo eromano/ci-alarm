@@ -22,23 +22,23 @@ class travisInterface {
 
         this.travisBaseUrl = 'https://travis-ci.org';
 
-        this.travis = this._loginTravis(githubToken);
-    }
-
-    /**
-     * Login on travis
-     *
-     * @return {Object} A Travis-ci object
-     */
-    _loginTravis(githubToken) {
-        var travis = new Travis({
+        this.travis = new Travis({
             version: '2.0.0',
             headers: {
                 'User-Agent': 'Travis/1.0'
             }
         });
 
-        this.travisAuth = new TravisAuth(travis, githubToken);
+        this._loginTravis(githubToken);
+    }
+
+    /**
+     * Login on travis
+     *
+     * @param {String} githubToken
+     */
+    _loginTravis(githubToken) {
+        this.travisAuth = new TravisAuth(this.travis, githubToken);
         this.travisAuth.login().then(() => {
             this.getAccountInfo().then(() => {
                 this.emit('travis:login:ok');
@@ -48,8 +48,6 @@ class travisInterface {
         }, (error) => {
             this.emit('travis:login:error', error);
         });
-
-        return travis;
     }
 
     /**
