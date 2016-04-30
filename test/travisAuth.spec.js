@@ -72,8 +72,7 @@ describe('Travis Auth', function () {
                 errorThrown = false;
                 expect(errorThrown).equals(true);
                 done();
-            }, (res)=> {
-                console.log(res);
+            }, ()=> {
                 errorThrown = true;
                 expect(errorThrown).equals(true);
                 done();

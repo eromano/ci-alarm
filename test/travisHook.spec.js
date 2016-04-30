@@ -38,6 +38,8 @@ describe('Travis Hook', function () {
                 this.title_link = params.attachments[0].title_link;
             });
 
+            this.loginStub = sinon.stub(Bot.prototype, 'login', function(){ });
+
             this.slackMessageInterface = new SlackMessageInterface('Fake-token-slack');
             this.slackMessageInterface.bot.self = {id: '1234'};
             this.slackMessageInterface.bot.channels = Channel.createChannelList();
@@ -48,6 +50,7 @@ describe('Travis Hook', function () {
 
         afterEach(function () {
             this.slackbotStub.restore();
+            this.loginStub.restore();
         });
 
         it('Should send a message on slack if the build is success', function (done) {

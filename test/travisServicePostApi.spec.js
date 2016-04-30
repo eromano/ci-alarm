@@ -42,6 +42,6 @@ describe('Travis Service Post Api', function () {
         setTimeout(()=> {
             expect(statusCodeAnswer).equals(200);
             done();
-        }, 10);
+        }, 50);
     });
 });

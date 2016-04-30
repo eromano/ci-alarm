@@ -22,6 +22,7 @@ describe('Slack Message Interface Bot Status Notify', function () {
         var repos = Repository.createRepositoriesList();
 
         this.loginTravisStub = sinon.stub(TravisService.prototype, '_loginTravis', function() {});
+        this.loginStub = sinon.stub(Bot.prototype, 'login', function () {});
 
         this.slackbotStub = sinon.stub(Bot.prototype, 'postTo', (name, text, params) => {
             this.textCheck = params.attachments[0].text;
@@ -47,6 +48,7 @@ describe('Slack Message Interface Bot Status Notify', function () {
     afterEach(function () {
         this.loginTravisStub.restore();
         this.slackbotStub.restore();
+        this.loginStub.restore();
         nock.cleanAll();
     });
 
@@ -88,7 +90,6 @@ describe('Slack Message Interface Bot Status Notify', function () {
             expect(this.title_link).to.be.equal('https://travis-ci.org/fakeuser/fake-project3/builds/120506232');
             done();
         }, 20);
-
     });
 
     it('should the bot respond with the Build status also if the slug is not complete', function (done) {

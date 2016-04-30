@@ -22,6 +22,7 @@ describe('Slack Message Interface Bot Status Notify', function () {
         var repos = Repository.createRepositoriesList();
 
         this.loginTravisStub = sinon.stub(TravisService.prototype, '_loginTravis', function() {});
+        this.loginStub = sinon.stub(Bot.prototype, 'login', function () {});
 
         this.slackbotStub = sinon.stub(Bot.prototype, 'postTo', (name, text, params) => {
             this.textCheck = params.attachments[0].text;
@@ -46,6 +47,7 @@ describe('Slack Message Interface Bot Status Notify', function () {
 
     afterEach(function () {
         this.loginTravisStub.restore();
+        this.loginStub.restore();
         this.slackbotStub.restore();
         nock.cleanAll();
     });

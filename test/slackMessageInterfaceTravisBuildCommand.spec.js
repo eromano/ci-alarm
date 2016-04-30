@@ -22,7 +22,7 @@ describe('Slack Travis Build Command', function () {
             this.colorMessage = params.attachments[0].color;
         });
 
-        this.loginStub = sinon.stub(Bot.prototype, 'login');
+        this.loginStub = sinon.stub(Bot.prototype, 'login', function(){});
 
         this.travisService = new TravisService('github-token');
         this.travisService.username = 'mbros';

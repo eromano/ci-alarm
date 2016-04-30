@@ -11,7 +11,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var nock = require('nock');
 
-describe.skip('Travis Service Get Api info', function () {
+describe('Travis Service Get Api info', function () {
 
     beforeEach(function () {
         this.loginTravisStub = sinon.stub(TravisService.prototype, '_loginTravis', function() {

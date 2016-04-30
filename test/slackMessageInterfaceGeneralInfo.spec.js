@@ -12,7 +12,7 @@ var Repository = require('../test/mockObjects/repository');
 var Channel = require('../test/mockObjects/channel');
 var Build = require('../test/mockObjects/build');
 
-describe.skip('Bot CI General Travis info communication', function () {
+describe('Bot CI General Travis info communication', function () {
 
     beforeEach(function () {
         this.textCheck = '';
@@ -22,7 +22,7 @@ describe.skip('Bot CI General Travis info communication', function () {
             this.colorMessage = params.attachments[0].color;
         });
 
-        this.loginStub = sinon.stub(Bot.prototype, 'login');
+        this.loginStub = sinon.stub(Bot.prototype, 'login', function(){});
 
         this.travisService = new TravisService('github-token');
         this.travisService.username = 'mbros';
