@@ -38,7 +38,10 @@ describe('Travis Hook', function () {
                 this.title_link = params.attachments[0].title_link;
             });
 
-            this.loginStub = sinon.stub(Bot.prototype, 'login', function(){ });
+            this.loginStub = sinon.stub(Bot.prototype, 'login', function () {
+            });
+            this.travisHookStub = sinon.stub(TravisHook.prototype, '_instantiateHandler', function () {
+            });
 
             this.slackMessageInterface = new SlackMessageInterface('Fake-token-slack');
             this.slackMessageInterface.bot.self = {id: '1234'};
@@ -51,6 +54,7 @@ describe('Travis Hook', function () {
         afterEach(function () {
             this.slackbotStub.restore();
             this.loginStub.restore();
+            this.travisHookStub.restore();
         });
 
         it('Should send a message on slack if the build is success', function (done) {
@@ -65,12 +69,16 @@ describe('Travis Hook', function () {
             }, 50);
         });
 
-        it('Should send a message on slack if the build is failing', function () {
+        it('Should send a message on slack if the build is failing', function (done) {
+            var event = {};
+            event.payload = HookMessage.createHookMessage({status_message: 'failed'});
+            this.travisHook.handler.emit('failure', event);
 
-        });
-
-        it('Should send a message on slack if the build is started', function () {
-
+            setTimeout(()=> {
+                expect(this.textCheck).to.be.equal('A build on the project minimal is failed triggered by Sven Fuchs <https://github.com/svenfuchs/minimal/compare/master...develop|Commit>');// jscs:ignore maximumLineLength
+                expect(this.colorMessage).to.be.equal(this.slackMessageInterface.failColor);
+                done();
+            }, 50);
         });
     });
 });

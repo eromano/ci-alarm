@@ -203,6 +203,11 @@ class slackMessageInterface {
         });
     }
 
+    /**
+     * Post a message in evry channel where the bot is present
+     *
+     * @param {Object} hookMessage
+     */
     postSlackMessageFromHook(hookMessage) {
         var message = 'A build on the project ' + hookMessage.repository.name + ' is ' + hookMessage.status_message + ' triggered by ' + hookMessage.committer_name + ' ' + this.slackMessageAnalyze.createSlackMessageLink('Commit', hookMessage.compare_url);// jscs:ignore maximumLineLength
         var fallBack = 'Ci Alarm Build Info';

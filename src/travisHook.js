@@ -41,8 +41,13 @@ class travisHook {
                 event.payload.branch);
         });
 
-        this.handler.on('failure', function () {
-            console.log('Build failed!');
+        this.handler.on('failure', function (event) {
+            slackMessageInterface.postSlackMessageFromHook(event.payload);
+
+            console.log('Build %s failed for %s branch %s',
+                event.payload.number,
+                event.payload.repository.name,
+                event.payload.branch);
         });
 
         this.handler.on('start', function () {
