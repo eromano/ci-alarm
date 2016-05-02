@@ -89,6 +89,10 @@ class slackMessageAnalyze {
         return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'info');
     }
 
+    isReportMessage(textMessage) {
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'report');
+    }
+
     _isTextContainedInMessage(textMessage, textToSearch) {
         return textMessage && textMessage.toLowerCase().indexOf(textToSearch) > -1;
     }

@@ -20,9 +20,10 @@ describe('Bot CI General Travis info communication', function () {
         this.slackbotStub = sinon.stub(Bot.prototype, 'postTo', (name, text, params) => {
             this.textCheck = params.attachments[0].text;
             this.colorMessage = params.attachments[0].color;
+            this.fields = params.attachments[0].fields;
         });
 
-        this.loginStub = sinon.stub(Bot.prototype, 'login', function(){});
+        this.loginStub = sinon.stub(Bot.prototype, 'login', function() {});
 
         this.travisService = new TravisService('github-token');
         this.travisService.username = 'mbros';
@@ -133,4 +134,25 @@ describe('Bot CI General Travis info communication', function () {
             done();
         }, 50);
     });
+
+    it('should the bot respond with the status of all repository id asked : "report" ', function (done) {
+        var repos = Repository.createRepositoriesList();
+
+        nock('https://api.travis-ci.org:443').get('/repos/' + this.travisService.username).reply(200, {repos});
+
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            channel: 'fake-general-channel-id',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: report'
+        });
+
+        setTimeout(()=> {
+            expect(JSON.stringify(this.fields)).to.be.equal('[{\"title\":\"fakeuser/fake-project1\",\"value\":\"|Build  #37| status passed\",\"short\":false},{\"title\":\"fakeuser/fake-project2\",\"value\":\"|Build  #37| status failed\",\"short\":false},{\"title\":\"fakeuser/fake-project3\",\"value\":\"|Build  #37| \",\"short\":false}]');
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            done();
+        }, 50);
+    });
 });
+

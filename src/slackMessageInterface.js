@@ -28,7 +28,8 @@ class slackMessageInterface {
             this.listenerInfoRepository,
             this.listenerCommandListMessage,
             this.listenerRebuildMessage,
-            this.listenerBuildsHistory
+            this.listenerBuildsHistory,
+            this.listenerReport
         ];
 
         var settingsBot = {
@@ -119,7 +120,7 @@ class slackMessageInterface {
         this._listenerMessage(this.slackMessageAnalyze.isCommandListMessage, (message) => {
             var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
-            this.postSlackMessage('Hi <@' + message.user + '> ' + this.slackMessageAnalyze.createSlackMessageLink('this is the command list', 'https://github.com/eromano/ci-alarm/wiki/Command-List') + ' \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project \n • info username/example-project', 'Command list', // jscs:ignore maximumLineLength
+            this.postSlackMessage('Hi <@' + message.user + '> ' + this.slackMessageAnalyze.createSlackMessageLink('this is the command list', 'https://github.com/eromano/ci-alarm/wiki/Command-List') + ' \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project \n • info username/example-project  \n • report', 'Command list', // jscs:ignore maximumLineLength
                 this.infoColor, null, 'Command list', '', nameChannelOrUser);
         });
     }
@@ -204,12 +205,43 @@ class slackMessageInterface {
     }
 
     /**
-     * Post a message in evry channel where the bot is present
+     * Post a message on slack with the information about all the repository
+     */
+    listenerReport() {
+        this._listenerMessage(this.slackMessageAnalyze.isReportMessage, (message) => {
+            this.ciService.getUserRepositoriesList().then((repositories)=> {
+                var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
+                this.postSlackMessage('prova', 'Info repository',
+                    this.infoColor, this._createMessageReport(repositories), 'Info repository', '', nameChannelOrUser);
+            });
+        });
+    }
+
+    /**
+     * create a string from a repositories list whit a general status for any of them
+     *
+     * @param {Object} repositories list
+     */
+    _createMessageReport(repositories) {
+        var report = [];
+        repositories.forEach((repo)=> {
+            report.push({
+                'title': repo.slug,
+                'value': '|Build ' + (repo.last_build_number ? ' #' + repo.last_build_number : '') + '| ' + (repo.last_build_state ? 'status ' + repo.last_build_state : ''),
+                'short': false
+            });
+        });
+
+        return report;
+    }
+
+    /**
+     * Post a message in every channel where the bot is present
      *
      * @param {Object} hookMessage
      */
     postSlackMessageFromHook(hookMessage) {
-        var message = 'Build #' + this.slackMessageAnalyze.createSlackMessageLink('#' + hookMessage.number , hookMessage.build_url) + ' on the project ' + hookMessage.repository.name + ' is ' + hookMessage.status_message + ' triggered by ' + hookMessage.committer_name + ' ' + this.slackMessageAnalyze.createSlackMessageLink('Commit', hookMessage.compare_url);// jscs:ignore maximumLineLength
+        var message = 'Build #' + this.slackMessageAnalyze.createSlackMessageLink('#' + hookMessage.number, hookMessage.build_url) + ' on the project ' + hookMessage.repository.name + ' is ' + hookMessage.status_message + ' triggered by ' + hookMessage.committer_name + ' ' + this.slackMessageAnalyze.createSlackMessageLink('Commit', hookMessage.compare_url);// jscs:ignore maximumLineLength
         var fallBack = 'Ci Alarm Build Info';
         var color = this._colorByStatus(hookMessage.status_message);
         var title = 'Ci Alarm Build Info';

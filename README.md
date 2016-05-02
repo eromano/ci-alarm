@@ -95,6 +95,10 @@ Once the bot is running see the documentation for the [Command list](https://git
 
     ```@BotName info "[repository name|repository slugName]" ```
 
+* To view the status about all your repository
+
+    ```@BotName report" ```
+
 
 ## Development
 
