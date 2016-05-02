@@ -63,7 +63,7 @@ describe('Travis Hook', function () {
             this.travisHook.handler.emit('success', event);
 
             setTimeout(()=> {
-                expect(this.textCheck).to.be.equal('A build on the project minimal is Passed triggered by Sven Fuchs <https://github.com/svenfuchs/minimal/compare/master...develop|Commit>');// jscs:ignore maximumLineLength
+                expect(this.textCheck).to.be.equal('Build #<https://travis-ci.org/svenfuchs/minimal/builds/1|#1> on the project minimal is Passed triggered by Sven Fuchs <https://github.com/svenfuchs/minimal/compare/master...develop|Commit>');// jscs:ignore maximumLineLength
                 expect(this.colorMessage).to.be.equal(this.slackMessageInterface.successColor);
                 done();
             }, 50);
@@ -75,7 +75,7 @@ describe('Travis Hook', function () {
             this.travisHook.handler.emit('failure', event);
 
             setTimeout(()=> {
-                expect(this.textCheck).to.be.equal('A build on the project minimal is failed triggered by Sven Fuchs <https://github.com/svenfuchs/minimal/compare/master...develop|Commit>');// jscs:ignore maximumLineLength
+                expect(this.textCheck).to.be.equal('Build #<https://travis-ci.org/svenfuchs/minimal/builds/1|#1> on the project minimal is failed triggered by Sven Fuchs <https://github.com/svenfuchs/minimal/compare/master...develop|Commit>');// jscs:ignore maximumLineLength
                 expect(this.colorMessage).to.be.equal(this.slackMessageInterface.failColor);
                 done();
             }, 50);

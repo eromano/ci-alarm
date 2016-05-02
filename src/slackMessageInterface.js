@@ -209,7 +209,7 @@ class slackMessageInterface {
      * @param {Object} hookMessage
      */
     postSlackMessageFromHook(hookMessage) {
-        var message = 'A build on the project ' + hookMessage.repository.name + ' is ' + hookMessage.status_message + ' triggered by ' + hookMessage.committer_name + ' ' + this.slackMessageAnalyze.createSlackMessageLink('Commit', hookMessage.compare_url);// jscs:ignore maximumLineLength
+        var message = 'Build #' + this.slackMessageAnalyze.createSlackMessageLink('#' + hookMessage.number , hookMessage.build_url) + ' on the project ' + hookMessage.repository.name + ' is ' + hookMessage.status_message + ' triggered by ' + hookMessage.committer_name + ' ' + this.slackMessageAnalyze.createSlackMessageLink('Commit', hookMessage.compare_url);// jscs:ignore maximumLineLength
         var fallBack = 'Ci Alarm Build Info';
         var color = this._colorByStatus(hookMessage.status_message);
         var title = 'Ci Alarm Build Info';
