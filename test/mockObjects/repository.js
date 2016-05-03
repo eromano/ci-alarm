@@ -18,7 +18,7 @@ class repository {
             'last_build_finished_at': new Date(),
             'active': true,
             'github_language': 'JavaScript',
-            'linkBuild': ''
+            'linkBuild': 'fake-link'
         };
 
         return _.merge(defaultAttributes, attributes);

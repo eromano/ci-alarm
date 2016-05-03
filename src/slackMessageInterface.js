@@ -211,8 +211,8 @@ class slackMessageInterface {
         this._listenerMessage(this.slackMessageAnalyze.isReportMessage, (message) => {
             this.ciService.getUserRepositoriesList().then((repositories)=> {
                 var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
-                this.postSlackMessage('prova', 'Info repository',
-                    this.infoColor, this._createMessageReport(repositories), 'Info repository', '', nameChannelOrUser);
+                this.postSlackMessage('Report Status:', 'Info repository',
+                    this.infoColor, this._createMessageReport(repositories), 'Report Status', '', nameChannelOrUser);
             });
         });
     }
@@ -225,11 +225,16 @@ class slackMessageInterface {
     _createMessageReport(repositories) {
         var report = [];
         repositories.forEach((repo)=> {
-            report.push({
-                'title': repo.slug,
-                'value': '|Build ' + (repo.last_build_number ? ' #' + repo.last_build_number : '') + '| ' + this._symbolByStatus(repo.last_build_state),
-                'short': false
-            });
+
+            if (repo.active) {
+                var linkBuild = this.slackMessageAnalyze.createSlackMessageLink(('Build #' + repo.last_build_number), repo.linkBuild);
+
+                report.push({
+                    'title': repo.slug,
+                    'value': '|' + (repo.last_build_number ? linkBuild : '') + '| ' + this._symbolByStatus(repo.last_build_state),
+                    'short': false
+                });
+            }
         });
 
         return report;

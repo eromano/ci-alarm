@@ -72,10 +72,15 @@ class travisInterface {
      */
     getUserRepositoriesList() {
         return new Promise((resolve, reject) => {
-            this.travis.repos(this.username).get(function (err, res) {
+            this.travis.repos(this.username).get((err, res)=> {
                 if (err || !res) {
                     reject(new Error(('Get UserRepository Error ' + err)));
                 }
+
+                res.repos.forEach((repository)=> {
+                    this._expandBaseRepositoryTravisObject(repository);
+                });
+
                 resolve(res.repos);
             });
         });
@@ -112,7 +117,6 @@ class travisInterface {
                 });
 
                 if (repository) {
-                    this._expandBaseRepositoryTravisObject(repository);
                     resolve(repository);
                 } else {
                     reject(new Error(('This repositories doesn\'t exist')));
