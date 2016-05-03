@@ -149,7 +149,7 @@ describe('Bot CI General Travis info communication', function () {
         });
 
         setTimeout(()=> {
-            expect(JSON.stringify(this.fields)).to.be.equal('[{\"title\":\"fakeuser/fake-project1\",\"value\":\"|Build  #37| status passed\",\"short\":false},{\"title\":\"fakeuser/fake-project2\",\"value\":\"|Build  #37| status failed\",\"short\":false},{\"title\":\"fakeuser/fake-project3\",\"value\":\"|Build  #37| \",\"short\":false}]');
+            expect(JSON.stringify(this.fields)).to.be.equal('[{\"title\":\"fakeuser/fake-project1\",\"value\":\"|Build  #37| status passed\",\"short\":false},{\"title\":\"fakeuser/fake-project2\",\"value\":\"|Build  #37| status failed\",\"short\":false},{\"title\":\"fakeuser/fake-project3\",\"value\":\"|Build  #37| \",\"short\":false}]');// jscs:ignore maximumLineLength
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();
         }, 50);
