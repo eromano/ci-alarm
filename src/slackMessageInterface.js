@@ -227,7 +227,7 @@ class slackMessageInterface {
         repositories.forEach((repo)=> {
             report.push({
                 'title': repo.slug,
-                'value': '|Build ' + (repo.last_build_number ? ' #' + repo.last_build_number : '') + '| ' + (repo.last_build_state ? 'status ' + repo.last_build_state : ''),
+                'value': '|Build ' + (repo.last_build_number ? ' #' + repo.last_build_number : '') + '| ' + this._symbolByStatus(repo.last_build_state),
                 'short': false
             });
         });
@@ -411,6 +411,17 @@ class slackMessageInterface {
         }
 
         return color;
+    }
+
+    _symbolByStatus(status) {
+        var symbol = ':white_medium_square:';
+        if (status.toLowerCase() === 'passed') {
+            symbol = ':white_check_mark:';
+        } else if (status.toLowerCase() === 'failed') {
+            symbol = ':red_circle:';
+        }
+
+        return symbol;
     }
 
     /**
