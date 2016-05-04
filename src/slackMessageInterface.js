@@ -29,7 +29,8 @@ class slackMessageInterface {
             this.listenerCommandListMessage,
             this.listenerRebuildMessage,
             this.listenerBuildsHistory,
-            this.listenerReport
+            this.listenerReport,
+            this.listenerLog
         ];
 
         var settingsBot = {
@@ -214,6 +215,42 @@ class slackMessageInterface {
                 this.postSlackMessage('Report Status:', 'Info repository',
                     this.infoColor, this._createMessageReport(repositories), 'Report Status', '', nameChannelOrUser);
             });
+        });
+    }
+
+    /**
+     * Post a message on slack with the asked log  "log fake-project3 #123"
+     */
+    listenerLog() {
+        this._listenerMessage(this.slackMessageAnalyze.isLogMessage, (message) => {
+
+            var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFromText(message.text, 'log');
+
+            if (repoName.indexOf('/') > -1) {
+                repoName = repoName.replace((this.ciService.username + '/'), '');
+            }
+
+            if (repoName) {
+                this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
+                    this.ciService.getBuildInfoByBuildNumber(repository.last_build_id).then((buildInfo)=> {
+
+                        console.log('repository.last_build_id' + JSON.stringify(buildInfo.build.id));
+
+
+                        this.ciService.getBuildLog(buildInfo.jobs[0].id).then((log)=> {
+                            var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
+
+                            this.postSlackMessage('```' + log.substr(0, 8000) + '```', 'Log build', this.infoColor, null, 'Log build', '', nameChannelOrUser);
+                        });
+                    });
+                }, ()=> {
+                    this.postSlackMessage('This repositories doesn\'t exist', 'Log build',
+                        this.infoColor, null, 'Log build', '', nameChannelOrUser);
+                });
+            } else {
+                this.postSlackMessage('Maybe you want use the command : "info username/example-project" but' +
+                    ' you forgot to add the repository slug', 'Log build', this.infoColor, null, 'Log build');
+            }
         });
     }
 

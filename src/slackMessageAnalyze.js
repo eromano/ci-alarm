@@ -69,6 +69,10 @@ class slackMessageAnalyze {
         return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'build');
     }
 
+    isLogMessage(textMessage) {
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'log');
+    }
+
     isRepositoryListMessage(textMessage) {
         return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'repository list');
     }

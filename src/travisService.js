@@ -6,6 +6,8 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var _ = require('lodash');
 var assert = require('assert');
+var http = require('http');
+var fs = require('fs');
 
 class travisInterface {
 
@@ -126,7 +128,7 @@ class travisInterface {
     }
 
     /**
-     * Retrieve the commits information by build Number
+     * Retrieve the commit information by build Number
      *
      * @param  {String} buildNumberId build number
      * @return {Promise} A promise that returns all the commits bounded to the build
@@ -203,6 +205,40 @@ class travisInterface {
      */
     getCommitLink(commit, slug) {
         return 'https://github.com' + '/' + slug + '/commit/' + commit.sha;
+    }
+
+    /**
+     * Retrieve the link to the repo
+     *
+     * @param  {String} jobId id of the build
+     *
+     * @return {Promise} A promise that returns a String with the log
+     */
+    getBuildLog(jobId) {
+        var buffer = '';
+        return new Promise((resolve, reject) => {
+            var req = http.get(`http://s3.amazonaws.com/archive.travis-ci.org/jobs/${jobId}/log.txt`, (res) => {
+                res.on('data', (chunk) => {
+                    buffer += chunk.toString();
+                });
+
+                res.on('end', () => {
+                    fs.writeFile('log/' + jobId + '-log.txt', buffer, function (err) {
+                        if (err) {
+                            return console.log(err);
+                        }
+
+                        console.log(jobId + '-log.txt');
+                    });
+
+                    resolve(buffer);
+                });
+            });
+
+            req.on('error', (err) => {
+                reject(new Error((`Error during the log collection ${err}`)));
+            });
+        });
     }
 
     _expandBaseRepositoryTravisObject(repository) {
