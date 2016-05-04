@@ -120,4 +120,79 @@ describe('Slack Message Interface Bot Status Notify', function () {
             done();
         }, 30);
     });
+
+    it('should the bot respond with the Unknown Build status if asked "build status" and travis not has this repo in the CI', function (done) {
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            channel: 'fake-general-channel-id',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: status fakeuser/fake-project3'
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was *unknown* a few seconds ago \n *Commit* : <https://github.com/fakeuser/fake-project3/commit/6aace211abf84f16d74f195109bc91433dc437f4|Link github> fake-commit-message');// jscs:ignore maximumLineLength
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
+                '"<https://travis-ci.org/fakeuser/fake-project3/builds/120506232|Build #37>","short":true}');
+            expect(this.title_link).to.be.equal('https://travis-ci.org/fakeuser/fake-project3/builds/120506232');
+            done();
+        }, 10);
+    });
+
+    it('should the bot respond with the Build status also if there are spaces before and after the slug repository name', function (done) {
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            channel: 'fake-general-channel-id',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: status       fakeuser/fake-project3   '
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was *unknown* a few seconds ago \n *Commit* : <https://github.com/fakeuser/fake-project3/commit/6aace211abf84f16d74f195109bc91433dc437f4|Link github> fake-commit-message');// jscs:ignore maximumLineLength
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
+                '"<https://travis-ci.org/fakeuser/fake-project3/builds/120506232|Build #37>","short":true}');
+            expect(this.title_link).to.be.equal('https://travis-ci.org/fakeuser/fake-project3/builds/120506232');
+            done();
+        }, 20);
+    });
+
+    it('should the bot respond with the Build status also if the slug is not complete', function (done) {
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            channel: 'fake-general-channel-id',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: status fake-project2'
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was *failed* a few seconds ago \n *Commit* : <https://github.com/fakeuser/fake-project2/commit/6aace211abf84f16d74f195109bc91433dc437f4|Link github> <https://github.com/eromano/fakeuser/fake-project2/issues/23|#23> fake link issue message');// jscs:ignore maximumLineLength
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.failColor);
+            expect(JSON.stringify(this.fields[0])).to.be.equal('{"title":"Elapsed time","value":"52 sec","short":true}');
+            expect(JSON.stringify(this.fields[1])).to.be.equal('{"title":"Build Number","value":' +
+                '"<https://travis-ci.org/fakeuser/fake-project2/builds/120506231|Build #37>","short":true}');
+            expect(this.title_link).to.be.equal('https://travis-ci.org/fakeuser/fake-project2/builds/120506231');
+            done();
+        }, 30);
+    });
+
+    it('should the bot respond with a link to the issue if inside the description is present a issue reference', function (done) {
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            channel: 'fake-general-channel-id',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: status fakeuser/fake-project2'
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).to.be.equal('Hi <@C3P0> the build Status was *failed* a few seconds ago \n *Commit* : <https://github.com/fakeuser/fake-project2/commit/6aace211abf84f16d74f195109bc91433dc437f4|Link github> <https://github.com/eromano/fakeuser/fake-project2/issues/23|#23> fake link issue message');// jscs:ignore maximumLineLength
+            done();
+        }, 30);
+    });
 });

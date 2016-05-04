@@ -154,5 +154,25 @@ describe('Bot CI General Travis info communication', function () {
             done();
         }, 50);
     });
+
+    it.skip('should the bot respond with the travis log if asked about the log of a build', function (done) {
+        var repos = Repository.createRepositoriesList();
+
+        nock('https://api.travis-ci.org:443').get('/repos/' + this.travisService.username).reply(200, {repos});
+
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            channel: 'fake-general-channel-id',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: log fake-project3 #123'
+        });
+
+        setTimeout(()=> {
+            expect(this.textCheck).be.equal('build log');// jscs:ignore maximumLineLength
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            done();
+        }, 50);
+    });
 });
 
