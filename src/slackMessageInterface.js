@@ -3,6 +3,7 @@
 var Bot = require('slackbots');
 var moment = require('moment');
 var SlackMessageAnalyze = require('./slackMessageAnalyze');
+var RaspberryInterface = require('./raspberryInterface');
 
 class slackMessageInterface {
 
@@ -30,6 +31,7 @@ class slackMessageInterface {
             this.listenerRebuildMessage,
             this.listenerBuildsHistory,
             this.listenerReport,
+            this.listenerAlarm,
             this.listenerLog
         ];
 
@@ -40,6 +42,7 @@ class slackMessageInterface {
 
         this.bot = new Bot(settingsBot);
         this.slackMessageAnalyze = new SlackMessageAnalyze(this.bot);
+        this.raspberryInterface = new RaspberryInterface();
     }
 
     run() {
@@ -121,7 +124,7 @@ class slackMessageInterface {
         this._listenerMessage(this.slackMessageAnalyze.isCommandListMessage, (message) => {
             var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
-            this.postSlackMessage('Hi <@' + message.user + '> ' + this.slackMessageAnalyze.createSlackMessageLink('this is the command list', 'https://github.com/eromano/ci-alarm/wiki/Command-List') + ' \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project \n • info username/example-project  \n • report', 'Command list', // jscs:ignore maximumLineLength
+            this.postSlackMessage('Hi <@' + message.user + '> ' + this.slackMessageAnalyze.createSlackMessageLink('this is the command list', 'https://github.com/eromano/ci-alarm/wiki/Command-List') + ' \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project \n • info username/example-project  \n • report \n • log fake-project 23  \n • alarm on/off', 'Command list', // jscs:ignore maximumLineLength
                 this.infoColor, null, 'Command list', '', nameChannelOrUser);
         });
     }
@@ -215,6 +218,31 @@ class slackMessageInterface {
                 this.postSlackMessage('Report Status:', 'Info repository',
                     this.infoColor, this._createMessageReport(repositories), 'Report Status', '', nameChannelOrUser);
             });
+        });
+    }
+
+    /**
+     * Activate the alarm
+     */
+    listenerAlarm() {
+        this._listenerMessage(this.slackMessageAnalyze.isAlarmMessage, (message) => {
+            var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
+
+            var mode = this.slackMessageAnalyze.getTextAfterWord(message.text, 'alarm');
+            var validMessage = false;
+            if (mode === 'on') {
+                this.raspberryInterface.flash();
+                validMessage = true;
+            } else if (mode === 'off') {
+                this.raspberryInterface.stopFlash();
+                validMessage = true;
+            }
+
+            if (validMessage) {
+                this.postSlackMessage('Alarm ' + mode, 'Alarm ' + mode, this.infoColor, null, 'Alarm ' + mode, '', nameChannelOrUser);
+            } else {
+                this.postSlackMessage('Alarm message not valid type "alarm on OR alarm off"', 'Alarm sugestion', this.infoColor, null, 'Alarm sugestion', '', nameChannelOrUser);
+            }
         });
     }
 

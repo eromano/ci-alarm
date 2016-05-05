@@ -8,7 +8,10 @@ class slackMessageAnalyze {
         this.bot = bot;
     }
 
-    /**
+    getTextAfterWord(textMessage, wordBefore) {
+        return this.getRepositoriesNameInMessageFromText(textMessage, wordBefore);
+    }
+        /**
      * Get the repository name in a message String
      *
      * @param {String} textMessage like 'status eromano/ci-alarm'
@@ -95,6 +98,10 @@ class slackMessageAnalyze {
 
     isReportMessage(textMessage) {
         return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'report');
+    }
+
+    isAlarmMessage(textMessage) {
+        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'alarm');
     }
 
     _isTextContainedInMessage(textMessage, textToSearch) {
