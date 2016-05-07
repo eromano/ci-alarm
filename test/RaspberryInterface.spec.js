@@ -5,7 +5,7 @@ var expect = require('chai').expect;
 
 describe('Bot CI GPIO comunication', function () {
 
-    it('should the raspberry gpio work on pin passed to contructor', function () {
+    it.skip('should the raspberry gpio work on pin passed to contructor', function () {
         this.raspberryInterface = new RaspberryInterface(22);
         this.raspberryInterface.flash();
 
