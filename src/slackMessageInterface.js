@@ -82,15 +82,12 @@ class slackMessageInterface {
             if (repoName) {
                 this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
                     this.ciService.getCommitInfoByBuildNumber(repository.last_build_id).then((commit)=> {
-                        var fields = this._createFieldsAdditionInformationMessage(repository, commit);
-                        var lastBuildState = repository.last_build_state ? repository.last_build_state : 'unknown';
                         var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
+                        var messageText = this._createMessageBuildInfo(message, repository, commit);
+                        var fields = this._createFieldsAdditionInformationMessage(repository, commit);
 
-                        var commitLink = this.ciService.getCommitLink(commit, repository.slug);
-                        var messageWithIssueLink = this.slackMessageAnalyze.replaceIssueNumberWithIssueLink(commit.message, repository.slug);
-
-                        this.postSlackMessage('Hi <@' + message.user + '> the build Status was *' + lastBuildState + '* ' + moment(repository.last_build_finished_at).fromNow() + ' \n *Commit* : ' + this.slackMessageAnalyze.createSlackMessageLink('Link github', commitLink) + ' ' + messageWithIssueLink, // jscs:ignore maximumLineLength
-                            'Ci status', this._colorByStatus(lastBuildState), fields, 'Build status', repository.linkBuild, nameChannelOrUser);
+                        this.postSlackMessage(messageText,
+                            'Ci status', this._colorByStatus(this._getBuildStatusByRepo(repository)), fields, 'Build status', repository.linkBuild, nameChannelOrUser);
                     });
                 }, (error)=> {
                     this.postSlackMessage(error.toString(), 'Ci status', this.failColor, null, 'Build status');
@@ -123,7 +120,6 @@ class slackMessageInterface {
     listenerCommandListMessage() {
         this._listenerMessage(this.slackMessageAnalyze.isCommandListMessage, (message) => {
             var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
-
             this.postSlackMessage('Hi <@' + message.user + '> ' + this.slackMessageAnalyze.createSlackMessageLink('this is the command list', 'https://github.com/eromano/ci-alarm/wiki/Command-List') + ' \n • status username/example-project  \n • repository list \n • command list \n • [build|rebuild] username/example-project  \n • history username/example-project \n • info username/example-project  \n • report \n • log fake-project 23  \n • alarm on/off', 'Command list', // jscs:ignore maximumLineLength
                 this.infoColor, null, 'Command list', '', nameChannelOrUser);
         });
@@ -455,6 +451,27 @@ class slackMessageInterface {
         });
 
         return message;
+    }
+
+    /**
+     * Create Slack Message from message and repository for build info
+     *
+     * @param {Object} message
+     * @param {Object} repository
+     * @param {Object} commit
+     *
+     * @return {String} message
+     */
+    _createMessageBuildInfo(message, repository, commit) {
+        var lastBuildState = this._getBuildStatusByRepo(repository);
+        var commitLink = this.ciService.getCommitLink(commit, repository.slug);
+        var messageWithIssueLink = this.slackMessageAnalyze.replaceIssueNumberWithIssueLink(commit.message, repository.slug);
+
+        return 'Hi <@' + message.user + '> the build Status was *' + lastBuildState + '* ' + moment(repository.last_build_finished_at).fromNow() + ' \n *Commit* : ' + this.slackMessageAnalyze.createSlackMessageLink('Link github', commitLink) + ' ' + messageWithIssueLink; // jscs:ignore maximumLineLength
+    }
+
+    _getBuildStatusByRepo(repository) {
+        return repository.last_build_state ? repository.last_build_state : 'unknown';
     }
 
     /**
