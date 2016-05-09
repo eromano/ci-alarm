@@ -2,8 +2,8 @@
 /*global describe, it, beforeEach, afterEach*/
 'use strict';
 
-var SlackMessageInterface = require('../src/slackMessageInterface');
-var TravisHook = require('../src/travisHook');
+var SlackMessageInterface = require('../src/slack/slackMessageInterface');
+var TravisHook = require('../src/travis/travisHook');
 
 var expect = require('chai').expect;
 var sinon = require('sinon');

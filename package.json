@@ -52,11 +52,13 @@
     "Eugenio Romano <> (http://eromano.github.io/)"
   ],
   "dependencies": {
-    "nconf": "^0.8.4",
+    "botbuilder": "^0.9.2",
     "coveralls": "^2.11.9",
     "github": "^0.2.4",
     "gpio": "^0.2.7",
     "moment": "^2.12.0",
+    "nconf": "^0.8.4",
+    "restify": "^4.0.4",
     "slackbots": "^0.5.1",
     "travis-ci": "^2.1.0",
     "travisci-webhook-handler": "^1.0.2"

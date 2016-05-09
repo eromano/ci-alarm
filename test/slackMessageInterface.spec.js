@@ -1,7 +1,7 @@
 /*global describe, it, beforeEach, afterEach */
 'use strict';
 
-var SlackMessageInterface = require('../src/slackMessageInterface');
+var SlackMessageInterface = require('../src/slack/slackMessageInterface');
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var Bot = require('slackbots');

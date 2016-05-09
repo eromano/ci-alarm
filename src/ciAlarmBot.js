@@ -1,9 +1,9 @@
 'use strict';
 
-var TravisService = require('./travisService');
-var SlackMessageInterface = require('./slackMessageInterface');
+var TravisService = require('./travis/travisService');
+var TravisHook = require('./travis/travisHook');
+var SlackMessageInterface = require('./slack/slackMessageInterface');
 var assert = require('assert');
-var TravisHook = require('./travisHook');
 
 class CiAlarmBot {
 

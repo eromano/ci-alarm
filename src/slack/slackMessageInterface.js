@@ -3,7 +3,7 @@
 var Bot = require('slackbots');
 var moment = require('moment');
 var SlackMessageAnalyze = require('./slackMessageAnalyze');
-var RaspberryInterface = require('./raspberryInterface');
+var RaspberryInterface = require('../raspberryInterface');
 
 class slackMessageInterface {
 

@@ -1,7 +1,7 @@
 /*jshint expr:true */
 /*global describe, it, beforeEach, afterEach */
 'use strict';
-var TravisService = require('../src/travisService');
+var TravisService = require('../src/travis/travisService');
 
 var Repository = require('../test/mockObjects/repository');
 
