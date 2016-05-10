@@ -2,10 +2,10 @@
 /*global describe, it, beforeEach, afterEach */
 'use strict';
 
-var TravisService = require('../src/travis/travisService');
+var TravisService = require('../../src/travis/travisService');
 
-var Repository = require('../test/mockObjects/repository');
-var Build = require('../test/mockObjects/build');
+var Repository = require('../../test/mockObjects/repository');
+var Build = require('../../test/mockObjects/build');
 
 var expect = require('chai').expect;
 var sinon = require('sinon');

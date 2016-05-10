@@ -2,8 +2,8 @@
 /*global describe, it */
 'use strict';
 
-var TravisAuth = require('../src/travis/travisAuth');
-var TravisService = require('../src/travis/travisService');
+var TravisAuth = require('../../src/travis/travisAuth');
+var TravisService = require('../../src/travis/travisService');
 
 var expect = require('chai').expect;
 
