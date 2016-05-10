@@ -1,16 +1,16 @@
 /*global describe, it, beforeEach, afterEach */
 'use strict';
 
-var SlackMessageInterface = require('../src/slack/slackMessageInterface');
-var TravisService = require('../src/travis/travisService');
+var SlackMessageInterface = require('../../src/slack/slackMessageInterface');
+var TravisService = require('../../src/travis/travisService');
 
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var Bot = require('slackbots');
 var nock = require('nock');
 
-var Repository = require('../test/mockObjects/repository');
-var Channel = require('../test/mockObjects/channel');
+var Repository = require('../../test/mockObjects/repository');
+var Channel = require('../../test/mockObjects/channel');
 
 describe('Slack Travis Build Command', function () {
 
