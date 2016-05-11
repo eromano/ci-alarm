@@ -1,4 +1,5 @@
 'use strict';
+var gpio = require('gpio');
 var nconf = require('nconf');
 
 class raspberryInterface {
@@ -7,41 +8,27 @@ class raspberryInterface {
         var gpioPinDefault = 22;
         // var projectToAlarm = process.env.PROJECT_TO_ALARM || nconf.get('projectToAlarm');
         this.pin = nconf.get('gpioPin') || gpioPinDefault;
+
+        this.gpioPin = gpio.export(this.pin, {
+            interval: 200,
+            ready: function () {
+                console.log('gpio ready');
+            }
+        });
+        this.gpioPin.setDirection('out');
     }
 
     flash() {
-        try {
-            var gpio = require('pi-gpio');
-
-            gpio.open(this.pin, 'output', (err)=> {
-                if (!err) {
-                    gpio.write(this.pin, 1, () => {
-                        gpio.close(this.pin);
-                    });
-                } else {
-                    console.log('error raspberry' + err);
-                }
-            });
-        } catch (error) {
-            console.log('not raspberry' + error);
+        if (this.gpioPin) {
+            console.log('pin ' + this.pin + ' on');
+            this.gpioPin.set(1);
         }
     }
 
     stopFlash() {
-        try {
-            var gpio = require('pi-gpio');
-
-            gpio.open(this.pin, 'output', (err)=> {
-                if (!err) {
-                    gpio.write(this.pin, 0, () => {
-                        gpio.close(this.pin);
-                    });
-                } else {
-                    console.log('error raspberry' + err);
-                }
-            });
-        } catch (error) {
-            console.log('not raspberry' + error);
+        if (this.gpioPin) {
+            console.log('pin ' + this.pin + ' off');
+            this.gpioPin.set(0);
         }
     }
 }
