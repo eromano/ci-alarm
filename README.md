@@ -1,6 +1,6 @@
 <h1 align="center">Ci Alarm</h1>
 <p align="center">
-  <img alt='ci alarm logo' alt="ci alarm" src='ci-alarm-logo.png' title='Ci Alarm logo' />
+  <img alt='ci alarm logo' src='ci-alarm-logo.png' title='Ci Alarm logo' />
 </p>
 <p align="center">
     <a title='Build Status' href="https://travis-ci.org/eromano/ci-alarm">

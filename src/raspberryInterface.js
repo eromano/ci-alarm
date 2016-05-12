@@ -23,6 +23,10 @@ class raspberryInterface {
             console.log('pin ' + this.pin + ' on');
             this.gpioPin.set(1);
         }
+
+        setTimeout(()=> {
+            this.stopFlash();
+        }, 10000);
     }
 
     stopFlash() {
