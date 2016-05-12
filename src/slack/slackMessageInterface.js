@@ -490,7 +490,7 @@ class slackMessageInterface {
 
         if (status.toLowerCase() === 'passed') {
             color = this.successColor;
-        } else if (status.toLowerCase() === 'failed') {
+        } else if (status.toLowerCase() === 'failed' || status.toLowerCase() === 'failing') {
             color = this.failColor;
         }
 
@@ -501,7 +501,7 @@ class slackMessageInterface {
         var symbol = ':white_medium_square:';
         if (status.toLowerCase() === 'passed') {
             symbol = ':white_check_mark:';
-        } else if (status.toLowerCase() === 'failed') {
+        } else if (status.toLowerCase() === 'failed' || status.toLowerCase() === 'failing') {
             symbol = ':warning:';
         }
 

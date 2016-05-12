@@ -71,11 +71,11 @@ describe('Travis Hook', function () {
 
         it('Should send a message on slack if the build is failing', function (done) {
             var event = {};
-            event.payload = HookMessage.createHookMessage({status_message: 'failed'});
+            event.payload = HookMessage.createHookMessage({status_message: 'Failing'});
             this.travisHook.handler.emit('failure', event);
 
             setTimeout(()=> {
-                expect(this.textCheck).to.be.equal('Build #<https://travis-ci.org/svenfuchs/minimal/builds/1|#1> on the project minimal is :warning: failed triggered by Sven Fuchs <https://github.com/svenfuchs/minimal/compare/master...develop|Commit>');// jscs:ignore maximumLineLength
+                expect(this.textCheck).to.be.equal('Build #<https://travis-ci.org/svenfuchs/minimal/builds/1|#1> on the project minimal is :warning: Failing triggered by Sven Fuchs <https://github.com/svenfuchs/minimal/compare/master...develop|Commit>');// jscs:ignore maximumLineLength
                 expect(this.colorMessage).to.be.equal(this.slackMessageInterface.failColor);
                 done();
             }, 50);
