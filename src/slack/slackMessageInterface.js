@@ -304,7 +304,7 @@ class slackMessageInterface {
      * @param {Object} hookMessage
      */
     postSlackMessageFromHook(hookMessage) {
-        var message = 'Build #' + this.slackMessageAnalyze.createSlackMessageLink('#' + hookMessage.number, hookMessage.build_url) + ' on the project ' + hookMessage.repository.name + ' is ' + hookMessage.status_message + ' triggered by ' + hookMessage.committer_name + ' ' + this.slackMessageAnalyze.createSlackMessageLink('Commit', hookMessage.compare_url);// jscs:ignore maximumLineLength
+        var message = 'Build #' + this.slackMessageAnalyze.createSlackMessageLink('#' + hookMessage.number, hookMessage.build_url) + ' on the project ' + hookMessage.repository.name + ' is ' + this._symbolByStatus(hookMessage.status_message) + ' ' + hookMessage.status_message + ' triggered by ' + hookMessage.committer_name + ' ' + this.slackMessageAnalyze.createSlackMessageLink('Commit', hookMessage.compare_url);// jscs:ignore maximumLineLength
         var fallBack = 'Ci Alarm Build Info';
         var color = this._colorByStatus(hookMessage.status_message);
         var title = 'Ci Alarm Build Info';
@@ -502,7 +502,7 @@ class slackMessageInterface {
         if (status.toLowerCase() === 'passed') {
             symbol = ':white_check_mark:';
         } else if (status.toLowerCase() === 'failed') {
-            symbol = ':red_circle:';
+            symbol = ':warning:';
         }
 
         return symbol;
