@@ -2,6 +2,7 @@
 var http = require('http');
 var createHandler = require('travisci-webhook-handler');
 var assert = require('assert');
+var RaspberryInterface = require('../raspberryInterface');
 
 class travisHook {
 
@@ -12,6 +13,7 @@ class travisHook {
     constructor(slackMessageInterface, travisToken) {
         assert(travisToken, 'Travis Token is necessary');
 
+        this.raspberryInterface = new RaspberryInterface();
         this.handler = createHandler({path: '/', token: travisToken});
 
         this._instantiateHandler();
@@ -28,11 +30,11 @@ class travisHook {
     }
 
     _startListener(slackMessageInterface) {
-        this.handler.on('error', function (err) {
+        this.handler.on('error', (err) => {
             console.error('Error:', err.message);
         });
 
-        this.handler.on('success', function (event) {
+        this.handler.on('success', (event)  => {
             slackMessageInterface.postSlackMessageFromHook(event.payload);
 
             console.log('Build %s success for %s branch %s',
@@ -41,16 +43,17 @@ class travisHook {
                 event.payload.branch);
         });
 
-        this.handler.on('failure', function (event) {
+        this.handler.on('failure', (event)  => {
             slackMessageInterface.postSlackMessageFromHook(event.payload);
 
+            this.raspberryInterface.flash();
             console.log('Build %s failed for %s branch %s',
                 event.payload.number,
                 event.payload.repository.name,
                 event.payload.branch);
         });
 
-        this.handler.on('start', function () {
+        this.handler.on('start', ()  => {
             console.log('Build started!');
         });
     }

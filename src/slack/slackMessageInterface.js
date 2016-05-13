@@ -3,7 +3,6 @@
 var Bot = require('slackbots');
 var moment = require('moment');
 var SlackMessageAnalyze = require('./slackMessageAnalyze');
-var RaspberryInterface = require('../raspberryInterface');
 
 class slackMessageInterface {
 
@@ -42,7 +41,6 @@ class slackMessageInterface {
 
         this.bot = new Bot(settingsBot);
         this.slackMessageAnalyze = new SlackMessageAnalyze(this.bot);
-        this.raspberryInterface = new RaspberryInterface();
     }
 
     run() {
@@ -499,6 +497,7 @@ class slackMessageInterface {
 
     _symbolByStatus(status) {
         var symbol = ':white_medium_square:';
+
         if (status.toLowerCase().indexOf('passed') >= 0 || status.toLowerCase().indexOf('fixed') >= 0) {
             symbol = ':white_check_mark:';
         } else if (status.toLowerCase().indexOf('failed') >= 0 || status.toLowerCase().indexOf('failing') >= 0) {
