@@ -488,9 +488,9 @@ class slackMessageInterface {
     _colorByStatus(status) {
         var color = this.infoColor;
 
-        if (status.toLowerCase() === 'passed') {
+        if (status.toLowerCase().indexOf('passed') >= 0 || status.toLowerCase().indexOf('fixed') >= 0) {
             color = this.successColor;
-        } else if (status.toLowerCase() === 'failed' || status.toLowerCase() === 'failing') {
+        } else if (status.toLowerCase().indexOf('failed') >= 0 || status.toLowerCase().indexOf('failing') >= 0) {
             color = this.failColor;
         }
 
@@ -499,9 +499,9 @@ class slackMessageInterface {
 
     _symbolByStatus(status) {
         var symbol = ':white_medium_square:';
-        if (status.toLowerCase() === 'passed') {
+        if (status.toLowerCase().indexOf('passed') >= 0 || status.toLowerCase().indexOf('fixed') >= 0) {
             symbol = ':white_check_mark:';
-        } else if (status.toLowerCase() === 'failed' || status.toLowerCase() === 'failing') {
+        } else if (status.toLowerCase().indexOf('failed') >= 0 || status.toLowerCase().indexOf('failing') >= 0) {
             symbol = ':warning:';
         }
 
