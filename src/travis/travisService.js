@@ -8,6 +8,7 @@ var _ = require('lodash');
 var assert = require('assert');
 var http = require('http');
 var fs = require('fs');
+var path = require('path');
 
 class travisInterface {
 
@@ -212,7 +213,7 @@ class travisInterface {
      *
      * @param  {String} jobId id of the build
      *
-     * @return {Promise} A promise that returns a String with the log
+     * @return {Promise} A promise that returns an Obkect with the buffer string and the fileName
      */
     getBuildLog(jobId) {
         var buffer = '';
@@ -223,15 +224,22 @@ class travisInterface {
                 });
 
                 res.on('end', () => {
-                    fs.writeFile('log/' + jobId + '-log.txt', buffer, function (err) {
+                    var fileName = +jobId + '-log.txt';
+
+                    fs.writeFile(path.join(__dirname, '../..', 'log', fileName), buffer, function (err) {
                         if (err) {
                             return console.log(err);
                         }
 
                         console.log(jobId + '-log.txt');
-                    });
 
-                    resolve(buffer);
+                        var log = {
+                            buffer: buffer,
+                            fileName: fileName
+                        };
+
+                        resolve(log);
+                    });
                 });
             });
 

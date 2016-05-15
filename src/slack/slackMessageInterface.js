@@ -3,6 +3,7 @@
 var Bot = require('slackbots');
 var moment = require('moment');
 var SlackMessageAnalyze = require('./slackMessageAnalyze');
+var SlackFileUpload = require('./slackFileUpload');
 
 class slackMessageInterface {
 
@@ -18,7 +19,11 @@ class slackMessageInterface {
         return 'warning';
     }
 
-    constructor(token, ciService) {
+    /**
+     * @param {String} slackToken Your Slack bot integration token (obtainable at https://my.slack.com/services/new/bot)
+     * @param {Object} ciService  Your ci service object for now we support just travis
+     */
+    constructor(slackToken, ciService) {
         this.ciService = ciService;
 
         this.listener = [
@@ -35,12 +40,13 @@ class slackMessageInterface {
         ];
 
         var settingsBot = {
-            token: token,
+            token: slackToken,
             name: 'CI Bot Alarm'
         };
 
         this.bot = new Bot(settingsBot);
         this.slackMessageAnalyze = new SlackMessageAnalyze(this.bot);
+        this.slackFileUpload = new SlackFileUpload(slackToken);
     }
 
     run() {
@@ -259,7 +265,7 @@ class slackMessageInterface {
                     this.ciService.getBuildInfoByBuildNumber(repository.last_build_id).then((buildInfo)=> {
                         this.ciService.getBuildLog(buildInfo.jobs[0].id).then((log)=> {
 
-                            this.postSlackMessage('```' + log.substr(0, 8000) + '```', 'Log build', this.infoColor, null, 'Log build', '', nameChannelOrUser);
+                            this.slackFileUpload.uploadFile(log.fileName, 'Log build ' + repository.last_build_id, nameChannelOrUser);
                         });
                     });
                 }, ()=> {
@@ -324,7 +330,7 @@ class slackMessageInterface {
      */
     postSlackMessage(message, fallback, color, fields, title, titleLink, nameChannelOrUser) {
         var params = {
-            icon_emoji: ':robot_face:',
+            as_user: true,
             attachments: [
                 {
                     'fallback': fallback,

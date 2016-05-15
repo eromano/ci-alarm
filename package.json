@@ -2,6 +2,7 @@
   "name": "ci-alarm",
   "version": "1.1.0",
   "description": "Ci-alarm is a Slack bot to help you to communicate with Travis CI",
+  "author": "Eugenio Romano",
   "keywords": [
     "slack",
     "travis",
@@ -45,6 +46,7 @@
     "mocha": "^2.4.5",
     "mocha-lcov-reporter": "^1.2.0",
     "nock": "^7.7.3",
+    "node-slack-upload": "^1.1.0",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0"
   },
