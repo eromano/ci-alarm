@@ -82,11 +82,11 @@ class slackMessageInterface {
      */
     listenerRequestStatusBuild() {
         this._listenerMessage(this.slackMessageAnalyze.isStatusMessage, (message) => {
+            var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
             var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFromText(message.text, 'status');
             if (repoName) {
                 this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
                     this.ciService.getCommitInfoByBuildNumber(repository.last_build_id).then((commit)=> {
-                        var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
                         var messageText = this._createMessageBuildInfo(message, repository, commit);
                         var fields = this._createFieldsAdditionInformationMessage(repository, commit);
 
@@ -94,11 +94,11 @@ class slackMessageInterface {
                             'Ci status', this._colorByStatus(this._getBuildStatusByRepo(repository)), fields, 'Build status', repository.linkBuild, nameChannelOrUser);
                     });
                 }, (error)=> {
-                    this.postSlackMessage(error.toString(), 'Ci status', this.failColor, null, 'Build status');
+                    this.postSlackMessage(error.toString(), 'Ci status', this.failColor, null, 'Build status,', null, nameChannelOrUser);
                 });
             } else {
-                this.postSlackMessage('Maybe you want use the command : "status username/example-project" but' +
-                    ' you forgot to add the repository slug', 'Ci status', this.infoColor, null, 'Build status');
+                this.postSlackMessage('Maybe you want use the command : "status username/example-project" but you forgot to add the repository slug',
+                    'Ci status', this.infoColor, null, 'Build status', null, nameChannelOrUser);
             }
         });
     }
@@ -147,7 +147,7 @@ class slackMessageInterface {
                 });
             } else {
                 this.postSlackMessage('Maybe you want use the command : "build username/example-project" but' +
-                    ' you forgot to add the repository slug', 'Execute build', this.infoColor, null, 'Execute build');
+                    ' you forgot to add the repository slug', 'Execute build', this.infoColor, null, 'Execute build', '', nameChannelOrUser);
 
             }
         });
@@ -174,7 +174,7 @@ class slackMessageInterface {
                 });
             } else {
                 this.postSlackMessage('Maybe you want use the command : "history username/example-project" but' +
-                    ' you forgot to add the repository slug', 'Build History', this.infoColor, null, 'Build History');
+                    ' you forgot to add the repository slug', 'Build History', this.infoColor, null, 'Build History', '', nameChannelOrUser);
 
             }
         });
@@ -202,7 +202,7 @@ class slackMessageInterface {
                 });
             } else {
                 this.postSlackMessage('Maybe you want use the command : "info username/example-project" but' +
-                    ' you forgot to add the repository slug', 'Info repository', this.infoColor, null, 'Info repository');
+                    ' you forgot to add the repository slug', 'Info repository', this.infoColor, null, 'Info repository', '', nameChannelOrUser);
 
             }
         });
@@ -251,6 +251,7 @@ class slackMessageInterface {
      */
     listenerLog() {
         this._listenerMessage(this.slackMessageAnalyze.isLogMessage, (message) => {
+            var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
             var repoName = this.slackMessageAnalyze.getRepositoriesNameInMessageFromText(message.text, 'log');
 
@@ -259,7 +260,6 @@ class slackMessageInterface {
             }
 
             if (repoName) {
-                var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
                 this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
                     this.ciService.getBuildInfoByBuildNumber(repository.last_build_id).then((buildInfo)=> {
@@ -274,7 +274,7 @@ class slackMessageInterface {
                 });
             } else {
                 this.postSlackMessage('Maybe you want use the command : "info username/example-project" but' +
-                    ' you forgot to add the repository slug', 'Log build', this.infoColor, null, 'Log build');
+                    ' you forgot to add the repository slug', 'Log build', this.infoColor, null, 'Log build', '', nameChannelOrUser);
             }
         });
     }

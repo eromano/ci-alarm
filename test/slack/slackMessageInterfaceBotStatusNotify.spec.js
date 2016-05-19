@@ -56,6 +56,7 @@ describe('Slack Message Interface Bot Status Notify', function () {
         this.slackMessageInterface.bot.emit('message', {
             username: 'Sonikku',
             user: 'C3P0',
+            channel: 'fake-general-channel-id',
             type: 'message',
             text: '<@' + this.slackMessageInterface.bot.self.id + '>: status'
         });
@@ -71,6 +72,7 @@ describe('Slack Message Interface Bot Status Notify', function () {
             username: 'Sonikku',
             user: 'C3P0',
             type: 'message',
+            channel: 'fake-general-channel-id',
             text: '<@' + this.slackMessageInterface.bot.self.id + '>: status mbros/project-fake99'
         });
 
