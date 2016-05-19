@@ -405,16 +405,38 @@ class slackMessageInterface {
      * @return {name} name of the channel or the user in the message depend if is a direct message or channel message
      */
     _getSlackNameChannelOrUserById(message) {
-        var name = this.bot.channels.find(function (item) {
-            return item.id === message.channel;
-        });
+        var name = this._getChannelById(message.channel);
 
         if (!name && this.bot.users) {
-            name = this.bot.users.find(function (item) {
-                return item.id === message.user;
-            });
+            name = this._getUserById(message.user);
         }
         return name;
+    }
+
+    /**
+     * Get the Channel Name by ID
+     *
+     * @param {String} channelId id Channel
+     *
+     * @return {name} name of channel
+     */
+    _getChannelById(channelId) {
+        return this.bot.channels.find(function (item) {
+            return item.id === channelId;
+        });
+    }
+
+    /**
+     * Get the UserName by ID
+     *
+     * @param {String} userId id User
+     *
+     * @return {name} name of user
+     */
+    _getUserById(userId) {
+        return this.bot.users.find(function (item) {
+            return item.id === userId;
+        });
     }
 
     /**
@@ -521,8 +543,12 @@ class slackMessageInterface {
      */
     _listenerMessage(condition, callback) {
         this.bot.on('message', (message) => {
-            if (condition.call(this.slackMessageAnalyze, message.text, message.username)) {
-                callback.call(this, message);
+            var user = this._getUserById(message.user);
+
+            if (user && user.name) {
+                if (condition.call(this.slackMessageAnalyze, message.text, user.name)) {
+                    callback.call(this, message);
+                }
             }
         });
     }

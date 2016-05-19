@@ -11,7 +11,8 @@ class slackMessageAnalyze {
     getTextAfterWord(textMessage, wordBefore) {
         return this.getRepositoriesNameInMessageFromText(textMessage, wordBefore);
     }
-        /**
+
+    /**
      * Get the repository name in a message String
      *
      * @param {String} textMessage like 'status eromano/ci-alarm'
@@ -68,36 +69,36 @@ class slackMessageAnalyze {
         return '<' + link + '|' + titleLink + '>';
     }
 
-    isRebuildMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'build');
+    isRebuildMessage(textMessage, username) {
+        return this._isValidCiMentionMessage(textMessage, username) && this._isTextContainedInMessage(textMessage, 'build');
     }
 
-    isLogMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'log');
+    isLogMessage(textMessage, username) {
+        return this._isValidCiMentionMessage(textMessage, username) && this._isTextContainedInMessage(textMessage, 'log');
     }
 
-    isRepositoryListMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'repository list');
+    isRepositoryListMessage(textMessage, username) {
+        return this._isValidCiMentionMessage(textMessage, username) && this._isTextContainedInMessage(textMessage, 'repository list');
     }
 
-    isCommandListMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && (this._isTextContainedInMessage(textMessage, 'command list') || this._isTextContainedInMessage(textMessage, 'help'));
+    isCommandListMessage(textMessage, username) {
+        return this._isValidCiMentionMessage(textMessage, username) && (this._isTextContainedInMessage(textMessage, 'command list') || this._isTextContainedInMessage(textMessage, 'help'));
     }
 
-    isStatusMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'status');
+    isStatusMessage(textMessage, username) {
+        return this._isValidCiMentionMessage(textMessage, username) && this._isTextContainedInMessage(textMessage, 'status');
     }
 
-    isHistoryMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'history');
+    isHistoryMessage(textMessage, username) {
+        return this._isValidCiMentionMessage(textMessage, username) && this._isTextContainedInMessage(textMessage, 'history');
     }
 
-    isInfoRepoMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'info');
+    isInfoRepoMessage(textMessage, username) {
+        return this._isValidCiMentionMessage(textMessage, username) && this._isTextContainedInMessage(textMessage, 'info');
     }
 
-    isReportMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'report');
+    isReportMessage(textMessage, username) {
+        return this._isValidCiMentionMessage(textMessage, username) && this._isTextContainedInMessage(textMessage, 'report');
     }
 
     isAlarmMessage(textMessage) {
@@ -108,8 +109,8 @@ class slackMessageAnalyze {
         return textMessage && textMessage.toLowerCase().indexOf(textToSearch) > -1;
     }
 
-    _isValidCiMentionMessage(textMessage) {
-        return !this._isFromCiAlarmBotMessage(textMessage)  && this._isMentioningCiAlarm(textMessage);
+    _isValidCiMentionMessage(textMessage, username) {
+        return (username && !this._isFromCiAlarmBotMessage(textMessage, username)) && this._isMentioningCiAlarm(textMessage);
     }
 
     _isMentioningCiAlarm(textMessage) {
@@ -117,7 +118,7 @@ class slackMessageAnalyze {
     }
 
     _isFromCiAlarmBotMessage(textMessage, username) {
-        return (username === this.bot.name);
+        return (username === this.bot.self.name);
     }
 }
 

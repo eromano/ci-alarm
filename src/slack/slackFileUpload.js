@@ -30,7 +30,7 @@ class slackFileUpload {
             channels: channel
         }, function (err) {
             if (err) {
-                console.error(err);
+                console.error('error' + err);
             } else {
                 console.log('done');
             }
