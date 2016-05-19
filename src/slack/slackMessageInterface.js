@@ -273,7 +273,7 @@ class slackMessageInterface {
                         this.infoColor, null, 'Log build', '', nameChannelOrUser);
                 });
             } else {
-                this.postSlackMessage('Maybe you want use the command : "info username/example-project" but' +
+                this.postSlackMessage('Maybe you want use the command : "log example-project #buildNumber" but' +
                     ' you forgot to add the repository slug', 'Log build', this.infoColor, null, 'Log build', '', nameChannelOrUser);
             }
         });
