@@ -82,7 +82,7 @@ class slackMessageAnalyze {
     }
 
     isCommandListMessage(textMessage, username) {
-        return this._isValidCiMentionMessage(textMessage, username) && (this._isTextContainedInMessage(textMessage, 'command list') || this._isTextContainedInMessage(textMessage, 'help'));
+        return this._isValidCiMentionMessage(textMessage, username) && (this._isTextContainedInMessage(textMessage, 'command list') || this._isTextContainedInMessage(textMessage, 'help'));// jscs:ignore maximumLineLength
     }
 
     isStatusMessage(textMessage, username) {
@@ -118,7 +118,7 @@ class slackMessageAnalyze {
     }
 
     _isFromCiAlarmBotMessage(textMessage, username) {
-        return (username === this.bot.self.name);
+        return (username === this.bot.self.id);
     }
 }
 

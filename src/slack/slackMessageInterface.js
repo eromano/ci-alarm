@@ -543,10 +543,8 @@ class slackMessageInterface {
      */
     _listenerMessage(condition, callback) {
         this.bot.on('message', (message) => {
-            var user = this._getUserById(message.user);
-
-            if (user && user.name) {
-                if (condition.call(this.slackMessageAnalyze, message.text, user.name)) {
+            if (message && message.user) {
+                if (condition.call(this.slackMessageAnalyze, message.text, message.user)) {
                     callback.call(this, message);
                 }
             }
