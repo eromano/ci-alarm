@@ -4,6 +4,7 @@ var Bot = require('slackbots');
 var moment = require('moment');
 var SlackMessageAnalyze = require('./slackMessageAnalyze');
 var SlackFileUpload = require('./slackFileUpload');
+var RaspberryInterface = require('../raspberryInterface');
 
 class slackMessageInterface {
 
@@ -47,6 +48,8 @@ class slackMessageInterface {
         this.bot = new Bot(settingsBot);
         this.slackMessageAnalyze = new SlackMessageAnalyze(this.bot);
         this.slackFileUpload = new SlackFileUpload(slackToken);
+        this.raspberryInterface = new RaspberryInterface();
+
     }
 
     run() {
@@ -226,22 +229,28 @@ class slackMessageInterface {
      */
     listenerAlarm() {
         this._listenerMessage(this.slackMessageAnalyze.isAlarmMessage, (message) => {
+            console.log('alarm');
             var nameChannelOrUser = this._getSlackNameChannelOrUserById(message).name;
 
             var mode = this.slackMessageAnalyze.getTextAfterWord(message.text, 'alarm');
-            var validMessage = false;
-            if (mode === 'on') {
-                this.raspberryInterface.flash();
-                validMessage = true;
-            } else if (mode === 'off') {
-                this.raspberryInterface.stopFlash();
-                validMessage = true;
-            }
+            try {
+                var validMessage = false;
+                if (mode === 'on') {
+                    this.raspberryInterface.flash();
+                    validMessage = true;
+                } else if (mode === 'off') {
+                    this.raspberryInterface.stopFlash();
+                    validMessage = true;
+                }
 
-            if (validMessage) {
-                this.postSlackMessage('Alarm ' + mode, 'Alarm ' + mode, this.infoColor, null, 'Alarm ' + mode, '', nameChannelOrUser);
-            } else {
-                this.postSlackMessage('Alarm message not valid type "alarm on OR alarm off"', 'Alarm sugestion', this.infoColor, null, 'Alarm sugestion', '', nameChannelOrUser);
+                if (validMessage) {
+                    this.postSlackMessage('Alarm ' + mode, 'Alarm ' + mode, this.infoColor, null, 'Alarm ' + mode, '', nameChannelOrUser);
+                } else {
+                    this.postSlackMessage('Alarm message not valid type "alarm on OR alarm off"', 'Alarm suggestion', this.infoColor, null, 'Alarm suggestion', '', nameChannelOrUser);// jscs:ignore maximumLineLength
+                }
+            } catch (error) {
+                console.log(error);
+                this.postSlackMessage('Alarm functionality is possible only for ci-alarm installed on a Raspberry Pi', 'Alarm Error', this.infoColor, null, 'Alarm suggestion', '', nameChannelOrUser);// jscs:ignore maximumLineLength
             }
         });
     }

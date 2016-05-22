@@ -101,8 +101,8 @@ class slackMessageAnalyze {
         return this._isValidCiMentionMessage(textMessage, username) && this._isTextContainedInMessage(textMessage, 'report');
     }
 
-    isAlarmMessage(textMessage) {
-        return this._isValidCiMentionMessage(textMessage) && this._isTextContainedInMessage(textMessage, 'alarm');
+    isAlarmMessage(textMessage, username) {
+        return this._isValidCiMentionMessage(textMessage, username) && this._isTextContainedInMessage(textMessage, 'alarm');
     }
 
     _isTextContainedInMessage(textMessage, textToSearch) {
