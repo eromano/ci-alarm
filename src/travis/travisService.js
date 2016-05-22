@@ -131,12 +131,12 @@ class travisInterface {
     /**
      * Retrieve the commit information by build Number
      *
-     * @param  {String} buildNumberId build number
+     * @param  {String} buildId build number
      * @return {Promise} A promise that returns all the commits bounded to the build
      */
-    getCommitInfoByBuildNumber(buildNumberId) {
+    getCommitInfoByBuildNumber(buildId) {
         return new Promise((resolve, reject) => {
-            this.getBuildInfoByBuildNumber(buildNumberId).then((build)=> {
+            this.getBuildInfoByBuildId(buildId).then((build)=> {
                 resolve(build.commit);
             }, (error)=> {
                 reject(new Error(error));
@@ -180,18 +180,43 @@ class travisInterface {
     }
 
     /**
-     * Retrieve the build information by build Number
+     * Retrieve the build information by build Id
      *
-     * @param  {String} buildNumberId build number
+     * @param  {String} buildId build Id
      * @return {Promise} A promise that returns all the build info
      */
-    getBuildInfoByBuildNumber(buildNumberId) {
+    getBuildInfoByBuildId(buildId) {
         return new Promise((resolve, reject) => {
-            this.travis.builds(buildNumberId).get(function (err, res) {
+            this.travis.builds(buildId).get(function (err, res) {
                 if (err || !res) {
                     reject(new Error(('Get Info Build Error ' + err)));
                 }
                 resolve(res);
+            });
+        });
+    }
+
+    /**
+     * Retrieve the build information by build Number
+     *
+     * @param  {String} buildNumber number of the build
+     * @return {Promise} A promise that returns all the build info
+     */
+    getBuildInfoByBuildNumber(buildNumber, repositoryName) {
+        return new Promise((resolve, reject) => {
+            this.travis.repos(this.username, repositoryName).builds().get(function (err, res) {
+                if (err || !res) {
+                    reject(new Error(('Get builds Error ' + err)));
+                }
+                console.log('res' + JSON.stringify(res));
+
+
+                var buildObj = _.find(res.builds, (build)=> {
+                    if (build.number === buildNumber) {
+                        return true;
+                    }
+                });
+                resolve(buildObj);
             });
         });
     }
@@ -250,7 +275,11 @@ class travisInterface {
     }
 
     _expandBaseRepositoryTravisObject(repository) {
-        repository.linkBuild = this.travisBaseUrl + '/' + repository.slug + '/builds/' + repository.last_build_id;
+        repository.linkBuild = this.buildLinkByLastBuildId(repository.slug, repository.last_build_id);
+    }
+
+    buildLinkByLastBuildId(repositorySlug, buildId) {
+        return this.travisBaseUrl + '/' + repositorySlug + '/builds/' + buildId;
     }
 }
 

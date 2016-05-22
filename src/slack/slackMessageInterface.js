@@ -166,7 +166,7 @@ class slackMessageInterface {
             }
             if (repoName) {
                 this.ciService.getAllBuildByRepositoryName(repoName).then((builds)=> {
-                    this.postSlackMessage(this._createMessageFromBuildsArray(builds), 'Build History',
+                    this.postSlackMessage(this._createMessageFromBuildsArray(builds, (this.ciService.username + '/' + repoName)), 'Build History',
                         this.infoColor, null, 'Build History', '', nameChannelOrUser);
                 }, ()=> {
                     this.postSlackMessage('This repositories doesn\'t exist', 'Build History',
@@ -260,14 +260,17 @@ class slackMessageInterface {
             }
 
             if (repoName) {
-
                 this.ciService.getLastBuildStatusByRepository(repoName).then((repository)=> {
-                    this.ciService.getBuildInfoByBuildNumber(repository.last_build_id).then((buildInfo)=> {
-                        this.ciService.getBuildLog(buildInfo.jobs[0].id).then((log)=> {
 
-                            this.slackFileUpload.uploadFile(log.fileName, 'Log build ' + repository.last_build_id, nameChannelOrUser);
+                    var buildId = this.slackMessageAnalyze.getTextAfterWord(message.text, repoName);
+
+                    if (!buildId) {
+                        this.uploadSlackMessageWithLogFileByBuildId(repository.last_build_id, nameChannelOrUser);
+                    } else {
+                        this.ciService.getBuildInfoByBuildNumber(buildId, repoName).then((build)=> {
+                            this.uploadSlackMessageWithLogFileByBuildId(build.id, nameChannelOrUser);
                         });
-                    });
+                    }
                 }, ()=> {
                     this.postSlackMessage('This repositories doesn\'t exist', 'Log build',
                         this.infoColor, null, 'Log build', '', nameChannelOrUser);
@@ -276,6 +279,14 @@ class slackMessageInterface {
                 this.postSlackMessage('Maybe you want use the command : "log example-project #buildNumber" but' +
                     ' you forgot to add the repository slug', 'Log build', this.infoColor, null, 'Log build', '', nameChannelOrUser);
             }
+        });
+    }
+
+    uploadSlackMessageWithLogFileByBuildId(buildId, nameChannelOrUser) {
+        this.ciService.getBuildInfoByBuildId(buildId).then((buildInfo)=> {
+            this.ciService.getBuildLog(buildInfo.jobs[0].id).then((log)=> {
+                this.slackFileUpload.uploadFile(log.fileName, 'Log build ' + buildId, nameChannelOrUser);
+            });
         });
     }
 
@@ -467,13 +478,17 @@ class slackMessageInterface {
      * Create Slack Message from builds Array
      *
      * @param {Array} builds
+     * @param {String} slug repository
      *
      * @return {String} message
      */
-    _createMessageFromBuildsArray(builds) {
+    _createMessageFromBuildsArray(builds, slug) {
         var message = '';
-        builds.forEach((buildobject)=> {
-            message = message + 'Build #' + buildobject.number + ' was ' + buildobject.state + '\n';
+        builds.forEach((buildObject)=> {
+            var linkBuild = this.ciService.buildLinkByLastBuildId(slug, buildObject.id);
+            var linkBuildSlackMessage = this.slackMessageAnalyze.createSlackMessageLink(('Build #' + buildObject.number), linkBuild);
+
+            message = message + linkBuildSlackMessage + this._symbolByStatus(buildObject.state) + ' was ' + buildObject.state + '\n';
         });
 
         return message;

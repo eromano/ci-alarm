@@ -109,7 +109,7 @@ describe('Bot CI General Travis info communication', function () {
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).to.be.equal('Build #53 was passed\nBuild #53 was passed\nBuild #53 was passed\n');
+            expect(this.textCheck).to.be.equal('<https://travis-ci.org/mbros/fake-project3/builds/122131187|Build #53>:white_check_mark: was passed\n<https://travis-ci.org/mbros/fake-project3/builds/122131187|Build #53>:white_check_mark: was passed\n<https://travis-ci.org/mbros/fake-project3/builds/122131187|Build #53>:white_check_mark: was passed\n');
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();
         }, 50);
@@ -155,7 +155,7 @@ describe('Bot CI General Travis info communication', function () {
         }, 50);
     });
 
-    it.skip('should the bot respond with the travis log if asked about the log of a build', function (done) {
+    it('should the bot respond with the travis log  of the last build if asked about the log of a build without the build number', function (done) {
         var repos = Repository.createRepositoriesList();
 
         nock('https://api.travis-ci.org:443').get('/repos/' + this.travisService.username).reply(200, {repos});
@@ -165,11 +165,33 @@ describe('Bot CI General Travis info communication', function () {
             user: 'C3P0',
             channel: 'fake-general-channel-id',
             type: 'message',
-            text: '<@' + this.slackMessageInterface.bot.self.id + '>: log fake-project3 #123'
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: log fake-project3'
         });
 
         setTimeout(()=> {
-            expect(this.textCheck).be.equal('build log');// jscs:ignore maximumLineLength
+            expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
+            done();
+        }, 50);
+    });
+
+    it('should the bot respond with the travis log if asked about the log of a build', function (done) {
+        var repos = Repository.createRepositoriesList();
+
+        nock('https://api.travis-ci.org:443')
+            .get('/repos/' + this.travisService.username + '/fake-project3/builds')
+            .reply(200, {repos});
+
+        nock('https://api.travis-ci.org:443').get('/repos/' + this.travisService.username).reply(200, {repos});
+
+        this.slackMessageInterface.bot.emit('message', {
+            username: 'Sonikku',
+            user: 'C3P0',
+            channel: 'fake-general-channel-id',
+            type: 'message',
+            text: '<@' + this.slackMessageInterface.bot.self.id + '>: log fake-project3 123'
+        });
+
+        setTimeout(()=> {
             expect(this.colorMessage).to.be.equal(this.slackMessageInterface.infoColor);
             done();
         }, 50);
