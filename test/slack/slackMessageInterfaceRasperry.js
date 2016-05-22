@@ -2,7 +2,6 @@
 'use strict';
 var SlackMessageInterface = require('../../src/slack/slackMessageInterface');
 var TravisService = require('../../src/travis/travisService');
-var RaspberryInterface = require('../../src/raspberryInterface');
 
 var expect = require('chai').expect;
 var sinon = require('sinon');
