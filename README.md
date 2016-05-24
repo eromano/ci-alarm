@@ -32,7 +32,7 @@
 >Ci-alarm is a  node.js slack bot to help you to communicate with Travis CI.
 
 With this bot you can :
-* Get in yor slack chat all the info about your repository
+* Get in yor slack chat all the info about your Travis Ci and repositories
 * Restart Build
 * Turn on a light alarm through GPIO of the Raspberry Pi when your Travis build fail
 
@@ -100,6 +100,21 @@ Once the bot is running see the documentation for the [Command list](https://git
     ```@BotName report" ```
 
 
+## Plug-In
+
+<div>
+    <div align="left" width="70%"  >
+    Ci Alarm is also able to turn on/off a alarm light when the build is failing.
+    In order to have this kind of plug-in you have to install ci-alarm on a Raspberry PI.
+    All the specification for this kind of configuration are [here](https://github.com/eromano/ci-alarm/blob/master/doc/README.md).
+    </div>
+
+    <div align="left"  width="20%" >
+      <img title="ci alarm light alarm schema components" src='doc/img/raspberry-pi-logo.png' width="70px" height="80px"  />
+    </div>
+</div>
+
+
 ## Development
 
 * To test ci-alarm
@@ -118,17 +133,6 @@ Once the bot is running see the documentation for the [Command list](https://git
 
     ```$ npm run-script start```
 
-## Plug-In
-
-<div align="left"  >
-Ci Alarm is also able to turn on/off a alarm light when the build is failing.
-In order to have this kind of plug-in you have to install ci-alarm on a Raspberry PI.
-All the specification for this kind of configuration are [here](https://github.com/eromano/ci-alarm/blob/master/doc/README.md).
-</div>
-
-<div align="left"  >
-  <img title="ci alarm light alarm schema components" src='doc/img/raspberry-pi-logo.png' width="100px" height="100px"  />
-</div>
 
 ## Contributing
 
