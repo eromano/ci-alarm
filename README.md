@@ -62,30 +62,19 @@ Once the bot is running see the documentation for the [Command list](https://git
 
 * To show the command list
 
-    ```@BotName command list ``` or     ```@BotName help ```
-<p align="left" >
-  <img title="ci alarm" src='doc/img/command list.png' width="400px"/>
-</p>
+    ```@BotName command list ```    or     ```@BotName help ```
 
 * To show the repository status
 
     ```@BotName status "[repository name|repository slugName]" ```
 
-<p align="left" >
-  <img title="ci alarm" src='doc/img/status.png'  width="400px"/>
-</p>
-
 * To show the repository list
 
     ```@BotName repository list ```
 
-<p align="left"  >
-  <img title="ci alarm" src='doc/img/repo list.png' width="400px"/>
-</p>
+* To run a build a project on Travis
 
-* To build a project on Travis
-
-    ```@BotName rebuild "[repository name|repository slugName]" ```
+    ```@BotName build "[repository name|repository slugName]" ```
 
 * To view the build history of a project
 
@@ -97,9 +86,12 @@ Once the bot is running see the documentation for the [Command list](https://git
 
 * To view the status about all your repository
 
-    ```@BotName report" ```
+    ```@BotName report ```
 
+* To switch on/off the alarm light if you install [ci-alarm on a raspberry pi](https://github.com/eromano/ci-alarm/wiki/Set-up--CI-ALARM-on-your-Raspberry-Pi)
 
+    ```@BotName alarm on/off ```
+    
 ## Plug-In
 
 <div>

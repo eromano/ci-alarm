@@ -6,7 +6,6 @@ class raspberryInterface {
 
     constructor() {
         var gpioPinDefault = 22;
-        // var projectToAlarm = process.env.PROJECT_TO_ALARM || nconf.get('projectToAlarm');
         this.pin = nconf.get('gpioPin') || gpioPinDefault;
 
         this.gpioPin = gpio.export(this.pin, {
