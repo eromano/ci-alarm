@@ -63,6 +63,6 @@
     "restify": "4.3.2",
     "slackbots": "0.5.3",
     "travis-ci": "2.1.1",
-    "travisci-webhook-handler": "1.0.2"
+    "travisci-webhook-handler": "2.0.0"
   }
 }
