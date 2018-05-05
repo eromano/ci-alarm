@@ -54,7 +54,7 @@
     "Eugenio Romano <> (http://eromano.github.io/)"
   ],
   "dependencies": {
-    "botbuilder": "0.9.2",
+    "botbuilder": "3.15.0",
     "coveralls": "2.13.3",
     "github": "0.2.4",
     "gpio": "0.2.7",
