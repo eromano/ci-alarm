@@ -62,7 +62,7 @@
     "nconf": "0.8.5",
     "restify": "4.3.2",
     "slackbots": "0.5.3",
-    "travis-ci": "2.1.1",
+    "travis-ci": "2.2.0",
     "travisci-webhook-handler": "1.0.2"
   }
 }
