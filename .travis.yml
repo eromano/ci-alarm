@@ -5,8 +5,8 @@ before_install: npm install -g grunt-cli
 
 deploy:
  provider: releases
- api_key: “$GITHUB_OAUTH_TOKEN”
- file: “README.md”
+ api_key: "$GITHUB_OAUTH_TOKEN"
+ file: "README.md"
  skip_cleanup: true
  draft: true
  
