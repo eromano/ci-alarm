@@ -59,7 +59,7 @@
     "github": "0.2.4",
     "gpio": "0.2.7",
     "moment": "2.20.1",
-    "nconf": "0.8.5",
+    "nconf": "0.12.1",
     "restify": "4.3.2",
     "slackbots": "0.5.3",
     "travis-ci": "2.1.1",
