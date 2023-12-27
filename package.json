@@ -58,7 +58,7 @@
     "coveralls": "2.13.3",
     "github": "0.2.4",
     "gpio": "0.2.7",
-    "moment": "2.20.1",
+    "moment": "2.30.1",
     "nconf": "0.8.5",
     "restify": "4.3.2",
     "slackbots": "0.5.3",
